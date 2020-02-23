@@ -1,0 +1,2470 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{tikz-cd}
+\usepackage{xargs}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\title{%
+  Linear Algebra \\
+  \large Notes from TAU Course with Additional Information}
+\author{Gabriel Domingues}
+\date{2020-02-03}
+
+\let\emptyset\varnothing
+\let\RA\Rightarrow
+\let\LA\Leftarrow
+\let\LR\Leftrightarrow
+\renewcommand{\arraystretch}{1.5}
+
+\newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
+\newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
+
+\newcommand{\set}[2]{\left\{{#1}\;\middle|\;{#2}\right\}}
+\newcommand{\Forall}[1]{\forall\,{#1}\,,\;}
+\newcommand{\Exist}[1]{\exists\,{#1}\,:\;}
+\newcommand{\NExist}[1]{\nexists\,{#1}\,:\;}
+\newcommand{\tuple}[1]{\underline{#1}}
+
+\newcommand{\seq}[2]{\left({#1}_{\,1},{#1}_{\,2},\cdots,{#1}_{\,#2}\right)}
+\newcommand{\seqt}[2]{\left(\tuple{#1}_{\,1},\tuple{#1}_{\,2},\cdots,\tuple{#1}_{\,#2}\right)}
+
+\newcommandx{\mcols}[4][1={},2={}]{
+  \left(
+    \begin{array}{cccc}
+      \vertbar & \vertbar && \vertbar \\
+      {#1} \tuple{#3}_{\,1} {#2} & {#1} \tuple{#3}_{\,2} {#2} &\cdots& {#1} \tuple{#3}_{\,#4} {#2}   \\
+      \vertbar & \vertbar && \vertbar
+    \end{array}
+  \right)
+}
+\newcommandx{\mrows}[4][1={},2={}]{
+  \left(
+    \begin{array}{ccc}
+      \horzbar & {#1}\tuple{#3}_{\,1}{#2} & \horzbar \\
+      \horzbar & {#1}\tuple{#3}_{\,2}{#2} & \horzbar \\
+              & \vdots    &          \\
+      \horzbar & {#1}\tuple{#3}_{\,#4}{#2} & \horzbar
+    \end{array}
+  \right)
+}
+
+\newcommand{\inner}[2]{\left\langle{#1},{#2}\right\rangle}
+
+\DeclareMathOperator{\R}{\mathbb{R}}
+\DeclareMathOperator{\Image}{Im}
+\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\sols}{sols}
+\DeclareMathOperator{\LD}{LD}
+\DeclareMathOperator{\cols}{cols}
+\DeclareMathOperator{\rows}{rows}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\adj}{adj}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\concat}{++}
+\DeclareMathOperator{\Eig}{Eig}
+\DeclareMathOperator{\am}{am}
+\DeclareMathOperator{\gm}{gm}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\Gram}{Gram}
+
+\makeatletter
+\newcommand*\sumprod{\mathpalette\bigcdot@{.6}{}}\newcommand*\bigcdot{\mathpalette\bigcdot@{.5}{}}
+\newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{definition}{Definition}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
+\newtheorem{proposition}{Proposition}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{example}{Example}[subsection]
+
+\begin{document}
+\maketitle
+
+\setlength{\parindent}{0ex}
+\setlength{\parskip}{1em}
+
+\tableofcontents
+
+\pagebreak
+
+\section{Sets}
+
+\subsection{Set Theory (Succinctly) and Logic}
+
+There will be no definition of a set. Instead, we postulate the existence of a relation $\in$ (read as "is in"). 
+
+It is axiom the existence of the empty set $\emptyset$, that is, $\Exist{\emptyset}\Forall{x} x\notin\emptyset$
+
+\begin{definition}[Principle of Double Inclusion]
+  We define the following symbols:
+  \begin{itemize}
+    \item[] Inclusion: $A\subseteq B\LR \Forall{x} x\in A\RA \;x\in B$
+    \item[] Equality: $A=B\LR A\subseteq B$ and $B\subseteq A\LR \Forall{x} x\in A\LR \;x\in B$
+    \item[] Proper Inclusion: $A\subsetneqq B\LR A\subseteq B$ and $A\neq B$
+  \end{itemize}
+  
+\end{definition}
+
+It is also axiom the existence of the power set: Given a set $A$, there is a set $\mathcal{P}(A)$ so that: $x\in \mathcal{P}(A) \LR x \subseteq A$
+
+We can create new sets by the Principle of Restricted Comprehension: Let $A$ be a set and $P$ a predicate (given an object, it is either True or False), then the following is a set: $\set{x\in A}{P(x)}$
+
+\begin{example}[Set Difference]
+  Let $A$ and $B$ be sets. Construct: $A\setminus B=\set{x\in A}{x\notin B}$
+\end{example}
+
+We can construct the sets we will mainly use:
+
+\begin{itemize}
+  \item [] Natural Numbers $\mathbb{N}=\{0,1,2,\cdots\}$
+  \item [] Integer Numbers $\mathbb{Z}=\{\cdots,-2,-1,0,1,2,\cdots\}$
+  \item [] Rational Numbers $\mathbb{Q}=\set{\dfrac{m}{n}}{m\in\mathbb{Z}\text{ and }n\in\mathbb{N}\setminus\{0\}}$
+  \item [] Real Numbers $\R$
+\end{itemize}
+
+\subsection{Operations on Sets}
+
+\begin{definition}[Set Operations]
+  For sets $A$ and $B$ these are sets (by axiom):
+  \begin{itemize}
+    \item[] Union : $A\cup B=\set{x}{x\in A \text{ or } x\in B}$
+    \item[] Intersection : $A\cap B=\set{x}{x\in A \text{ and } x\in B}$
+    \item[] Cartesian Product : $A\times B=\set{(a,b)}{a\in A \text{ and } b\in B}$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Operation]
+  An operation $*$ on a set $A$ is a map:
+  \begin{align*}
+    *: A\times A&\to B\\
+    (a,b)&\mapsto a*b
+  \end{align*}
+  This operation can have (or lack) multiple properties. These are the most important:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Properties & Definition \\\hline
+      Closed & $\Forall{a,b\in A} a*b\in A$\\\hline
+      Commutative & $\Forall{a,b\in A} a*b=b*a$\\\hline
+      Associative & $\Forall{a,b,c\in A} (a*b)*c=a*(b*c)$\\\hline
+      Neutral Element & $\Exist{e\in A}\Forall{a\in A}a*e=e*a=a$\\\hline
+      Inverse Element & $\Forall{a\in A}\Exist{b\in A} a*b=b*a=e$\\\hline
+    \end{tabular}
+  \end{table} 
+\end{definition}
+
+\begin{definition}[Equivalence Relation]
+  An equivalence relation on a set $X$ is a predicate of two variables (has the value True or False), denoted $x \sim y$, that has these three properties:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Reflexivity & $\Forall{x \in X} x \sim x$\\\hline
+      Symmetry & $\Forall{x,y \in X} x \sim y \;  \LR \; y \sim x$ \\\hline
+      Transitivity & $\Forall{x,y,z \in X} x \sim y \; \land \; y \sim z \RA x \sim z$\\\hline
+    \end{tabular}
+  \end{table}
+\end{definition}
+
+\subsection{Axioms of Field}
+
+\begin{definition}[Field]
+  A field $F$ is a set with operations $(+:F\times F\to F,\cdot:F\times F\to F)$ iff:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Properties & Definition \\\hline
+      Commutative & $\Forall{\alpha,\beta\in F}\alpha+\beta=\beta+\alpha$ \\\hline
+      Associative & $\Forall{\alpha,\beta,\gamma\in F} (\alpha+\beta)+\gamma=\alpha+(\beta+\gamma)$ \\\hline
+      Neutral Element & $\Exist{0 \in F}\Forall{\alpha\in F} \alpha+0=\alpha$ \\\hline
+      Inverse Element & $\Forall{\alpha\in F}\Exist{\beta \in F}\alpha+\beta=0$ \\\hline
+      Associative & $\Forall{\alpha,\beta,\gamma \in F}\alpha\cdot(\beta\cdot \gamma)=(\alpha\cdot\beta)\cdot\gamma$ \\\hline
+      Distributive Right & $\Forall{\alpha,\beta,\gamma\in F} \alpha\cdot(\beta+\gamma)=\alpha\cdot \beta+\alpha\cdot \gamma$ \\\hline
+      Distributive Left & $\Forall{\alpha,\beta,\gamma\in F} (\alpha+\beta)\cdot \gamma=\alpha\cdot \gamma+\beta\cdot \gamma$ \\\hline
+      Unital Element & $\Exist{1 \in F}\Forall{\alpha\in F} 1\cdot \alpha=\alpha$ \\\hline
+      Inverse Element & $\Forall{\alpha\in F\setminus\{0\}}\Exist{\beta \in F} \alpha\cdot\beta=1$ \\\hline
+      Commutative & $\Forall{\alpha,\beta\in F} \alpha\cdot\beta=\beta\cdot\alpha$ \\\hline
+    \end{tabular}
+  \end{table}
+\end{definition}
+
+Examples include $\mathbb{Q}$ and $\mathbb{R}$ with addition and multiplication of numbers.
+
+\pagebreak
+
+\section{Linear Equations}
+
+\subsection{Linear Equations over a Field}
+
+\begin{definition}[Linear Equation]
+  A linear equation (over $F$) in the tuple $\tuple{x}=\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}\in F^n$, where we define $F^n=\overbrace{\;F\times F\times \cdots\times F\;}^{n\text{ times}}$. is something of the form: $$ E\;:\;\sum_{i=1}^n a_i\cdot x_i=a_1\cdot x_1+a_2\cdot x_2+\cdots+a_n\cdot x_n=b$$ where $a_i,b\in F$. We denote the solution to $E$ as $\sols(E)$. That is, $$\sols(E):=\set{\tuple{x}\in F^n}{\sum_{i=1}^n a_i\cdot x_i=b}$$
+\end{definition}
+
+\begin{definition}[Homogeneous Equation]
+  We say a linear equation $H$ is homogeneous if $b=0$. 
+\end{definition}
+
+\begin{definition}[Linear Equation System]
+  A system of $k$ linear equations $L$ is a sequence of linear equations $(E_1,E_2,\cdots,E_k)$, for which we need to find $\tuple{x}\in F^n$ that satisfies all equations. That is, $$\sols(L)=\bigcap_{i=1}^k \sols(E_i)=\sols(E_1)\cap\sols(E_2)\cap\cdots\cap\sols(E_k)$$
+\end{definition}
+
+\subsection{Gaussian Elimination}
+
+\begin{definition}[Leading Variable]
+  We say $x_i$ the leading variable of the linear equation $E\,:\;\displaystyle\sum_{k=1}^n a_i\cdot x_i$ iff $a_i\neq 0$ and $\Forall{j\in\{1,\cdots,i\}} a_j=0$.
+\end{definition}
+
+\begin{definition} [Canonical Form/ Row Reduced Echelon Form]
+  A linear system is said to be in canonical form if:
+  \begin{enumerate}
+    \item The sequence of leading variables strictly increases
+    \item Equations without leading variables (zero equation) come at the end
+    \item Each leading variable appears only in one equation with coefficient $1$
+  \end{enumerate}
+  A system in the canonical form is very easy to solve since we can isolate the leading variables and make the others (if exist) free variables.
+\end{definition}
+
+\begin{example}
+  $$
+  \begin{cases}
+    x_1+x_2+x_3&=3\\
+    2x_1-x_2+5x_3&=0
+  \end{cases}
+  \LR
+  \begin{cases}
+    x_1+0+2x_3&=1\\
+    0+x_2-x_3&=2
+  \end{cases}
+  $$
+  We can solve:$\;\sols(L)=\set{\begin{pmatrix}1-2t\\2+t\\t\end{pmatrix}}{t\in\R}$
+\end{example}
+
+\begin{definition}[Elementary Operations]
+  We define three types of elementary operation:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Operations & Calculation\\\hline
+      Reordering the equations & $E_i\leftrightarrow E_j$\\\hline
+      Multiplying one equation by a non-zero constant $t$ & $E_i\rightarrow t\cdot E_i$\\\hline
+      Add multiple of one equation to another & $E_i\rightarrow E_i-t\cdot E_j$\\\hline
+    \end{tabular}
+  \end{table}
+
+  These operations are reversible, so they conserve the solutions. That is, the LES $M=\varphi(L)$ that we get after doing one of the elementary operations, is equivalent to $L$.
+\end{definition}
+
+\begin{theorem}[Gaussian Elimination Algorithm]
+  Every LES is equivalent to a LES in canonical form.
+  \begin{proof}
+    Let $E_j\,:\;\displaystyle\sum_{i=1}^n\,a_{i,j}\cdot x_i=b_j$ and $L=(E_1,\cdots,E_k)$. We prescribe the following algorithm to get into canonical form:
+
+    \begin{algorithm}[H]
+      \caption{Gaussian Elimination Algorithm}
+      \begin{algorithmic}
+        \State $r\gets 0$
+        \For{$1\leq j\leq n$}
+          \State $i\gets r+1$
+          \While{$i\leq k$ \textbf{and} $a_{i,j}=0$}
+            \State $i\gets i+1$
+          \EndWhile
+          \If{$i<k$}
+            \State $r\gets r+1$
+            \State \textbf{do} $E_i\leftrightarrow E_r$\\
+            \State \textbf{do} $E_j\to \dfrac{1}{a_{r,j}}\cdot E_j$\\
+            \For{$1\leq m\leq k$}
+              \If{$m\neq r$}
+                \State \textbf{do} $E_m\rightarrow E_m-a_{m,j}\cdot E_r$
+              \EndIf
+            \EndFor
+          \EndIf
+        \EndFor
+      \end{algorithmic}
+      \label{Gaussian Elimination}
+    \end{algorithm}
+
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\section{Linear Combinations}
+
+\subsection{Sequence of Tuples}
+
+\begin{definition}[Tuple field operations]
+  We define addition of tuple and multiplication by number as:
+
+  $$
+  \begin{pmatrix}x_1\\\vdots\\x_n\end{pmatrix}+\begin{pmatrix}y_1\\\vdots\\y_n\end{pmatrix}:=\begin{pmatrix}x_1+y_1\\\vdots\\x_n+y_n\end{pmatrix}\quad \text{ and }\quad
+  t\cdot \begin{pmatrix}x_1\\\vdots\\x_n\end{pmatrix}:=\begin{pmatrix}t\cdot x_1\\\vdots\\t\cdot x_n\end{pmatrix}
+  $$
+\end{definition}
+
+\begin{definition}(Linear Combination)
+  Given tuples $\tuple{v}_{\,1},\tuple{v}_{\,2},\cdots,\tuple{v}_{\,n}\in F^k$ and numbers $\alpha_1,\alpha_2,\cdots,\alpha_n\in F$ a linear combination is:
+  $$ \sum_{i=1}^n  \alpha_i\cdot \tuple{v}_{\,i}=\alpha_1\cdot \tuple{v}_{\,1}+\alpha_2\cdot \tuple{v}_{\,2}+\cdots+\alpha_n\cdot \tuple{v}_{\,n}\in F^k$$
+\end{definition}
+
+\begin{definition}[Span of Sequence]
+  For a set/sequence of tuples $S=\seqt{v}{n}$, with $\tuple{v}_{\,i}\in F^k$, we define: $$\Span(S)=\set{\sum_{i=1}^n  \alpha_i\cdot \tuple{v}_{\,i}}{\alpha_i\in F}$$
+  the set of all linear combinations
+\end{definition}
+
+\begin{proposition}[Span is closed]
+  For any sequence $S$, $\Span(S)$ is closed under addition and multiplication by number.
+  \begin{proof}
+    Let $S=\seqt{v}{n}$ then:
+    $$\left(\sum_{i=1}^n  \alpha_i\cdot \tuple{v}_{\,i}\right)+\left(\sum_{i=1}^n  \beta_i\cdot \tuple{v}_{\,i}\right)=\left(\sum_{i=1}^n  (\alpha_i+\beta_i)\cdot \tuple{v}_{\,i}\right)\in\Span(S)$$
+    $$\lambda\cdot \left(\sum_{i=1}^n  \alpha_i\cdot \tuple{v}_{\,i}\right)=\left(\sum_{i=1}^n (\lambda\cdot \alpha_i)\cdot \tuple{v}_{\,i}\right)\in\Span(S)$$
+  \end{proof}
+\end{proposition}
+
+\begin{definition}[Linear Dependent and Independent sequences]
+  We say $S=\seqt{v}{n}$ is:
+  \begin{itemize}
+    \item [] Linear Dependent if: $$\Exist{\seq{x}{n}\neq\tuple{0} \in F^n}\sum_{i=1}^n  x_i\cdot \tuple{v}_{\,i}=\tuple{0}$$
+    \item [] Linear Independent if: $$\NExist{\seq{x}{n}\neq\tuple{0} \in F^n}\sum_{i=1}^n  x_i\cdot \tuple{v}_{\,i}=\tuple{0}$$ that is, $$\Forall{\seq{x}{n}\in F^n}\sum_{i=1}^n  x_i\cdot \tuple{v}_{\,i}=\tuple{0}\RA \seq{x}{n}=\tuple{0}$$
+  \end{itemize}
+\end{definition}
+
+\begin{example}[Proportionality Condition]
+  A sequence $S=(\tuple{u},\tuple{v})$ is linear independent iff the two tuples are not proportional.
+\end{example}
+
+\begin{definition}[Linear Dependency]
+  We write the linear dependency of $S=\seqt{v}{n}$: $$\LD(S)=\sols\left(\sum_{i=1}^n \tuple{v}_{\,i}\cdot x_i=\tuple{0}\right)$$
+  Comment: Always given: $\tuple{0}\subseteq\LD(S)$
+\end{definition}
+
+\begin{proposition}[LI sequences have trivial LD]
+  A sequence is Linear Independent iff $\LD(S)=\{\tuple{0}\}$.
+  \begin{proof}
+    We prove both directions:
+    \begin{itemize}
+      \item[$(\RA)$] By contrary, suppose there is $\tuple{x}=(x_1,x_2,\cdots,x_n)\neq\tuple{0}\in\LD(S)$, then $S$ is not Linearly Independent
+      \item[$(\LA)$] Let $\tuple{x}=\seq{x}{n}\in F^n\,:\;\sum_{i=1}^n  x_i\cdot \tuple{v}_{\,i}=\tuple{0}$. Therefore, $\tuple{x}\in\LD(S)=\{\tuple{0}\}\RA \tuple{x}=\tuple{0}$
+    \end{itemize}
+  \end{proof}
+\end{proposition}
+
+\subsection{Linear Equation Systems on Tuples}
+
+\begin{definition}[System as Tuples]
+  For a linear system:
+  $$
+  L:\begin{cases}
+    E_1\,:\;\sum_{i=1}^n a_{1,i}\cdot x_i=b_1\\
+    E_2\,:\;\sum_{i=1}^n a_{2,i}\cdot x_i=b_2\\
+    \quad\qquad\vdots\\
+    E_k\,:\;\sum_{i=1}^n a_{k,i}\cdot x_i=b_n\\
+  \end{cases}
+  \LR
+  \sum_{i=1}^n \begin{pmatrix}a_{1,i}\\a_{2,i}\\\vdots\\a_{k,i}\end{pmatrix}\cdot x_i=\begin{pmatrix}b_1\\b_2\\\vdots\\b_k\end{pmatrix}
+  $$
+
+  If we define $\tuple{a}_{\,i}=\begin{pmatrix}a_{1,i}\\a_{2,i}\\\vdots\\a_{k,i}\end{pmatrix}$ and $\tuple{b}=\begin{pmatrix}b_1\\b_2\\\vdots\\b_k\end{pmatrix}$ so that $\displaystyle L\,:\;\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{b}$.
+\end{definition}
+
+\begin{proposition}[N\&SC for solution]
+  $\displaystyle L\,:\;\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{b}$ has a solution iff $\tuple{b}\in\Span\seqt{a}{n}$
+\end{proposition}
+
+\begin{lemma}[Homogeneous solutions are closed]
+  Let $\displaystyle L\,:\;\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{0}$ be a homogeneous linear system, that is, a system of homogeneous linear equations. Then, $\sols(H)$ is closed under (tuple) addition and multiplication by number.
+  \begin{proof}
+    Let $\tuple{x},\tuple{y}\in\sols(H)$ then:
+    $$\left(\sum_{i=1}^n \tuple{a}_{\,i}\cdot (x_i+y_i)\right)=\left(\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i\right)+\left(\sum_{i=1}^n  \tuple{a}_{\,i}\cdot y_i\right)=\tuple{0}+\tuple{0}=\tuple{0}$$
+    $$\left(\sum_{i=1}^n \tuple{a}_{\,i}\cdot(\lambda\cdot x_i)\right)=\lambda\cdot \left(\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i \right)=\lambda\cdot\tuple{0}=\tuple{0}$$
+  \end{proof}
+  Further, $\sols(H)=\LD\seqt{a}{n}$, by definition. And, $\tuple{0}\subseteq\sols(H)$, so $\sols(H)\neq\emptyset$
+\end{lemma}
+
+\begin{corollary}[LD is closed]
+  For any sequence $S$, $\LD(S)$ is closed under (tuple) addition and multiplication by number.
+\end{corollary}
+
+\begin{theorem}[General Solution of LES]
+  Let $L$ be a LES and $H$ be the respective homogeneous system. Let $\tuple{p}\in\sols(L)$ then:
+
+  $$\sols(L)=\set{\tuple{p}+\tuple{q}}{\tuple{q}\in\sols(H)}$$
+
+  \begin{proof}
+    We use double inclusion:
+    \begin{itemize}
+      \item[$(\supseteq)$] $\displaystyle\Forall{\tuple{q}\in\sols(H)}\sum_{i=1}^n \tuple{a}_{\,i}\cdot \big(p_i+q_i\big)=\sum_{i=1}^n \tuple{a}_{\,i}\cdot p_i+\sum_{i=1}^n \tuple{a}_{\,i}\cdot q_i=\tuple{b}+\tuple{0}=\tuple{b}\RA  p+\tuple{q}\in\sols(L)$ 
+      \item[$(\subseteq)$] $\displaystyle\tuple{x}\in\sols(L)\LR \sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{b}=\sum_{i=1}^n \tuple{a}_{\,i}\cdot p_i\LR \sum_{i=1}^n \tuple{a}_{\,i}\cdot \big(x_i-p_i\big)=\tuple{0} \RA \tuple{x}-\tuple{p}=\tuple{q}\in\sols(H)$ 
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Uniqueness of Solution]
+  If $\sols(H)=\{\tuple{0}\}$ (trivial), then the solution of the linear system is either unique or empty.
+\end{corollary}
+
+\subsection{Basis and Subspaces of $F^k$}
+
+\begin{definition}[Basis of Tuples]
+  We say $S=\seqt{v}{n}$ is a basis for a set $U\subseteq F^k$ if every element in $U$ can be uniquely represented as linear combination of $S$, that is:
+
+  $$
+  \Forall{\tuple{u}\in U}\Exist{!\,\seq{\alpha}{n}\in\R^n}\sum_{i=1}^n \alpha_i\cdot  \tuple{v}_{\,i} = \tuple{u}
+  $$
+\end{definition}
+
+\begin{theorem}[N\&SC for a Basis]
+  A sequence is a basis of its span iff the sequence is linear independent.
+  \begin{proof}
+    We know every element in the span can be represented as a linear combination of $S$. It rests to show uniqueness iff the sequence is linear independent.
+
+    \begin{itemize}
+      \item[$(\RA)$] Then, $\tuple{0}$ has a unique representation, which is taking every coefficient $0$. Hence, there is no other linear combination that gets $\tuple{0}$, that is, $S$ is linearly independent.
+      \item[$(\LA)$] For any $\tuple{u}\in U=\Span(S)$, we want $\sum_i  \tuple{v}_{\,i}\cdot x_i = \tuple{u}$ to have a unique solution. Since a solution exists ($\tuple{u}\in\Span(S)$), by the previous theorem, it is necessary and sufficient that the homogenous system has only trivial solution, that is, $\sum_i  \tuple{v}_{\,i}\cdot x_i = \tuple{0}$ has only trivial solution. Meaning, the only linear combination of $S$ that gives $\tuple{0}$ is the one with all zeros. I.e. $S$ is linearly independent.
+    \end{itemize}
+  \end{proof} 
+  If $S$ is a basis of its span, we say the span is \textbf{exact}.
+\end{theorem}
+
+\begin{definition}[Subspaces as Spans]
+  A subset $U\subseteq F^k$ is a (finitely spanned) subspace of $F^k$ if it is a span of some sequence. 
+\end{definition}
+
+\pagebreak
+
+\section{Functions}
+
+\subsection{Basic Definitions}
+
+\begin{definition}[Function]
+  A function $f:A\to B$ is defined as three sets:
+  \begin{itemize}
+    \item \textbf{Domain}: $A$
+    \item \textbf{Codomain/Range}: $B$
+    \item \textbf{Graph/Table}: $f\subseteq A\times B$
+  \end{itemize}
+  Such that: $\Forall{a\in A}\Exist{!\,b\in B}(a,b)\in f$
+
+  Instead of writing $(a,b)\in f$, we write $f(a)=b$. We call $b$ the \textbf{image} of $a$ and $a$ the \textbf{source} of $b$.
+\end{definition}
+
+\begin{definition}[Image]
+  $$\Image(f)=\set{b\in B}{\Exist{a\in A}f(a)=b}=\set{f(a)}{a\in A}$$
+\end{definition}
+
+\begin{definition}[Injectivity]
+  Given $f: A \to B$ is called injective iff: $$\Forall{a_1,a_2\in A} a_1\neq a_2\RA f(a_1)\neq f(a_2)$$ which is equivalent to: $\Forall{a_1,a_2\in A}f(a_1)= f(a_2)\RA a_1= a_2$
+\end{definition}
+
+\begin{lemma}[Injectivity as Unique Solution]
+  A function is injective iff: $$\Forall{b\in\Image(f)}\Exist{!\,a\in A} f(a)=b$$
+  \begin{proof}
+    We prove both directions: Let $b\in\Image(f)$.
+    \begin{itemize}
+      \item[$(\RA)$] By definition, $\Exist{a\in A}f(a)=b$. Let $a'\in A\,:\;f(a')=b=f(a)\RA a'=a$, so it is unique.
+      \item[$(\LA)$] By contrary, if $\Exist{a_1,a_2\in A, a_1\neq a_2}f(a_1)=b=f(a_2)$, then the source $a$ of $b$ is not unique.
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Surjectivity]
+  Given $f:A\to B$ is called surjective iff: $B=\Image(f)$
+\end{definition}
+
+\begin{lemma}[Surjectivity as existence of solution]
+  A function is surjective iff: $$\Forall{b\in B}\Exist{a\in A} f(a)=b$$
+  \begin{proof}
+    We prove both directions: Let $b\in B$.
+    \begin{itemize}
+      \item[$(\RA)$] By definition, $b\in B=\Image(f)\LR \Exist{a\in A}f(a)=b$.
+      \item[$(\LA)$] By contrary, if $\Exist{b\in B}\Forall{a\in A} f(a)\neq b$, then $B\setminus\Image(f)\neq \emptyset\RA B\neq \Image(f)$.
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\subsection{Composition and Inverses}
+
+\begin{definition}[Bijectivity]
+  A function is bijective iff it is both injective and surjective.
+\end{definition}
+
+\begin{theorem}[Reverse Table]
+  The reverse graph of $f$, $g=\set{(b,a)\in B\times A}{(a,b)\in f}$, defines a function iff $f$ is bijective.
+  \begin{proof}
+    We prove both directions:
+    \begin{itemize}
+      \item[$(\LA)$] $f$ is injective and surjective: $\Forall{ b\in\Image(f)=B}\Exist{!\,a\in A} f(a)=b$. Putting $g(b)=a$ instead of $f(a)=b$, by definition, we get that $g$ is a function.
+      \item[$(\RA)$] Using contrapositive, if it's not injective or not surjective, it is not invertible.
+      \begin{itemize}
+        \item Not injective, $\Exist{a_1,a_2\in A, a_1\neq a_2} f(a_1)=f(a_2)=b$, hence $g(b)$ has two images.
+        \item Not surjective $\Exist{b\in B}\Forall{a\in A} f(a)\neq b$, hence $g(b)$ has no image.
+      \end{itemize} 
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Composition]
+  Let $f:A\to B$ and $g:B\to C$ be two functions (s.t. $\Image(f)\subseteq \operatorname{Dom}(g)$), the composition $g\circ f$ is the function:
+  \begin{align*}
+    h: A&\to C\\
+    a&\mapsto g\big(f(a)\big)
+  \end{align*}
+  It is an associative operation.
+\end{definition}
+
+\begin{definition}[Commutative Diagram]
+  A commutative diagram is a combination of maps as:
+  $$
+  \begin{tikzcd}
+    A \arrow{r}{f} \arrow{dr}{h}
+    & B \arrow{d}{g}\\
+    & C
+  \end{tikzcd}
+  $$
+  so that we can arrive at any point through any sequence of maps. In this simplest case, we must have $h=g\circ f$.
+\end{definition}
+
+\begin{theorem}[Character of Functions]
+  Let $f:A\to B$ and $g:B\to C$.
+  \begin{enumerate}
+    \item $g\circ f\text{ injective}\RA f\text{ injective}$
+    \item $g\circ f\text{ surjective}\RA g\text{ surjective}$
+  \end{enumerate}
+  \begin{proof}
+    We use the contrapositive
+    \begin{enumerate}
+      \item $f$ is not injective: $\Exist{a_1,a_2\in A,a_1\neq a_2} f(a_1)=f(a_2)$. By apply $g$ to both sides, we get $g\circ f$ is not injective.
+      \item $g$ is not surjective: $\Exist{c\in C}\Forall{b\in B} g(b)\neq c$. Letting $b=f(a)$, we get $g\circ f$ is not surjective.
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Identity]
+  For any set $A$ we define:
+  \begin{align*}
+    \Id_A: A&\to A\\
+    a&\mapsto a
+  \end{align*}
+  Let $f:A\to B$, then: $f\circ \Id_A=f=\Id_B\circ f$
+\end{definition}
+
+\begin{theorem}[Reverse Table as Inverses]
+  If $f$ is bijective and $g: B \to A$ its inverse table, then:
+  \begin{align*}
+    g\circ f=\Id_A\\
+    f\circ g=\Id_B
+  \end{align*}
+  \begin{proof}
+    Let $f(a)=b$: $\Forall{a\in A}(g\circ f)(a)=g(f(a))=g(b)=a$ and $\Forall{b\in B}(f\circ g)(b)=f(g(b))=f(a)=b$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Uniqueness of Inverses]
+  For any associative operation $*:A\times A\to A$ with neutral element ($e$), the inverses are unique.
+  \begin{proof}
+    Let $a,a'$ be inverses of $b$. Then:
+    $$a'=a'*e=a'*(b*a)=(a'*b)*a=e*a=a$$
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Uniqueness of Function Inverses]
+  If $f$ has an inverse wrt composition, then it is unique. Heretofore, we denote the inverse $f^{-1}$.
+\end{corollary}
+
+\begin{lemma}[Composition of Inverses]
+  For any associative operation $*:A\times A\to A$ with neutral element ($e$), if $a$ and $b$ are have inverses, then $a*b$ has an inverse. In particular, $(a*b)^{-1}=b^{-1}*a^{-1}$
+  \begin{proof}
+    We show that $b^{-1}*a^{-1}$ is an inverse:
+    \begin{align*}
+      \left(b^{-1}*a^{-1}\right)*(a*b)=b^{-1}*\left(a^{-1}*a\right)*b=b^{-1}*e*b=b^{-1}*b=e\\
+      (a*b)*\left(b^{-1}*a^{-1}\right)=a*\left(b^{-1}*b\right)*a^{-1}=a*e*a^{-1}=a*a^{-1}=e\\
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Inverse of Composition]
+  The composition of bijective functions is again bijective.
+\end{corollary}
+
+\begin{example}[Set of Functions]
+  Let ${}^AA=\set{f}{f: A \to A}$, we have:
+  \begin{enumerate}
+    \item ${}^AA$ is closed under composition
+    \item Composition is associative
+    \item There is a neutral element ($\Id_A$)
+    \item If $f: A \to A$ is a bijection, then it has an inverse
+  \end{enumerate}
+  Let $G_A=\set{f\in {}^AA}{f\text{ is bijective}}$, so that every element of ${}^AA$ that has an inverse is in $G_A$. Then, $G_A$ is closed under composition.
+\end{example}
+
+\subsection{One-Sided Inverses}
+
+\begin{definition}[Left-Inverse]
+  Let $f:A\to B$ be a function. A left-inverse is $g:B\to A$ such that: $g\circ f=\Id_A$
+\end{definition}
+
+\begin{lemma}[N\&SC for existence of left-inverses]
+  $f$ has left inverse iff $f$ is injective.
+  \begin{proof}
+    We prove both directions:
+    \begin{itemize}
+      \item [$(\RA)$] Since $g\circ f=\Id_A$ is injective, we must have $f$ is injective.
+      \item [$(\LA)$] Take any $a_0\in A$. We define:
+      $$
+      g(b)=
+      \begin{cases}
+        a &\text{ if }b\in \Image(f)\text{ where } f(a)=b\\ a_0 &\text{ if }b\notin \Image(f)
+      \end{cases}
+      $$
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Right-Inverse]
+  Let $f:A\to B$ be a function. A right-inverse is $g:B\to A$ such that: $f\circ g=\Id_B$
+\end{definition}
+
+\begin{lemma}[N\&SC for existence of right-inverses]
+  $f$ has right inverse iff $f$ is surjective.
+  \begin{proof}
+    We prove both directions:
+    \begin{itemize}
+      \item [$(\RA)$] Since $f\circ g=\Id_B$ is surjective, we must have $f$ is surjective.
+      \item [$(\LA)$] We define $g(b)$ are any source $a$ of $b$ (there may be many, we pick an arbitrary one).
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Conservation of Character]
+  Let $f:A\to B$ arbitrary and $g:B\to C$ bijective.
+  \begin{enumerate}
+    \item $g\circ f\text{ injective}\LR f\text{ injective}$
+    \item $g\circ f\text{ surjective}\LR f\text{ surjective}$
+  \end{enumerate}
+  \begin{proof}
+    By the previous two lemmas:
+    \begin{enumerate}
+      \item $g\circ f\text{ injective}\LR\Exist{h_1:C\to A}h_1\circ (g\circ f)=\Id_A\LR f$ has left inverse ($h_2=h_1\circ g\LR h_1=h_2\circ g^{-1}$) $\LR f\text{ injective}$
+      \item $g\circ f\text{ surjective}\LR\Exist{h_1:C\to A}(g\circ f)\circ h_1=\Id_C \text{ eq. } f\circ h_1=g^{-1} \text{ eq. } f\circ h_1\circ g=\Id_A$ has right inverse ($h_2=h_1\circ g\LR h_1=h_2\circ g^{-1}$) $\LR f\text{ surjective}$
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Functions to Equations]
+  \begin{align*}
+    E&:f(x)=g(x)\\
+    F&:h\big(f(x)\big)=h\big(g(x)\big)
+  \end{align*}
+  For general $h$: $\sols(E)\subseteq \sols(F)$. If $h$ is injective: $\sols(E)=\sols(F)$
+\end{lemma}
+
+\pagebreak
+
+\section{Matrices}
+
+\subsection{Products on Matrices}
+
+\begin{definition}[SumProd]
+  Given two tuples $\tuple{a},\tuple{x}\in F^n$, we define: $$\tuple{a}\sumprod\tuple{x}:=\sum_{i=1}^n a_i\cdot x_i\in F$$ which is linear on both variables (distributive over addition and numbers move freely inside).
+\end{definition}
+
+\begin{definition}[SumProd with Sequences]
+  Let $S=\seqt{a}{n}\in(F^k)^n$, we can further define: $$S\sumprod\tuple{x}:=\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i\in F$$
+  That way, we can write a linear system $\displaystyle L: \sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{b}$ as $L: S\sumprod\tuple{x}=\tuple{b}\;$.
+\end{definition}
+
+\begin{definition}[Matrices]
+  The set $M_{k\times n}(F)$ (also denoted $F^{k\times n}$) has elements which are rectangles of numbers with $k$ rows and $n$ columns. It is equivalent (isomorphic) to $(F^k)^n$. If we take a sequence $S=\seqt{a}{n}\in(F^k)^n$, we write the matrix $A$ as:
+  $$A=\mcols{a}{n}$$
+  We define multiplication by tuples (written side-by-side) as:
+  $$A\,\tuple{x}=\mcols{a}{n}
+  \begin{pmatrix}
+    x_1\\ x_2\\\vdots \\x_n
+  \end{pmatrix}
+  = S\sumprod\tuple{x}=\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i$$
+  We can also define with rows:
+  $$A\,\tuple{x}=\mrows{r}{k}
+  \tuple{x}
+  = \begin{pmatrix}
+    \tuple{r}_{\,1}\sumprod\tuple{x}\\ \tuple{r}_{\,2}\sumprod\tuple{x}\\\vdots \\\tuple{r}_{\,k}\sumprod\tuple{x}
+  \end{pmatrix}$$
+  Note that is operation is linear on $\tuple{x}$ (distributive over addition and numbers move freely inside).
+  Also, we define $S_c(A)=\seqt{a}{n}$, the column sequence, and $S_r(A)=\seqt{r}{k}$, the row sequence.
+\end{definition}
+
+\begin{proposition}[LES as Matrix Equations]
+  $$
+  L:\sum_{i=1}^n \tuple{a}_{\,i}\cdot x_i=\tuple{b}
+  \LR
+  \begin{pmatrix}
+    a_{1,1}&a_{1,2}&\cdots&a_{1,n}\\
+    a_{2,1}&a_{2,2}&\cdots&a_{2,n}\\
+    \vdots&\vdots&\ddots&\vdots\\
+    a_{n,1}&a_{n,2}&\cdots&a_{n,n}
+  \end{pmatrix}
+  \,\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}=\begin{pmatrix}b_1\\b_2\\\vdots\\b_k\end{pmatrix}
+  $$
+  We call the matrix $A$, we get: $L:\,A\,\tuple{x}=\tuple{b}$.
+\end{proposition}
+  
+
+\begin{definition}[Transpose]
+  For $A\in M_{k\times n}(F)$ as a rectangle of numbers, we define:
+  $$A=\mcols{a}{n}\RA A^t=\mrows{a}{n}\in M_{n\times k}(F)$$  
+\end{definition}
+
+\begin{lemma}[Transpose Changes Order]
+  $(AB)^t=B^t\,A^t$
+\end{lemma}
+
+\subsection{Matricial Functions}
+
+\begin{definition}[Matricial Functions]
+  Given $A\in M_{k\times n}(F)$, we define:
+  \begin{align*}
+    T_A: F^n&\to F^k\\
+    \tuple{x}&\mapsto A\,\tuple{x}
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Linear Operation on Matrices]
+  For $A,B\in M_{k\times n}(F)$, we define:
+  \begin{itemize}
+    \item[] Sum: $T_{A+B}=T_A+T_B$, that is, $T_{A+B}: \tuple{x}\mapsto T_A(\tuple{x})+T_B(\tuple{x})$
+    \item[] Multiplication by number: $T_{\lambda\,A}=\lambda\cdot T_A$ that is, $T_{\lambda\,A}: \tuple{x}\mapsto \lambda\cdot T_A(\tuple{x})$
+  \end{itemize}
+  In terms of the original rectangles of numbers, they are defined analogously to the tuple addition and multiplication by a number.
+\end{definition}
+
+\begin{definition}[Matrix Multiplication]
+  We define: $T_{A\,B}=T_A\circ T_B$. Notice that, if $A\in M_{k\times n}(F)$ and $B\in M_{r\times m}(F)$, for $AB$ to be defined, we need $n=r$. Hence, $T_A:F^n\to F^k$ and $T_B:F^m\to F^n$.As a rectangle of numbers:
+  \begin{align*}
+    T_A(T_B\,\tuple{x})&=A\,\big(B\,\tuple{x}\big)=A\,\mcols{b}{n}
+    \begin{pmatrix}
+      x_1\\ x_2\\\vdots \\x_n
+    \end{pmatrix}
+    = A\,\Bigg(\sum_{i=1}^n \tuple{b}_{\,i}\cdot x_i\Bigg)\\
+    &=\sum_{i=1}^n A(\tuple{b}_{\,i})\cdot x_i
+    =\mcols[A(][)]{b}{n}\,\tuple{x}\\
+    \RA&\; A\, B =\mcols[A(][)]{b}{n}
+  \end{align*}
+  Equivalently, we calculate as follows:
+  $$
+  \mrows{r}{k}\mcols{b}{n}=
+  \begin{pmatrix}
+    \tuple{r}_{\,1}\sumprod \tuple{b}_{\,1}&\tuple{r}_{\,1}\sumprod \tuple{b}_{\,2}&\cdots&\tuple{r}_{\,1}\sumprod \tuple{b}_{\,n}\\
+    \tuple{r}_{\,2}\sumprod \tuple{b}_{\,1}&\tuple{r}_{\,2}\sumprod \tuple{b}_{\,2}&\cdots&\tuple{r}_{\,2}\sumprod \tuple{b}_{\,n}\\\vdots&\vdots&\ddots&\vdots \\
+    \tuple{r}_{\,n}\sumprod \tuple{b}_{\,1}&\tuple{r}_{\,n}\sumprod \tuple{b}_{\,2}&\cdots&\tuple{r}_{\,n}\sumprod \tuple{b}_{\,n}
+  \end{pmatrix}
+  $$
+  Notice it is not commutative.
+\end{definition}
+
+\begin{definition}[Identity Matrix]
+  Let $\tuple{e}_{\,i}\in F^n$ be such that the $i$-th component is $1$ and every other is $0$. Then:
+  $$
+  A\,\tuple{e}_{\,i}=
+  \mcols{a}{n}\,
+  \begin{pmatrix}
+    0\\ \vdots \\ 1\\\vdots \\0
+  \end{pmatrix}\,
+  =\tuple{a}_{\,i}
+  $$
+  The ($n\times n$) identity matrix is defined:
+  $$
+  I_n=
+  \mcols{e}{n}\,=
+  \begin{pmatrix}
+    1&0&\cdots&0\\
+    0&1&\cdots&0\\
+    \vdots&\vdots&\ddots&\vdots\\
+    0&0&\cdots&1
+  \end{pmatrix}\,
+  $$
+  the diagonal of all ones. Also, notice: $\Id_{F^n}=T_{I_n}$.
+\end{definition}
+
+\begin{lemma}[Matrix of Transformation]
+  Let $T: F^n\to F^k$ be a matricial function. Its corresponding matrix is:
+  $$
+  \big[T\big]=\mcols[T(][)]{e}{n}
+  $$
+  That is, the matrix is uniquely determined by the function.
+  \begin{proof}
+    If $A$ and $B$ are two matrices that define the same matricial function, then, for $i\in\{1,2,\cdots,n\}$:
+    $$\tuple{a}_i=A\,\tuple{e}_i=T(\tuple{e}_i)=B\,\tuple{e}_i=\tuple{b}_i$$
+    hence, every column is the same, so $A=B$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Kernel]
+  Given a matricial function $T_A$, we define:
+  $$\ker(T_A)=\set{\tuple{x}\in F^n}{T_A\big(\tuple{x}\big)=\tuple{0}}$$
+  Notice $\{\tuple{0}\}\subseteq \ker(T_A)$. We further write $\sols(A)=\ker(T_A)=\sols(A\,\tuple{x}=\tuple{0})$.
+\end{definition}
+
+\begin{lemma}[N\&SC for Injectivity]
+  $T_A$ is injective iff $\ker(T_A)=\{\tuple{0}\}$.
+  \begin{proof}
+    We prove both directions:
+    \begin{itemize}
+      \item [$(\RA)$] $T\big(\tuple{x}\big)=\tuple{0}=T\big(\tuple{0}\big)\RA \tuple{x}=\tuple{0}$, that is, $\{\tuple{0}\}\supseteq \ker(T_A)$.
+      \item [$(\LA)$] $T(\tuple{x})=T(\tuple{y})\RA T(\tuple{x}-\tuple{y})=\tuple{0}\RA \tuple{x}-\tuple{y}=\tuple{0}\RA \tuple{x}=\tuple{y}$
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\subsection{Invertible Matrices}
+
+\begin{definition}[Inverse of a Matrix]
+  Given a matricial function $T_A: F^n \to F^k$, we seek to find its inverse (if it exists). We define the inverse matrix as the matrix of the matrical function $T^{-1}_A=T_{A^{-1}}$. That is, $A^{-1}$ is the unique matrix that $A^{-1}\,A=I$ and $A\,A^{-1}=I$
+\end{definition}
+
+\begin{definition}[General Linear Group]
+  The set of invertible matrices is denoted $\GL_n(F)$.
+\end{definition}
+
+\begin{lemma}[Inverse of Transpose]
+  $(A^t)^{-1}=(A^{-1})^t$
+  \begin{proof}
+    \begin{align*}
+      A\,A^{-1}=I\RA (A\,A^{-1})^t=I^t=I\RA (A^{-1})^t\,A^t=I\\
+      A^{-1}\,A=I\RA (A^{-1}\,A)^t=I^t=I\RA A^t\,(A^{-1})^t=I
+    \end{align*}
+    By uniqueness of inverses, we have the proof.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Transpose of Invertible is Invertible]
+  $A^t$ is invertible $\LR A$ is invertible.
+\end{corollary}
+
+We proceed to apply the Gaussian Elimination to matrices, as any linear equation system can be written as something of the form $A\,\tuple{x}=\tuple{b}$.
+
+\begin{definition}[Elementary Functions]
+  We define the following types of (invertible) elementary functions $\varphi: F^k\to F^k$
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|p{5cm}|c|c|}\hline
+      Operations & $\varphi$ & $\varphi^{-1}$\\\hline
+      Reordering the variables & $x_i\leftrightarrow x_j$ & $x_i\leftrightarrow x_j$ \\\hline
+      Multiplying one variable by a non-zero constant $t$ & $x_i\rightarrow t\cdot x_i$ & $x_i\rightarrow \frac{1}{t}\cdot x_i$\\\hline
+      Add multiple of one variable to another & $x_i\rightarrow x_i-t\cdot x_j$ & $x_i\rightarrow x_i+t\cdot x_j$\\\hline
+    \end{tabular}
+  \end{table}
+
+  Notice that those are matricial functions. We further denote $\Phi=\big[\varphi\big]$
+\end{definition}
+
+\begin{definition}[Leading Coefficient]
+  We say $x_i$ the leading coefficient of the tuple $\begin{pmatrix}a_1\\\vdots\\a_n\end{pmatrix}$ iff $a_i\neq 0$ and $\Forall{j: 1\leq j<i} a_j=0$.
+\end{definition}
+
+\begin{definition}[Canonical Form / Reduced Row Echelon Form]
+  A matrix is said to be in canonical form or rref (row reduced echelon form) if:
+  \begin{enumerate}
+    \item The leading coefficient of a nonzero row is always strictly to the right of the leading coefficient of the row above it.
+    \item $\tuple{0}$ rows come at the end.
+    \item The leading coefficient of each row is $1$.
+    \item Each column containing a leading 1 (called pivot column) has zeros everywhere else.
+  \end{enumerate}
+  An important example of a matrix in rref is the identity matrix. We also say $T_A$ is in canonical form.
+\end{definition}
+
+\begin{proposition}[Gaussian Elimination on Matrices]
+  For every matricial function $T_A$, $\Exist{\varphi_1,\varphi_2,\cdots,\varphi_r\text{ elementary}} \varphi_r\circ \cdots\circ \varphi_2\circ \varphi_1\circ T_A=T_R$ is in canonical form.
+
+  Therefore, $T_A$ has "same character" (i.e. injective or surjective) as $T_R$.
+
+  \begin{proof}
+    Follows directly from the Gaussian Elimination Algorithm.
+  \end{proof}
+\end{proposition}
+
+
+\begin{theorem}[N\&SC for Inverting RREF]
+  Let $R\in M_{k\times n}(F)$ be in canonical form. Then, $R$ is invertible iff $n=k$ and $R=I$.
+  \begin{proof}
+    First, notice that the number of leading coefficients is $\min(n,k)$. We have two cases:
+    \begin{enumerate}
+      \item If $n<k$, there is a row of $\tuple{0}$.
+      \item If $n>k$, there is a column without a leading coefficient.
+    \end{enumerate}
+    Now, we look:
+    \begin{enumerate}
+      \item If there is a row of $\tuple{0}$, then $T_R$ is not surjective, because it doesn't map to $\tuple{e}_{\,k}$ (last row).
+      \item Suppose that there is a column without a leading coefficient, say, $\tuple{a}$, the $i$-th column. We apply $T_R$ to the tuple $\tuple{x}$:
+      $$
+      x_j=
+      \begin{cases}
+        -a_j &\text{ if }j\text{-th column is pivot}\\
+        1 &\text{ if }j=i\\
+        0 &\text{ else}
+      \end{cases}
+      $$
+      Hence, $T_R\big(\tuple{x}\big)=\tuple{0}\RA \tuple{0}\neq \tuple{x}\in\ker(T_A)\RA T_A$ is not injective.
+    \end{enumerate}
+    Therefore, if $n\neq k$, $T_R$ is not bijective. However if $n=k$ and $R$ still has a row of $\tuple{0}$ or a column without a leading coefficient, $T_R$ is still not bijective. The remaining case it exactly when $n=k$ and $R=I$, which is trivially invertible.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Invertibility from RREF]
+  \boxed{\text{A matrix is invertible iff it's rref is }I}
+\end{corollary}
+
+\begin{corollary}[Character of Dimension]
+  For every matricial function $T_A$:
+  \begin{enumerate}
+    \item If $n<k$, $T_A$ is not surjective.
+    \item If $n>k$, $T_A$ is not injective.
+  \end{enumerate}
+\end{corollary}
+
+In order to invert a matrix $A$ we write the augmented matrix $\begin{pmatrix}[c|c]A&I\end{pmatrix}$ and apply elementary functions until we get $\begin{pmatrix}[c|c]I&A^{-1}\end{pmatrix}$.
+
+\begin{example}
+  $A=\begin{pmatrix}1&1\\2&3\end{pmatrix}$
+  $$
+  \begin{pmatrix}[cc|cc]
+    1&1&1&0\\
+    2&3&0&1
+  \end{pmatrix}
+  \to
+  \begin{pmatrix}[cc|cc]
+    1&1&1&0\\
+    0&1&-2&1
+  \end{pmatrix}
+  \to
+  \begin{pmatrix}[cc|cc]
+    1&0&3&-1\\
+    0&1&-2&1
+  \end{pmatrix}
+  $$
+  Hence, $A^{-1}=\begin{pmatrix}3&-1\\-2&1\end{pmatrix}$
+\end{example}
+
+\begin{definition}[Row Equivalence]
+  Two matrices are \textbf{row equivalent}, written: $$A\leftrightarrow B\LR\Exist{\Phi_1,\Phi_2,\cdots,\Phi_r\text{ elementary}} A=\Phi_1\,\Phi_2\cdots \Phi_r\,B$$
+\end{definition}
+
+\begin{lemma}[N\&SC for Row Equivalence]
+  $A\leftrightarrow B\LR\Exist{M\in\GL_k(F)}A=MB$
+  \begin{proof}
+    By Gaussian Elimination Theorem, a matrix is invertible iff it is row equivalent to the identity.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Row Equivalence Relation]
+  Row equivalence is an equivalence relation:
+  \begin{proof}
+    We choose the matrices so that $A\leftrightarrow B\LR\Exist{M\in\GL_k(F)}A=MB$. Reflexive: Take $I$; Symmetric: Take $M^{-1}$; Transitive: Take $M_1\,M_2$.
+  \end{proof}
+\end{lemma}
+
+\subsection{Matrix Spaces}
+
+\begin{definition}[Sols, Cols and Rows]
+  Given $$A=\mcols{a}{n}=\mrows{r}{k}\in M_{k\times n}(F)$$
+  we define:
+  \begin{itemize}
+    \item[] $\cols(A)=\Span(S_c(A))=\Span\seqt{a}{n}$
+    \item[] $\rows(A)=\cols(A^t)=\Span(S_r(A))=\Span\seqt{r}{k}$
+    \item[] $\sols(A)=\sols(A\,\tuple{x}=\tuple{0})=\LD(S_c(A))=\LD(\seqt{a}{n})$
+  \end{itemize}
+\end{definition}
+
+\begin{lemma}[Fundamental Theorem on Gaussian Elimination]
+  $$A\leftrightarrow B\LR \rows(A)=\rows(B)\LR \sols(A)=\sols(B)$$
+  \begin{proof}
+    We prove each one:
+    \begin{itemize}
+      \item[]$\LR\rows(A)=\rows(B)$ \begin{itemize}
+        \item[$(\RA)$] $\rows(A)=\cols(A^t)=\cols(B^t\,M^t)=\cols(B^t)=\rows(B)$
+        \item[$(\LA)$] By contrary, if $\rows(A)\neq\rows(B)\RA\cols(A^t)\neq\cols(B^t)$. If $\rows(A)\setminus\rows(B)\neq\emptyset\RA\Exist{x\in\R^n}\begin{cases}\Exist{y\in\R^n}A^t\,\tuple{y}=\tuple{x}\\\NExist{z\in\R^n}B^t\,\tuple{z}=\tuple{x}\end{cases}$, then, $\NExist{M\in\GL_k(F):A=MB}$ otherwise $B^t\,(M^t\tuple{y})=\tuple{x}$. The same if $\rows(B)\setminus\rows(A)\neq\emptyset$.
+      \end{itemize}
+      \item[]$\LR\sols(A)=\sols(B)$ \begin{itemize}
+        \item[$(\RA)$] $\tuple{x}\in\sols(A)\LR \tuple{0}=A\,\tuple{x}=M\,B\,\tuple{x}\LR B\,\tuple{x}=\tuple{0}\LR \tuple{x}\in\sols(B)$
+        \item[$(\LA)$] By contrary, if $\sols(A)\setminus\sols(B)\neq\emptyset\RA\Exist{x\in\R^n}\begin{cases}A\,\tuple{x}=\tuple{0}\\B\,\tuple{x}\neq\tuple{0}\end{cases}$, then, $\NExist{M\in\GL_k(F):B=MA}$ otherwise $B\,\tuple{x}=0$. The same if $\sols(B)\setminus\sols(A)\neq\emptyset$.
+      \end{itemize}
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  Let $R$ be in canonical form. Then, either $R=I$ or it is (up to an exchange of columns):
+  $$
+  \left(
+  \begin{array}{cc}
+    I_r &\multicolumn{1}{|c}{L}\\ \cline{1-2}
+    0 &0 \\
+  \end{array}\right)\RA \sols(R)=\cols\left(\begin{array}{c} -L\\ \cline{1-1} I_{n-r} \\ \end{array}\right)$$
+    (up to the same exchange of rows).
+\end{lemma}
+
+\begin{example}
+  We have: $$R=\begin{pmatrix}1&2&0&3\\0&0&1&4\end{pmatrix}\RA \sols(R)=\cols\begin{pmatrix}
+    -2&-3\\1&0\\0&-4\\0&1
+  \end{pmatrix}$$
+  We had to switch columns 2 and 3 in $R$, we performed the same switch to rows in the shape.
+\end{example}
+
+\begin{theorem}[Rank-Dimension]
+  $$\dim\cols(A)=\dim\rows(A)$$
+  \begin{proof}
+    Let $R$ be the rref form of $A$. Since $R=M\,A$ for some $M\in\GL_k(F)$, we get: $\rows(A)=\rows(R)$, by the lemma above and $\dim\cols(A)=\dim\cols(R)$ since $T_M$ is an isomorphism. Therefore, we only need to prove for the rref form. From the previous lemma, $\dim\rows(A)=r$ (number of pivot columns). Also $\dim\cols(A)=n-\dim\sols(A)=n-(n-r)=r$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Rank]
+  We call $$\operatorname{rank}(A)=\dim\cols(A)=\dim\rows(A)=\text{number of pivot columns}$$
+\end{definition}
+
+\pagebreak
+
+\section{Determinants}
+
+\subsection{Multilinear Alternating Function}
+
+\begin{definition}[Determinant]
+  We define the determinant function $\det:(F^n)^n\to F$ so that:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|p{2.5cm}|c|}\hline
+      Operations & Calculation\\\hline
+      Multilinearity &$\det(\alpha\cdot\tuple{u}+\beta\cdot \tuple{v},\cdots)=\alpha\cdot\det(\tuple{u},\cdots)+\beta\cdot\det(\tuple{v},\cdots)$\\\hline
+      Alternating & $\det(\tuple{u}\;,\cdots,\tuple{v}\;,\cdots)=-\det(\tuple{v}\;,\cdots,\;\tuple{u}\;,\cdots)$ \\\hline
+      Normalized & $\det(\tuple{e}_{\,1},\tuple{e}_{\,2}\;,\cdots,\,\tuple{e}_{\,n})=1$ \\\hline
+    \end{tabular}
+  \end{table}
+  
+  Moreover, we have: $\det(\tuple{u},\tuple{u}\;,\cdots)=0$
+
+  For a square matrix, we use the sequence of columns: $$\det(A)=\det(\tuple{a}_{\,1},\tuple{a}_{\,2},\cdots,\tuple{a}_{\,n})=\begin{vmatrix}a_{1,1}&a_{1,2}&\cdots&a_{1,n}\\a_{2,1}&a_{2,2}&\cdots&a_{2,n}\\\vdots&\vdots&\ddots&\vdots\\a_{n,1}&a_{n,2}&\cdots&a_{n,n}\end{vmatrix}$$
+\end{definition}
+
+\begin{proposition}[Change in Determinants]
+  For elementary operations, we have those relations:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|p{5cm}|c|c|}\hline
+      Operations & $\varphi$ & $\det(\Phi\,A)$\\\hline
+      Reordering the equations & $x_i\leftrightarrow x_j$ & $\det(A)$ \\\hline
+      Multiplying one equation by a non-zero constant $t$ & $x_i\rightarrow t\cdot x_i$ & $t\,\det(A)$\\\hline
+      Add multiple of one equation to another & $x_i\rightarrow x_i-t\cdot x_j$ & $\det(A)$ \\\hline
+    \end{tabular}
+  \end{table}
+\end{proposition}
+
+\begin{definition}[Permutation]
+  A permutation is a bijective function $\sigma:\{1,2,\cdots,n\}\to\{1,2,\cdots,n\}$. A transpostion is the simplest type of permutation which consist of only switching two numbers, every permutation can be written as a composition of transpositions. We define $\operatorname{sgn}(\sigma)=(-1)^\text{\# transpositions}$.
+\end{definition}
+
+\begin{theorem}[Leibnitz Formula]
+  $$\det(A)=\sum_\sigma \operatorname{sgn}(\sigma)\prod_{i=1}^n a_{\,i,\,\sigma(i)}$$
+  \begin{proof}
+    By linearity:
+    $$
+    \det(A)=\sum_{k_1=1}^n\sum_{k_2=1}^n\cdots\sum_{k_n=1}^n \det\big(\tuple{e}_{\,k_1},\tuple{e}_{\,k_2}\;,\cdots,\,\tuple{e}_{\,k_n}\big)\,\prod_{i=1}^n a_{\,i,\,k_i}
+    $$
+    we get the formula by noticing:
+    $$
+    \det\big(\tuple{e}_{\,k_1},\tuple{e}_{\,k_2}\;,\cdots,\,\tuple{e}_{\,k_n}\big)=
+    \begin{cases}
+      0 &\text{ if one of }k_i\text{'s are equal}\\
+      \operatorname{sgn}(\sigma) &\text{ otherwise, where }\sigma(i)=k_i
+    \end{cases}
+    $$
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  $\det(A\,B)=\det(A)\cdot \det(B)$
+\end{corollary}
+
+\begin{theorem}[Laplace Formula]
+  The $(i,j)$ minor of $A$, denoted $A_{\,i,\,j}\;$, is the matrix we get when we delete the $i$-th row and $j$-th column.
+  For arbitrary column $j$:
+  $$
+  \det(A)=\sum_{i=1}^n(-1)^{i+j}\,a_{i,\,j}\,\det(A_{\,i,\,j})
+  $$
+  \begin{proof}
+    By linearity on the $j$-th column:
+    $$
+    \det(A)=\sum_{i=1}^n a_{i,\,j}\,\det(\cdots,\;\tuple{a}_{\,j-1}\,,\,\tuple{e}_{\,i}\,,\,\tuple{a}_{\,j+1}\;,\cdots)
+    $$
+    And we calculate:
+    \begin{align*}
+      &\det(\cdots,\;\tuple{a}_{\,j-1}\,,\,\tuple{e}_{\,i}\,,\,\tuple{a}_{\,j+1}\;,\cdots)=(-1)^{i+j}\,\det(\tuple{e}_{\,i}\;,\cdots,\;\tuple{a}_{\,j-1}\,,\,\tuple{a}_{\,j+1}\;,\cdots)\\
+      &=(-1)^{i+j}\,\det(\tuple{e}_{\,i}\;,\cdots,\;\tuple{a}_{\,j-1}-a_{\,i,j-1}\cdot\tuple{e}_{\,i}\,,\,\tuple{a}_{\,j+1}-a_{\,i,j+1}\cdot\tuple{e}_{\,i}\;,\cdots)\\
+      &=(-1)^{i+j}\,\det(A_{\,i,\,j})
+    \end{align*}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Determinant on Upper Triangular Matrix]
+  If $U$ is an upper triangular matrix, $\det(U)$ is the product of the elements in the main diagonal.
+\end{corollary}
+
+\begin{theorem}[N\&SC for Invertibility]
+  $A$ is invertible iff $\det(A)\neq 0$
+  \begin{proof}
+    We prove both directions:
+    \begin{enumerate}
+      \item[$(\RA)$] $\Exist{B\in M_n(F)} A\,B=I$, so that $\det(A)\cdot\det(B)=1\RA \det(A)\neq 0$
+      \item[$(\LA)$] $A=\Phi_r\,\cdots\,\Phi_2\,\Phi_1\,R\RA \det(A)=t\,\det(R)$, $t\neq 0$. $R$ is upper diagonal and $\det(R)\neq 0$ hence, the diagonal has no zeros, i.e. $R=I$.
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\subsection{Cramer's Rule and Adjungate Matrix}
+
+\begin{definition}[Adjungate]
+  Given $A\in M_n(F)$, we define $\adj(A)\in M_n(F)$ such that: $$\adj(A)_{\,i,\,j}=(-1)^{i+j}\,\det(A_{\,j,\,i})$$
+\end{definition}
+
+\begin{lemma}[Adjungate Formula]
+  $$\adj(A)\, A=\det(A)\,I$$
+  \begin{proof}
+    Sufficient to notice:
+    $$
+    \sum_{i=1}^n(-1)^{i+j}\,a_{i,\,k}\,\det(A_{\,i,\,j})=
+    \begin{cases}
+      \det(A)&\text{ if }j=k\\
+      0&\text{ otherwise}
+    \end{cases}
+    $$
+    Since if $j\neq k$ we have the determinant with repeated columns.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Inverse Formula]
+  If $\det(A)\neq 0$: $$A^{-1}=\frac{1}{\det(A)}\,\adj(A)$$
+\end{corollary}
+
+\begin{theorem}[Cramer's Rule]
+  If $A$ is invertible, then the solution $\tuple{x}$ of $A\,\tuple{x}=\tuple{b}$ is such that: $$x_i=\frac{\det(B_i)}{\det(A)}$$ where $B_i$ is the matrix we get from A by replacing its $i$-th column by $\tuple{b}$.
+  \begin{proof}
+    $$\tuple{x}=A^{-1}\,\tuple{b}=\frac{1}{\det(A)}\,\adj(A)\,\tuple{b}$$ notice that: $\sum_{i=1}^n(-1)^{i+j}\,b_i\,\det(A_{\,i,\,j})=\det(B_i)$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\section{Ring of Polynomials}
+
+\subsection{Polynomials}
+
+\begin{definition}[Polynomial is $c_{00}$]
+  A polynomial is a sequence $p\in F^\infty$ such that almost all of its components (i.e. except finitely many) are $0$.We will write with a dummy variable $X$:
+  $$
+  p=\begin{pmatrix}
+    a_0\\a_1\\\vdots\\a_n\\0\\\vdots
+  \end{pmatrix}\RA
+  p(X)=a_0+a_1\,X+a_2\,X^2\,\cdots\,a_n\,X^n
+  $$
+  Using the dummy letter, we get the set $F[X]$. Its polynomial function is defined with substitution into $p(X)$.
+\end{definition}
+
+\begin{definition}[Operations on Polynomials]
+  \begin{align*}
+    \big(a_n\big)_{n=0}^\infty+\big(b_n\big)_{n=0}^\infty&=\big(a_n+b_n\big)_{n=0}^\infty\\
+    t\cdot \big(a_n\big)_{n=0}^\infty&=\big(t\cdot a_n\big)_{n=0}^\infty\\
+    \big(a_n\big)_{n=0}^\infty\bigcdot\big(b_n\big)_{n=0}^\infty&=\bigg(\sum_{k=0}^n a_k\cdot b_{n-k}\bigg)_{n=0}^\infty
+  \end{align*}
+  The last one being convolution, which is such that: $(p\bigcdot q)(X)=p(X)\cdot q(X)$.
+\end{definition}
+
+\begin{definition}[Degree]
+  Let $\deg:F[X]\to\mathbb{N}$ as: $\deg(p)=n\LR a_n\neq 0$ and $\Forall{i>n}a_i=0$.
+\end{definition}
+
+\begin{theorem}[Euclidean Division of Polynomials]
+  Let $a,b\in F[X]$, then, $\Exist{!\,q,r\in F[X]} a=b\bigcdot q+r$ and $\deg(r)<\deg(b)$
+  \begin{proof}
+    If $\deg(a)<\deg(b)$, it is immediate that $a=b\bigcdot 0+a$. Now, if $\deg(a)=n\geq \deg(b)=k$, we work by induction on $n$. Let $a(X)=a_n\,X^n+\cdots$ and $b(X)=b_k\,X^k+\cdots$. Notice that $a(X)-\dfrac{a_n}{b_k}\,X^{n-k}\cdot b(X)$ is a polynomial with degree less than $n$, hence, we use our induction hypothesis.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Divisibility of Roots]
+  Let $p\in F[X]$ and $\alpha\in F: p(\alpha)=0$. Then $\Exist{q\in F[X]} p(X)=(X-\alpha)q(X)$.
+\end{corollary}
+
+\begin{lemma}[Sequence of Surprises]
+  A sequence of non-zero polynomials $S=\seq{p}{n}$ with distinct degree, that is: $$\Forall{i,j\in \{1,2,\cdots,n\}:i\neq j} \deg(p_i)\neq \deg(p_j)$$ is linearly independent.
+  \begin{proof}
+    Without loss of generality, let they be in ascending order of degree: $\deg p_1<\deg p_2<\cdots<\deg p_n$. We write: $$\alpha_1\cdot p_1(X)+\alpha_2\cdot p_2(X)+\cdots+\alpha_n\cdot p_n(X)=0$$
+    If we look at $\deg p_n$, we get: $\alpha_n\cdot X^{\deg p_n}=0\RA \alpha_n=0$. Apply induction, with base case that a sequence of only one non-zero element is LI.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Multiplicity]
+  Given $p\in F[X]\setminus\{0\}$ and $\lambda\in F$, there is a unique $\mu\in\mathbb{N}$ and $q\in F[X]$ where $q(\lambda)\neq 0$ such that $p(X)=(X-\lambda)^\mu\,q(X)$. The unique $\mu$ is called the (algebraic) multiplicity of $\lambda$ in $p$ (denote $\am(\lambda)$ or $\mu_p(\lambda)$).
+  \begin{proof}
+    If $p(\lambda)\neq 0$, we're done. Else $p(X)=(X-\lambda)\,q_1(X)$. If $q_1(\lambda)\neq 0$, we're done. Else $p(X)=(X-\lambda)^2\,q_2(X)$. It continues at most until $p(X)=a(X-\lambda)^{\deg p}$.
+  \end{proof}
+\end{theorem}
+
+\begin{proposition}[Multiplicity with Derivatives]
+  $\mu_p(\lambda)=\mu\LR p(\lambda)=p'(\lambda)=\cdots=p^{(\mu-1)}(\lambda)=0$ and $p^{(\mu)}(\lambda)\neq 0$.
+\end{proposition}
+
+\subsection{Axioms of Rings}
+
+\begin{definition}[Ring]
+  A ring $R$ is a set with operations $(+:R\times R\to R,\cdot:R\times R\to R)$ iff:
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Properties & Definition \\\hline
+      Commutative & $\Forall{\alpha,\beta\in R}\alpha+\beta=\beta+\alpha$ \\\hline
+      Associative & $\Forall{\alpha,\beta,\gamma\in R} (\alpha+\beta)+\gamma=\alpha+(\beta+\gamma)$ \\\hline
+      Neutral Element & $\Exist{0 \in R}\Forall{\alpha\in R} \alpha+0=\alpha$ \\\hline
+      Inverse Element & $\Forall{\alpha\in R}\Exist{\beta \in R}\alpha+\beta=0$ \\\hline
+      Associative & $\Forall{\alpha,\beta,\gamma \in R}\alpha\cdot(\beta\cdot \gamma)=(\alpha\cdot\beta)\cdot\gamma$ \\\hline
+      Distributive Right & $\Forall{\alpha,\beta,\gamma\in R} \alpha\cdot(\beta+\gamma)=\alpha\cdot \beta+\alpha\cdot \gamma$ \\\hline
+      Distributive Left & $\Forall{\alpha,\beta,\gamma\in R} (\alpha+\beta)\cdot \gamma=\alpha\cdot \gamma+\beta\cdot \gamma$ \\\hline
+      Unital Element & $\Exist{1 \in R}\Forall{\alpha\in R} 1\cdot \alpha=\alpha$ \\\hline
+    \end{tabular}
+  \end{table}
+\end{definition}
+
+Examples include $F[X]$ and $M_n(F)$ with addition and multiplication of polynomials and matrices, respectively. Also, notice that fields are special cases of rings.
+
+\pagebreak
+
+\section{Vector Spaces}
+
+\subsection{Axioms of Vector Spaces}
+
+\begin{definition}[Vector Space]
+  A vector space $V$ over a field $F$ is a set with operations $(+:V\times V\to V,\cdot:F\times V\to V)$ iff:
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Properties & Definition \\\hline
+      Commutative & $\Forall{u,v\in V}u+v=v+u$ \\\hline
+      Associative & $\Forall{u,v,w\in V} (u+v)+w=u+(v+w)$ \\\hline
+      Neutral Element & $\Exist{0 \in V}\Forall{u\in V} u+0=u$ \\\hline
+      Inverse Element & $\Forall{u\in V}\Exist{v \in V}u+v=0$ \\\hline
+      Associative & $\Forall{u \in V}\Forall{\alpha,\beta\in F}\alpha\cdot(\beta\cdot u)=(\alpha\cdot\beta)\cdot u$ \\\hline
+      Distributive Right & $\Forall{u,v\in V}\Forall{\alpha\in F} \alpha\cdot(u+v)=\alpha\cdot u+\alpha\cdot v$ \\\hline
+      Distributive Left & $\Forall{u\in V}\Forall{\alpha,\beta\in F} (\alpha+\beta)\cdot u=\alpha\cdot u+\beta\cdot u$ \\\hline
+      Unitary & $\Forall{u\in V} 1_F\cdot u=u$ \\\hline
+    \end{tabular}
+  \end{table}
+
+  Usually, $+$ is called addition and $\cdot$ is called scalar multiplication. Also, we often denote the inverse of addition as $-u$.
+\end{definition}
+
+\begin{definition}[Group]
+  The set $G$ is a group with operation $*: G\times G\to G$ iff:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Properties & Definition \\\hline
+      Associative & $\Forall{a,b,c\in G} (a*b)*c=a*(b*c)$ \\\hline
+      Neutral Element & $\Exist{e \in G}\Forall{a\in G} a*e=e*a=a$ \\\hline
+      Inverse Element & $\Forall{a\in G}\Exist{b \in G}a*b=b*a=e$ \\\hline
+    \end{tabular}
+  \end{table}
+\end{definition}
+
+Further, if the operation is commutative, the group is abelian. A field $F$ is both an abelian group $(F,+)$ and an abelian group $(F\setminus\{0\},\cdot)$. Moreover, a vector space is an abelian group $(V,+)$.
+
+\begin{example}
+  $F^n,F^{k\times n},F[X]$ and $F^\infty$ are vector spaces we saw before.
+
+  The set ${}^S V$ of all functions from a set $S$ is to a vector space $V$ is again a vector space with $+$ and $\cdot$ inherited from $V$ as follows:
+  \begin{align*}
+    (f+g)(s)&=f(s)+g(s)\\
+    (\alpha\cdot f)(s)&=\alpha\cdot f(s)
+  \end{align*}
+  If $U$ and $V$ are vector spaces over $F$, then $U\times V$ is a vector space again a vector space with $+$ and $\cdot$ inherited from $U$ and $V$ as follows:
+  \begin{align*}
+    (u_1,v_1)+(u_2,v_2)&=(u_1+u_2,v_1+v_2)\\
+    \alpha\cdot (u,v)&=(\alpha\cdot u,\alpha\cdot v)
+  \end{align*}
+  The following is also a vector space $F_n[X]=\big\{p\in F[X]\;|\;\deg(p)\leq n\big\}$.
+\end{example}
+
+\subsection{Spans and Subspaces}
+
+\begin{definition}[Finite Span]
+  For a set $S\subseteq V$, we define:
+  $$\Span(S)=\set{\sum_{i=1}^k\,\alpha_i\cdot v_i}{k\in\mathbb{N}\,,\,v_i\in S\,,\,\alpha_i\in F}$$
+  If $S$ is finite, or at least countable, we may write it as a sequence.
+\end{definition}
+
+\begin{definition}[Vector Subspace]
+  Given a vector space $(V,F,+,\cdot)$, a subset $U$ is a linear subspace if $(U,F,\left.+\right|_{U\times U},\left.\cdot\right|_{F\times U})$ is a vector space, where $\left.+\right|_{U\times U}$ and $\left.\cdot\right|_{F\times U}$ are the operations $+$ and $\cdot$ restricted to $U$. Particularly, we just need to check:
+  \begin{enumerate}
+    \item $U$ is non-empty
+    \item $U$ is closed under addition
+    \item $U$ is closed under scalar multiplication
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Finitely Spanned Vector Spaces]
+  Given a vector space $V$ over $F$, we say it is finitely spanned, if $\Exist{S\in V^k} \Span(S)=V$, for some $k$ finite.
+\end{definition}
+
+\begin{definition}[Spanning Sequence]
+  Given a subspace $U$, we say $S\in V^k$, for $k$ finite, is a spanning sequence of $U$ if: $U=\Span(S)$. Equivalently, we write $U$ is spanned by $S$. Note, since $U$ is a linear subspace, $\Span(S)\subseteq U\LR S\subseteq U$.
+\end{definition}
+
+\begin{lemma}[Concatenation on Span]
+  Let $S=\seq{v}{n}\in V^n$ and $T=\left(v_1,\cdots,v_n,u\right)=S\concat u\in V^{n+1}$. Then:
+  \begin{enumerate}
+    \item $\Span(T)\supseteq \Span(S)$
+    \item $\Span(T)=\Span(S)\LR u$ is a linear combination of $S$
+    \item $T$ is linearly independent iff $S$ is linearly independent and $u\notin\Span(S)$
+  \end{enumerate}
+  \begin{proof}
+    For each one:
+    \begin{enumerate}
+      \item $\displaystyle \Span(S)\ni \sum_{i=1}^n \alpha_i\cdot v_i=0\cdot u+\sum_{i=1}^n \alpha_i\cdot v_i\in \Span(T)$.
+      \item 
+      \begin{itemize}
+        \item[$(\LA)$] We only need $\subseteq$. Let $\displaystyle u=\sum_{i=1}^n \beta_i\cdot v_i$ so that $\displaystyle \Span(T)\ni \beta\cdot u+\sum_{i=1}^n \alpha_i\cdot v_i=\sum_{i=1}^n (\beta\cdot \beta_i+\alpha_i)\cdot v_i\in\Span(S)$.
+        \item[$(\RA)$] For $\beta\neq 0$, $\displaystyle \Span(T)\ni \beta\cdot u+\sum_{i=1}^n \alpha_i\cdot v_i=\sum_{i=1}^n \beta_i\cdot v_i\in \Span(S)\RA u=\sum_{i=1}^n\frac{\beta_i-\alpha_i}{\beta}\,\cdot v_i$.
+      \end{itemize}
+      \item 
+      \begin{itemize}
+        \item[$(\LA)$] $\displaystyle \beta\cdot u+\sum_{i=1}^n \alpha_i\cdot v_i=0$. Since $u\notin\Span(S)$, $\beta=0$. Since $S$ is linearly independent $\alpha_1=\cdots=\alpha_n=0$.
+        \item[$(\RA)$] By contrary, $\displaystyle \beta\cdot u+\sum_{i=1}^n \alpha_i\cdot v_i=0$, let $\displaystyle u=\sum_{i=1}^n \beta_i\cdot v_i$, set $\beta=1$ and $\alpha_i=-\beta_i$, so we found a linear dependency. If $u\in\Span(S)$, . If $S$ is linearly dependent we set $\beta=0$ and use any $(\alpha_1,\cdots,\alpha_n)\in \LD(S)\setminus\{0\}$. 
+      \end{itemize}
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\subsection{Basis and Dimension}
+
+\begin{definition}[Hamel Basis]
+  A set $B$ is called a (Hamel) basis of a vector space $V$ iff
+  \begin{enumerate}
+    \item Any finite subset is linearly independent
+    \item $\displaystyle\Forall{v\in V}\Exist{!\,\tuple{x}\in F^k,\seq{b}{k}\subseteq B}\sum_{i=1}^h\,x_i\cdot b_i=v$
+  \end{enumerate}
+  If $B$ is finite, or at least countable, we write it as a sequence. Heretofore, we only consern ourselves with this case.
+\end{definition}
+
+\begin{lemma}[N\&SC for Basis]
+  $B$ is a basis of $U\subseteq V$ iff $B$ is a spanning sequence of $U$ and linearly independent.
+\end{lemma}
+
+\begin{theorem}[Maximality of Basis]
+  Let $V$ be a vector space over $F$, and $A\in V^k$ be a linearly independent sequence in $V$. Moreover, let $S$ be any spanning sequence of $V$ ($V=\Span(S)$). Then: $\#A\leq \#S$.
+  \begin{proof}
+    Let $S=\seq{v}{n}\in V^n$ such that $V=\Span(S)$ and $T=\seq{u}{k}\in V^k$ with $k>n$. We want to show that $T$ is linearly dependent. Since $V=\Span(S)$, we can find coefficients such that: $$u_i=\sum_{j=1}^n\,a_{i,j}\cdot v_j$$
+    To find $\LD(T)$ we solve $\displaystyle\sum_{i=1}^k\,x_i\cdot u_i=0$, that is, $$\sum_{j=1}^n\,\bigg(\sum_{i=1}^k a_{i,j}\cdot x_i\bigg)\cdot u_j=0 $$
+    In particular, that solves $L=\set{\sum_{i=1}^k a_{i,j}\cdot x_i=0}{j\in\{1,2,\cdots,n\}}$ belongs to $LD(T)$. Notice this is a linear equation system of $k$ variables and $n$ equations, with $n<k$. Thereofore, there is a non-trivial solution.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Equality on Dimension]
+  Let $B_1$ and $B_2$ be two bases of $V$. Then, $\# B_1=\# B_2$.
+\end{corollary}
+
+\begin{definition}[Dimension]
+  Let $V$ be a vector space over $F$, that has a finite basis $B$. We define: $$\boxed{\dim V:=\# B}$$
+\end{definition}
+
+\begin{corollary}[Sequence larger than dimension]
+  For every $S\in V^k$, if $k>\dim V$, $S$ is linearly dependent.
+\end{corollary}
+
+\begin{lemma}[Exact Span]
+  Let $S=\seq{v}{n}\in V^n$. Then $S$ contains a basis of $\Span(S)$.
+  \begin{proof}
+    $S$ of course spans $\Span(S)$. If $S$ is linearly independent, we are done. Conversly, if $S$ is linearly dependent, $\exists \,v_i\in S$ that is a linear combination of the rest. Take $T$ such that $T\concat v_i=S$. Notice $\Span(T)=\Span(S)$. Since $S$ is finite, the algorithm terminates.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Finite Span is very easy]
+  Every linear space which is finitely spanned has a basis (and therefore a dimension).
+\end{corollary}
+
+\begin{definition}[Extension of Basis]
+  Let $U$ be a linear subspace of $V$ and $S=\seq{v}{n}\in V^n$. Then $S$ can be extended to a basis of $U$ iff: $\Exist{T\supseteq S} T$ is a basis of $U$.
+\end{definition}
+
+\pagebreak
+
+\begin{lemma}[Steinitz Exchange Lemma]
+  The necessary and sufficient criteria for $S$ to be able to be extended to basis are:
+  \begin{enumerate}
+    \item $S\subset U$
+    \item $S$ is linearly independent
+  \end{enumerate}
+  \begin{proof}
+    One direction $(\RA)$ is trivial. The other: ($\LA$) By contrary, it is clear that $\Span(S)\subseteq U$ and $S$ is a basis of $\Span(S)$. If $\Span(S)=U$, we are done. Conversly, if $\Span(S)\subsetneqq U$, $\exists \,u\neq 0\in U\setminus\Span(S)$. Take $T=S\concat\tuple{u}$, since $u\notin\Span(S)$. See that $T$ is also linearly independent and $T\subset U$. Since $\dim V$ is finite, the algorithm terminates (hence, $\# S\leq \dim V$).
+  \end{proof}
+\end{lemma}
+
+\begin{proposition}[Dimension of Subspace]
+  Let $U$ be a linear subspace of $V$. Then the following statements hold:
+  \begin{enumerate}
+    \item $U$ has a basis
+    \item $\dim U\leq \dim V$
+    \item $\dim U = \dim V \LR U=V$
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item If $U=\{0\}$, we're done. Otherwise, pick $u\neq 0\in U$ and set $S=(u)$. It fulfills the condition for extension. Hence, $U$ has a basis.
+      \item If $\dim U >\dim V$, there is a $\dim U$-long linearly independent sequence in $V$. Contradiction.
+      \item Let $B$ be a basis of $U$. If $\exists\,v\in V\setminus U$, then $B\concat v$ is a $\dim U+1=\dim V+1$-long linearly independent sequence. Contradiction.
+    \end{enumerate}
+  \end{proof}
+\end{proposition}
+
+\pagebreak
+
+\begin{theorem}[Size of Sequence]
+  Let $S\in V^k$
+  \begin{enumerate}
+    \item If $k>\dim V$, then $S$ is linearly independent
+    \item If $k<\dim V$, then $\Span(S)\subsetneqq V$
+    \item If $k=n$ then either $S$ is a basis of $V$ or both $\Span(S)\subsetneqq V$ and $S$ is linearly dependent
+  \end{enumerate}
+\end{theorem}
+
+\pagebreak
+
+\section{Linear Transformations}
+
+\subsection{Linear Maps}
+
+\begin{definition}[Linear Map]
+  A linear map between vector spaces $V$ and $W$ over the same field $F$ is a function $T: V\to W$ such that:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Additive & $\Forall{u,v\in V}T(u+ v)=T(u)+ T(v)$ \\\hline
+      Homogeneous & $\Forall{\alpha\in F}\Forall{v\in V} T(\alpha\cdot v)=\alpha\cdot T(v)$\\\hline
+    \end{tabular}
+  \end{table}
+
+  written as one:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Linearity & $\Forall{\alpha,\beta\in F}\Forall{u,v\in V} T(\alpha\cdot u+ \beta\cdot v)=\alpha\cdot T(u)+ \beta\cdot T(v)$ \\\hline
+    \end{tabular}
+  \end{table}
+
+  equivalently, these diagram commute:
+  $$
+  \begin{tikzcd}
+    V \times V \arrow[shift right=12pt]{d}{T} \arrow[shift left=12pt]{d}{T}\arrow{r}{+}
+    & V \arrow{d}{T}\\
+    W \times W \arrow{r}{+}
+    & W \\
+  \end{tikzcd}
+  \quad\text{ and }\quad
+  \begin{tikzcd}
+    F \times V \arrow[shift left=12pt]{d}{T}\arrow{r}{\bigcdot}
+    & V \arrow{d}{T}\\
+    F \times W \arrow{r}{\bigcdot}
+    & W \\
+  \end{tikzcd}
+  $$
+\end{definition}
+
+\begin{definition}[Homomorphisms and Endomorphisms]
+  Denote the set of all linear maps $T: V\to W$ as $\Hom(V, W)$. Also, $\Hom(V, V)=\operatorname{End}(V)$.
+\end{definition}
+
+\begin{lemma}[Operations on Linear Map]
+  Let $V$ and $W$ be linear spaces over $F$.
+  \begin{enumerate}
+    \item If $T$ and $S$ are linear transformations $V\to W$, then $T\pm S$ and $\alpha\cdot T$ are linear transformations $V\to W$.
+    \item If $T: V\to W$ and $S: W\to U$, are linear transformations, then $S\circ T: V\to U$ is a linear transformation.
+    \item If $T: V\to W$ is an invertible linear transformation, then $T^{-1}: W\to V$ is a linear transformation.
+  \end{enumerate}
+  \begin{proof}
+    1. and 2. are trivial. We prove 3. First, notice $\Id_V: V\to W$ is a linear transformation.
+    \begin{align*}
+      T^{-1}&\big(\alpha\cdot T(u)+\beta\cdot T(v)\big)=T^{-1}\circ T(\alpha\cdot u+\beta\cdot v)\\
+      &=Id_V(\alpha\cdot u+\beta\cdot v)=\alpha\cdot u+\beta\cdot v
+      = \alpha\cdot T^{-1}(T(u))+\beta\cdot T^{-1}(T(v))
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Linear Maps are Vector Spaces]
+  $\Hom(V, W)$ is a vector space over $F$ wrt to the operations we defined for ${}^S V$. Further, $\operatorname{End}(V)$ is a ring with composition.
+\end{corollary}
+
+\subsection{Kernel and Image and Dimension Theorem}
+
+\begin{lemma}[Image of Linear Map]
+  Let $T: V\to W$ is linear transformation, then $\Image(T)$ is a linear subspace of $W$.
+  \begin{proof}
+    $\Image(T)$ is closed under addition and scalar multiplication: $\alpha\cdot T(u)+\beta\cdot T(v)=T(\alpha\cdot u+\beta\cdot v)\in\Image(T)$ and is not empty since $T(0_V)=0_W$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Sequence Map]
+  Let $V,W$ be two vectors spaces over $F$. Let $f:V\to W$ be a function and $S=\seq{v}{k}\in V^k$, we define:
+  $$f(S)=\big(f(v_1),f(v_2),\cdots,f(v_k)\big)\in W^k$$
+\end{definition}
+
+\begin{lemma}[Span and LD of Sequence Map]
+  Let $T: V \to W$ be a linear transformation and $S\in V^k$ be a sequence in the domain.
+  \begin{enumerate}
+    \item If $V=\Span(S)$, then $\Image(T)=\Span(T(S))$
+    \item In particular, if $\dim V<\dim W$ then $T$ is not surjective
+    \item $\LD(T(S))\supseteq \LD(S)$
+    \item If $T$ is injective, then $\LD(T(S))=\LD(S)$.
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item $\displaystyle u\in\Image(T)\LR\Exist{v\in V=\Span(S)}u=T(v)=T\left(\sum_{i=1}^k\,\alpha_i\cdot\,v_i\right)=\sum_{i=1}^k\,\alpha_i\cdot\,T(v_i)\LR u\in\Span(T(S))$.
+
+      \item Take a basis $B$ of $V$: $\dim \Image(T)=\Span(T(B))\leq \# T(B)=\dim V<\dim W\RA \Image(T)\subsetneqq W$.
+      
+      \item $\tuple{x}\in\LD(S)\RA S\sumprod\tuple{x}=\tuple{0}_V\RA T(S)\sumprod\tuple{x}=T(S\sumprod\tuple{x})=\tuple{0}_W\RA \tuple{x}\in \LD(T(S))$.
+      
+      \item If $T$ is injective, there is a left inverse, so that: $\tuple{x}\in \LD(T(S))\RA T(S\sumprod\tuple{x})=T(S)\sumprod\tuple{x}=0_W\RA S\sumprod\tuple{x}=0_V\RA \tuple{x}\in\LD(S)$.
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Kernel]
+  Let $T: V \to W$ be a linear transformation, the kernel is the set: $\ker(T)=\set{v\in V}{T(v)=0_W}$
+\end{definition}
+
+\begin{lemma}[Kernel of linear map is Subspace]
+  The kernel is a linear subspace of $V$.
+  \begin{proof}
+    $\ker(T)$ is closed under addition and scalar multiplication: $u,v\in \ker(T)\RA 0=\alpha\cdot T(u)+\beta\cdot T(v)=T(\alpha\cdot u+\beta\cdot v)\RA\alpha\cdot u+\beta\cdot v\in\ker(T)$ and is not empty since $T(0_V)=0_W\RA 0_V\in\ker(T)$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[N\&SC for Injectivity of Linear Map]
+  Let $T: V \to W$ be a linear transformation.
+  \begin{enumerate}
+    \item $T$ is injective $\LR \ker(T)=\{0_V\}$.
+    \item For $V$ finetely spanned, $T$ is injective $\LR \dim\Image(T)=\dim V$.
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item We prove both directions:
+      \begin{itemize}
+        \item [$(\RA)$] $T(u)=0_W=T(0_V)\RA u=0_V$, that is, $\{0_V\}\supseteq \ker(T)$.
+        \item [$(\LA)$] $T(u)=T(v)\RA T(u-v)=0_W\RA u-v=0_V\RA u=v$
+      \end{itemize}
+      \item We prove both directions:  Let $B$ be a basis of $V$. 
+      \begin{itemize}
+        \item [$(\RA)$] $\LD(T(B))=\LD(B)=\{0\}\RA T(B)$ is linearly independent, meaning $\dim\Image(T)=\dim\Span T(B)=\dim V$.
+        \item [$(\LA)$] $\dim\Span T(B)=\dim\Image(T)=\dim V$. Hence $T(B)$ is linearly independent, which implies $\ker(T)=\{0_V\}$.
+      \end{itemize}
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Dimension Theorem]
+  If $V$ is finitely spanned, for any linear transformation $T: V\to W$: $$\boxed{\dim V=\dim\ker(T)+\dim \Image(T)}$$
+  \begin{proof}
+    $V$ is finitely spanned vector space ($\dim V=n$) and $\ker(T)$ is a linear subspace of $V$, therefore $\ker(T)$ is finitely spanned, hence it has a basis $A=\seq{a}{k}$, where $k=\dim\ker(T)$.
+
+    Since $A$ is a linear independent, we can extend it to a basis of $V$, call it $A\concat B$, where $B=\seq{b}{n-k}$ is the remainder of the extension.
+    
+    Let us show that $T(B)$ is a basis for $\Image(T)$: $\Image(T)=\Span(T(B))$ is easy since $\Image(T)=\Span(T(A\concat B))=\Span(T(A)\concat T(B))=\Span(T(B))$, we only need to prove $T(B)$ is linearly independent: $\displaystyle 0=\sum_{i=1}^{n-k}x_i\cdot T(b_i)=T\bigg(\sum_{i=1}^{n-k}x_i\cdot b_i\bigg)\LR \Span(B)\ni\sum_{i=1}^{n-k}x_i\cdot b_i\in \ker(T)=\Span(A)\RA x_1=x_2=\cdots=x_{n-k}=0$ since $\Span(A)\cap \Span(B)=\emptyset$. Hence, $\dim\Image(T)=n-k$
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Character from Dimension]
+  We have the ternary:
+  \begin{enumerate}
+    \item If $\dim V>\dim W$, then $T$ is not injective.
+    \item If $\dim V<\dim W$, then $T$ is not surjective.
+    \item If $\dim V=\dim W$, then $T$ is either bijective or it is neither surjective nor injective.
+  \end{enumerate}
+\end{corollary}
+
+\begin{corollary}[Sequence Dimensions]
+  If we use for $F_S$ (to be defined on the next section), we get: For any sequence $S\in V^n$:
+  $$n=\dim\LD(S)+\dim\Span(S)$$
+\end{corollary}
+
+\begin{corollary}[Dimension of Cols and Rows]
+  For a matricial function $T_A$, $A\in M_{k\times n}(F)$ and for the matricial function $T_{A^t}$, we get:
+  \begin{align*}
+    n=\dim\sols(A)+\dim\cols(A)\\
+    k=\dim\sols(A^t)+\dim\rows(A)\\
+  \end{align*}
+\end{corollary}
+
+\subsection{Isomorphism}
+
+\begin{definition}[Isomorphisms]
+  A linear transformation $T: V\to W$ is an:
+  \begin{enumerate}
+    \item monomorphism if it is injective
+    \item epimorphism if it is surjective
+    \item isomorphism if it is bijective
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Isomorphic Vector Spaces]
+  Two vectors spaces are \textbf{isomorphic}, denoted $V\cong W$, if there exists a \textbf{bijective} linear transformation $T: V\to W$, that is, an isomorphism.
+\end{definition}
+
+\begin{proposition}[Isomorphism Equivalence Relation]
+  Isomorphism of vector spaces is an equivalence relation.
+  \begin{proof}
+    We choose the following maps: Reflexivity: Take the identity $\Id_V:V\to V$; Symmetry: Take the inverse function (which exists, since it is bijective); Transitivity: Take the composition (which is linear and bijective).
+  \end{proof}
+\end{proposition}
+
+\pagebreak
+
+\section{Coordinates}
+
+\subsection{Representing Function}
+
+\begin{definition}[Sequence Function and Coordinate Map]
+  For $S\in V^n$, we define the sequence function:
+  \begin{align*}
+  F_{S}: F^n&\to V\\
+  \tuple{x}&\mapsto S\sumprod\tuple{x}
+  \end{align*}
+  which is a linear map. Moreover: $\ker(F_S)=\LD(S)$ and $\Image F_S=\Span(S)$.
+  
+  If $n=\dim V$ and $B$ is a basis of $V$, $F_B$ is bijective, so there is an (linear) inverse function $Q_B=F_B^{-1}:V\to F^{\;\dim V}$ which is called the coordinate function of $S$. We further denote $Q_B(v)=[v]_B$.
+
+  Further, for a sequence $S\in V^k$, we write $[S]_B=Q_B(S)\in M_{\dim V\times k}(F)$
+\end{definition}
+
+\begin{theorem}[Dimension Equality]
+  For $V$ and $W$ finitely spanned, we have:
+  \begin{enumerate}
+    \item $V\cong F^{\,\dim V}$
+    \item $\dim_F V=\dim_F W\LR V\cong W$
+  \end{enumerate}
+  \begin{proof}
+    Let $B$ be a basis for $V$. To show $V\cong F^{\,\dim V}$, take the coordinate function $Q_B$. To show the isomorphism $\dim_F V=\dim_F W\LR V\cong W$, take $F_C\circ Q_B$, where $C$ is a basis for $W$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Linear Maps are Sequence Functions]
+  Every linear map $T:F^n\to V$ is a sequence function $F_{T(E)}$, with $E=\seqt{e}{n}$ is the standard basis.
+\end{corollary}
+
+\begin{corollary}[Linear Maps are Matricial Functions]
+  Every linear map $T: F^n\to F^k$ is a matricial function. Moreover, every bijective linear transformation $T: V\to F^n$ is a coordinate map.
+\end{corollary}
+
+\begin{definition}[Representing Function]
+  Let $B$ be a basis for $V$ and $C$ a basis for $W$. Let $f: V\to W$ be any function. Then, there is a function
+  $f^B_C$ such that the following diagram commutes.
+  $$
+  \begin{tikzcd}
+    V \arrow{r}{f} \arrow{d}{Q_B}
+    & W \arrow{d}{Q_C}\\
+    F^{\,\dim V} \arrow[dashed]{r}{f_C^B}
+    & F^{\,\dim W}
+  \end{tikzcd}
+  $$
+  In particular, $f^B_C= Q_C\circ f \circ Q_B^{-1}= Q_C\circ f \circ F_B$. so that $f(v)=u\LR f^B_C([v]_B)=[u]_C$. Moreover, $f=Q_C^{-1}\circ f^B_C \circ Q_B=F_C\circ f^B_C\circ Q_B$.
+\end{definition}
+
+\begin{proposition}[Character of Representing Function]
+  $$
+  f\text{ is }\begin{cases}\text{injective}\\\text{surjective}\\\text{bijective}\\\text{linear}\end{cases}\text{ iff }f^B_C\text{ is}
+  $$
+\end{proposition}
+
+\begin{definition}[Representing Matrix]
+  If $f$ is linear, then $f^B_C$ is a matricial function (by lemma). We call $[f^B_C]$ (also denoted $[f]^B_C$) the representing matrix of $f$ in $B,C$.
+\end{definition}
+
+\begin{proposition}[Calculation of Representing Matrix]
+  For $T:V\to W$ a linear map:
+  $$[T]^B_C=[T(B)]_C=\mcols[{[T(}][{)]_C}]{b}{\dim V}$$
+\end{proposition}
+
+We can algorithmically compute $[T]^B_C$ by Gauss-Jordan Elimination: Take $E$ is a (usually standard) basis for $W$: $\begin{pmatrix}[c|c][C]_E & [T(B)]_E\end{pmatrix}\to\begin{pmatrix}[c|c]I &[T]^B_C\end{pmatrix}$.
+
+\begin{proposition}[Representation of Composition]
+  $$
+  \begin{tikzcd}
+    U \arrow{r}{g} \arrow{d}{Q_A}
+    & V \arrow{r}{f} \arrow{d}{Q_B}
+    & W \arrow{d}{Q_C}\\
+    F^{\,\dim U} \arrow[dashed]{r}{g_B^A}
+    & F^{\,\dim V} \arrow[dashed]{r}{f_C^B}
+    & F^{\,\dim W}
+  \end{tikzcd}
+  $$
+  we have the following: $(g\circ f)^A_C=g^A_B\circ f^B_C$, for the diagram to commute.
+\end{proposition}
+
+\subsection{Change of Coordinates}
+
+\begin{definition}[Change-of-Coordinates Matrix]
+  The change of coordinates in one vector space:
+  $$
+  \begin{tikzcd}[column sep=small]
+    & V \arrow[swap]{dl}{Q_B} \arrow{dr}{Q_C} &\\
+    F^{\,\dim V} \arrow[dashed]{rr}{Q^B_C} 
+    & & F^{\,\dim V}
+  \end{tikzcd}
+  $$
+  Where $Q^B_C=Q_C\circ Q_B^{-1}=F_C^{-1}\circ F_B$ is the change of coordinate function. We denote $M^B_C=[Q^B_C]$. So that: $$M^B_C\,[v]_B=[v]_C$$
+  Equivalently, we define: $M^B_C=[\Id_V]^B_C$. Notice in a standard basis $E$: $M^B_C=[C]_E^{-1}\,[B]_E$
+\end{definition} 
+
+\begin{proposition}[Changing Basis]
+  For a linear map $T: V\to W$
+  $$
+  \begin{tikzcd}
+    F^{\,\dim V} \arrow[dashed]{r}{T_F^E}
+    & F^{\,\dim W}\arrow[bend left,dashed]{dd}{Q^F_C}\\
+    V \arrow{r}{T} \arrow{d}{Q_B}\arrow[swap]{u}{Q_E}
+    & W \arrow[swap]{d}{Q_C}\arrow{u}{Q_F}\\
+    \arrow[bend left,dashed]{uu}{Q^B_E} F^{\,\dim V} \arrow[dashed]{r}{T_C^B}
+    & F^{\,\dim W}
+  \end{tikzcd}
+  $$
+  We get: 
+  \begin{align*}
+    T^B_C&=Q_C\circ T\circ Q_B^{-1}=Q_C\circ\left(Q_F^{-1}\circ Q_F \circ T\circ Q_E^{-1}\circ Q_E\right)\circ Q_B^{-1}\\
+    &=\left(Q_C\circ Q_F^{-1}\right)\circ T^E_F\circ\left(Q_E\circ Q_B^{-1}\right)=Q^F_C\circ T^E_F\circ Q_E^B
+  \end{align*}
+  $\RA [T]^B_C=M^F_C\,[T]^E_F\,M_E^B$.
+
+  For $V=W$, $B=C$ and $E=F$, we get: $[T]_B=M^E_B\,[T]_E\,M^B_E\;$.
+\end{proposition}
+
+\begin{proposition}[Calculation of Change-of-Coordinates Matrix]
+  $$
+  M^B_C=[B]_C=Q_C(B)=\mcols[{[}][{]_C}]{b}{n}
+  $$
+\end{proposition}
+
+\begin{proposition}
+  We have a type of transitive law: $M^B_C=M^B_D\,M^D_C$
+\end{proposition}
+
+Further, we can algorithmically compute $M^B_C$ by Gauss-Jordan Elimination: Take $E$ as standard basis and apply $\begin{pmatrix}[c|c] [B]_E&[C]_E\end{pmatrix}\to\begin{pmatrix}[c|c]I & M^B_C\end{pmatrix}$.
+
+\begin{definition}[Conjugation]
+  Let $P\in \GL_n(F)$. The function:
+  \begin{align*}
+    \Theta_P: M_n(F)&\to M_n(F)\\
+    A\to P^{-1}\,A\,P
+  \end{align*}
+  is called the conjugation (function) of $P$. Notice it is linear, and also: $$\Theta_P(AB)=\Theta_P(A)\cdot \Theta_P(B)$$
+  (it is a ring homomorphism, i.e. it preserves the ring structure)
+
+  Further, $\Theta_P^{-1}=\Theta_{P^{-1}}$, so it is a bijection.
+\end{definition}
+
+\begin{definition}[Similar Matrices]
+  Given two matrices $A, B\in M_n(F)$, we say:
+  $$A\sim B\LR\exists\,P\in\GL_n(F)\,:\; \Theta_P(A)=P^{-1}\,A\,P=B$$
+  the matrices are similar
+\end{definition}
+
+\begin{lemma}[Similarity Equivalence Relation]
+  The similarity of matrices is an equivalence relation.
+  \begin{proof}
+    We take the conjugation with the following matrices:
+    \begin{itemize}
+      \item[] Reflexive: Take $I$. 
+      \item[] Symmetric: Take $P^{-1}$. 
+      \item[] Transitive: Take the product/composition.
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\begin{theorem}[Similar Matrices represent the same Linear Map]
+  Let $V$ be a finitely spanned vector space over $F$.
+  \begin{enumerate}
+    \item Let $T: V\to V$ be a linear transformation and $B$ and $C$ be two basis of $V$. Then: $[T]_B=\Theta_P\big([T]_C\big)$ where $P=M^C_B$.
+    \item $\Forall{A,A'\in M_{\,\dim V}(F)}A\sim A'\RA \Exist{T\in\operatorname{End}(V)\text{ and }B,C\text{ basis of }V} [T]_B=A$ and $[T]_C=A'$.
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item Simply notice: $[T]_B=M^B_C\,[T]_C\,M^C_B=\big(M^C_B\big)^{-1}\,[T]_C\,M^C_B$.
+      \item Let $P$ be such that $A=\Theta_P(A')$. Let $B$ be any basis of $V$. Simply define $T=Q_B^{-1}\circ T_A\circ Q_B$, so that $[T]_B=A$. Now, define $C$ as: $[C]=[B]\,P$ so that $P=M^C_B$. By the previous stament, $T_C=\Theta^{-1}_P([T]_B)=\Theta_{P^{-1}}(A)=A'$.
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\section{Eigenspace}
+
+\subsection{Eigenvectors}
+
+\begin{definition}[Eigenspace and Eigenvectors]
+  Let $V$ be a linear space over the field $F$ and $T: V\to V$ be a linear transformation.
+
+  We say $v\in V\setminus\{0\}$ is an eigenvector of $T$ if $\Exist{\lambda\in F} T(v)=\lambda\cdot v$. We define:
+  
+  $$
+  \Eig_{\lambda}(T)=\set{v\in V}{T(v)=\lambda\cdot v}=\ker(T-\lambda\cdot\Id_V)
+  $$
+  
+  notice it is a linear subspace of $V$.
+\end{definition}
+
+\begin{definition}[Eigenvalue]
+  The number $\lambda$ is an eigenvalue of $T$ if $\Eig_{\lambda}(T)\supsetneqq\{0\}$.
+\end{definition}
+
+\begin{lemma}[Eigenspaces are disjoint]
+  $$\lambda\neq\mu\RA\Eig_\lambda(T)\cap \Eig_\mu(T)=\{0\}$$
+  \begin{proof}
+    Let $v\in \Eig_\lambda(T)\cap \Eig_\mu(T)\RA T(v)=\lambda\cdot v=\mu\cdot v\RA (\lambda-\mu)\cdot v=0\RA v=0$. So, $\Eig_\lambda(T)\cap \Eig_\mu(T)\subseteq\{0\}$. Moreover, $\Eig_\lambda(T)\cap \Eig_\mu(T)\supseteq\{0\}$ is clear.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Power of Linear Maps]
+  If $\lambda$ is an eigenvalue of $T:V\to V$, then $\Forall{k\in\mathbb{N}}\lambda^k$ is an eigenvalue of $T^k=\underbrace{\;T\circ T\circ \cdots\circ T\;}^{k\text{ times}}$. Moreover, $\Eig_\lambda(T)\subseteq \Eig_{\lambda^k}(T^k)$
+  \begin{proof}
+    If $\lambda$ is an eigenvalue, there is at least one eigenvector $u\neq 0$. Therefore, $T^k(u)=T^{k-1}(\lambda\cdot u)=\lambda\cdot T^{k-1}(u)=\cdots=\lambda^k\cdot u\;$, hence $\lambda^k$ is an eigenvalue of $T^k$. Further, we showed $u\in \Eig_\lambda(T)\RA u\in\Eig_{\lambda^k}(T^k)$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Reciprocal of Eigenvalue]
+  If $T$ is invertible, $\lambda^{-1}$ is an eigenvalue of $T^{-1}$.
+  \begin{proof}
+    If $T$ is invertible: $u=T^{-1}\circ T(u)=T^{-1}(\lambda\cdot u)=\lambda\cdot T^{-1}(u)\RA T^{-1}(u)=\lambda^{-1}\cdot u\;$, hence $\lambda^{-1}$ is an eigenvalue of $T^{-1}$. Further, observe that $T$ invertible $\RA T$ injective $\RA \ker(T)=\{0\}\RA \lambda=0$ is not an eigenvalue.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[N\&SC for Invertibility]
+  If $\lambda=0$ is an eigenvalue of $T$, then $T$ is not invertible.
+\end{corollary}
+
+\subsection{Characteristic Polynomial}
+
+\begin{proposition}[Determinant in Finite Case]
+  Let $V=F^n$ and $T=T_A:F^n\to F^n$, for a matrix $A$. We have:
+  $$
+  \{0\}\subsetneqq\Eig_{\lambda}(T)=\ker\big(T-\lambda\,\Id_V\big)=\sols(A-\lambda\,I)\LR \det\big(A-\lambda\,I\big)=0
+  $$
+\end{proposition}
+
+\begin{definition}[Characteristic Polynomial]
+  We define $$p_A(\lambda)=\det\big(\lambda\,I-A\big)$$ the characteristic polynomial of $A$ (which is a monic polynomial). Notice the eigenvalues of $T_A$ are exactly the roots of $p_A$.
+\end{definition}
+
+\begin{theorem}[Cayley-Hamilton]
+  $$p_A(A)=0$$
+  \begin{proof}
+    Let $B=\adj(\lambda\,I-A)$. First, we must have $(\lambda\,I-A)\,B=\det(\lambda\,I-A)\,I=p_A(\lambda)\,I$. Now, we can expand $B$ as $B=\sum_{k=0}^{n-1}\lambda^k\,B_i$. Now,
+    \begin{align*}
+      p_A(\lambda)\,I&=(\lambda\,I-A)\,B=(\lambda\,I-A)\,\sum_{k=0}^{n-1}\lambda^k\,B_i\\
+      =\sum_{k=0}^{n-1}\lambda^{k+1}\,B_i-\sum_{k=0}^{n-1}\lambda^k\,A\,B_i
+      &=\lambda^n\,B_{n-1}+\sum_{k=1}^{n-1}\lambda^k\big(B_{k-1}-A\,B_k\big)-A\,B_0\\
+      p_A(\lambda)\,I&=\sum_{k=0}^n\,c_k\,\lambda^k\,I
+      \RA
+      \begin{cases}
+        B_{n-1}=c_n\,I=I\\
+        B_{k-1}-A\,B_k=c_k\,I\\
+        -AB_0=c_0\,I
+      \end{cases}
+    \end{align*}
+    Therefore,
+    \begin{align*}
+      p_A(A)&=\sum_{k=0}^n\,A^k\,\big(c_k\,I\big)=A^n\,B_{n-1}+\sum_{k=1}^{n-1}A^k\big(B_{k-1}-A\,B_k\big)-A\,B_0\\
+      &=A^n\,B_{n-1}+\sum_{k=1}^{n-1}A^k\,B_{k-1}-\sum_{k=1}^{n-1}A^{k+1}\,B_k-A\,B_0\\
+      &=A^n\,B_{n-1}+A\,B_0-A^n\,B_{n-1}-A\,B_0=0
+    \end{align*}
+  \end{proof}
+\end{theorem}
+
+\subsection{Diagonalizing}
+
+\begin{definition}[Diagonalizable Matrix]
+  A matrix is diagonalizable if is similar to a diagonal matrix $\Lambda=\diag(\lambda_1,\cdots,\lambda_n)$, or, equivalently $\Exist{P\in\GL_n(F)}A=P\,\Lambda\,P^{-1}$.
+\end{definition}
+
+\begin{theorem}[EigenBasis]
+  If $P^{-1}\,A\,P$ is a diagonal matrix $\Lambda=\diag(\lambda_1,\cdots,\lambda_n)$, then $\Forall{\tuple{p}_{\,i}\in S_c(P)} A\,\tuple{p}_{\,i}=\lambda\cdot \tuple{p}_{\,i}$.
+  \begin{proof}
+    $P^{-1}\,A\,P=\Lambda\LR A\,P=P\,\Lambda$:
+    \begin{align*}
+      A\,P&=A\,\mcols{p}{n}
+      =\mcols[A(][)]{p}{n}\\
+      &=P\,\Lambda=P\,\begin{pmatrix}
+        | &\,&|\\
+        \lambda_1\cdot\tuple{e}_{\,1}&\cdots&\lambda_n\cdot\tuple{e}_{\,n}\\
+        | &\,&|
+      \end{pmatrix}
+      =\begin{pmatrix}
+        | &\,&|\\
+        \lambda_1\cdot P(\tuple{e}_{\,1})&\cdots&\lambda_n\cdot P(\tuple{e}_{\,n})\\
+        | &\,&|
+      \end{pmatrix}\\
+      &=\begin{pmatrix}
+        | &| &\,&|\\
+        \lambda_1\cdot\tuple{p}_{\,1}&\lambda_2\cdot\tuple{p}_{\,2}&\cdots&\lambda_n\cdot\tuple{p}_{\,n}\\
+        | &| &\,&|
+      \end{pmatrix}
+    \end{align*}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[N\&SC for Diagonalizability]
+  $A$ is diagonalizable iff there is a sequence on $n$ linearly independent eigentuples $\tuple{p}_{\,i}$ (called an eigenbasis).
+\end{corollary}
+
+\begin{theorem}[Sylvester's law of Inertia]
+  Every symmetric matrix is diagonalizable
+\end{theorem}
+
+\begin{definition}[Geometric Multiplicity]
+  $$\gm_A(\lambda)=\dim\Eig_\lambda(T_A)=\dim\sols(A-\lambda\,I)$$
+\end{definition}
+
+\begin{definition}[Algebraic Multiplicity]
+  $\am_A(\lambda)$ is the multiplicity of $\lambda\in F$ in the polynomial $p_A$.
+\end{definition}
+
+\begin{lemma}[AM-GM Inequality]
+  $\Forall{\lambda\in F}\am_{A}(\lambda)\geq\gm_A(\lambda)$.
+\end{lemma}
+
+\begin{theorem}[N\&SC for Diagonalizability]
+  $A$ is a diagonalizable iff $p_A$ can be split into linear factors and $\Forall{\lambda\in F}\am_{A}(\lambda)=\gm_A(\lambda)$.
+  \begin{proof}
+    We use the previous theorem to show that $p_A$ can be split into linear factors and $\Forall{\lambda\in F}\am_{A}(\lambda)=\gm_A(\lambda)\LR$ there is an eigenbasis for $A$. Notice, from the lemma above: $$n=\sum_{\lambda\in F}\am_A(\lambda)\geq \sum_{\lambda\in F}\gm_A(\lambda)$$
+    \begin{itemize}
+      \item [$(\RA)$] Each $\Eig_\lambda(T_A)$ has a basis $B_\lambda$, which are linearly independent from each other so $B=B_{\lambda_1}\concat B_{\lambda_2}\concat\cdots\concat B_{\lambda_N}$ is a linearly independent set. Further, $n=\sum_{\lambda\in F}\am_A(\lambda)=\sum_{\lambda\in F}\gm_A(\lambda)$, so the length of $B$ is $n$. Hence, it is an eigenbasis.
+      \item [$(\LA)$] By contrary, if $\Exist{\lambda\in F}\am_A(\lambda)>\gm_A(\lambda)\RA n>\sum_{\lambda\in F}\gm_A(\lambda)$. If there is an eigenbasis $B$, $\dim\Span(B)=\sum_{\lambda\in F}\gm_A(\lambda)<n$, contradiction.
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Diagonalizable Linear Map]
+  Let $V$ be a finetely spanned vector space over $F$ and $T: V \to V$ be a linear transformation. $T$ is called diagonalizable if there is a basis $B$ of $V$ such that $[T]_B$ is diagonal.
+\end{definition}
+
+\begin{lemma}[EigenBasis of Linear Map]
+  If $B=\seq{b}{n}$ satisfies that $[T]_B$ is diagonal, then each $b_i$ must be an eigenvector of $T$.
+  \begin{proof}
+    Let $[T]_B=\diag\seq{\lambda}{n}$, then: $$\tuple{e}_i=Q_B(b_i)\RA T_B(\tuple{e}_i)=\lambda_i\cdot \tuple{e}_i\RA T(b_i)=\lambda_i\cdot b_i$$
+  \end{proof}
+  Moreover, $T(v)=\lambda\cdot v\LR [T]_B\,[v]_B=\lambda\cdot [v]_B$.
+\end{lemma}
+
+\begin{example}
+  $V=\mathbb{Q}_1[X]$,
+  \begin{align*}
+    T:\mathbb{Q}_1[X]&\to\mathbb{Q}_1[X]\\
+    a+bX&\mapsto (a+2b)+(2a+b)X
+  \end{align*}
+  If we pick $E=(1,X)$, we find $A=[T]_E=\begin{pmatrix}1&2\\2&1\end{pmatrix}$, calculating: $p_A(\lambda)=\lambda^2-2\lambda-3=(\lambda-3)(\lambda+1)$.
+  \begin{align*}
+    \sols(A-3I)&=\sols\begin{pmatrix}-2&2\\2&-2\end{pmatrix}=\Span\left(\begin{pmatrix}1\\1\end{pmatrix}\right) \\
+    \sols(A+I)&=\sols\begin{pmatrix}2&2\\2&2\end{pmatrix}=\Span\left(\begin{pmatrix}1\\-1\end{pmatrix}\right)
+  \end{align*}
+  Pulling it back to $V$ : $\Eig_3(T)=\Span(1+X)$ and $\Eig_{-1}(T)=\Span(1-X)$. Now, if we pick the basis $B=(1+X,1-X)$, $[T]_B=\begin{pmatrix}3&0\\0&1\end{pmatrix}$.
+\end{example}
+
+\pagebreak
+
+\section{Normed and Scalar Product Spaces}
+
+\subsection{Euclidean Product}
+
+\begin{definition}[Norm]
+  Let $V$ be a linear space over $\R$. A norm is a function $\|\cdot\|:V\to \R$ such that:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      Positive-Definite & $\Forall{u \in V}\|u\|=0 \LR u=0$\\\hline
+      Homogeneous & $\Forall{\alpha\in K}\Forall{u \in V}\|\alpha\cdot u\|=|\alpha|\cdot \|u\|$\\\hline
+      Triangle Inequality & $\Forall{u,v \in V} \|u+v\|\leq\|u\|+\|v\|$\\\hline
+    \end{tabular}
+  \end{table}
+\end{definition}
+
+\begin{definition}[Normalizing]
+  We say $u$ is a \textbf{unit vector} if $\|u\|=1$. If $u\neq 0$, its normalized vector is $\widehat{u}=\dfrac{1}{\|u\|}\cdot\,u$.
+\end{definition}
+
+\begin{definition}[Scalar/Inner Product]
+  An scalar product is a function $\inner{\cdot}{\cdot}:V\times V\to \R$ such that:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|p{2.5cm}|c|}\hline
+      Homogeneous & $\Forall{\alpha\in K}\Forall{u,v \in V}\inner{\alpha\cdot u}{v}= \inner{u}{\alpha\cdot v}= \alpha\cdot\inner{u}{v}$\\\hline
+      Distributivity & $\Forall{u,v \in V} \begin{array}{c} \inner{u+v}{w}=\inner{u}{w}+\inner{v}{w}\\ \inner{u}{v+w}=\inner{u}{v}+\inner{u}{w} \end{array}$\\\hline
+      Symmetric & $\Forall{u,v \in V} \inner{u}{v}=\inner{v}{u}$\\\hline
+    \end{tabular}
+  \end{table}
+  
+  If we have:
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{|p{2.5cm}|c|}\hline
+      Positivity & $\Forall{u \in V}\inner{u}{u}\geq 0$ and $\inner{u}{u}\LR u=0$\\\hline
+    \end{tabular}
+  \end{table}
+  
+  the scalar product is said to be Euclidean (positive). A vector space with a positive scalar product is called a Euclidean space.
+\end{definition}
+
+\begin{example}
+  We have these examples:
+  \begin{itemize}
+    \item[] $\R^n\;$, Sumprod: $\;\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}\sumprod \begin{pmatrix}y_1\\y_2\\\vdots\\y_n\end{pmatrix}=\sum_{i=1}^n x_i\cdot\,y_i=x_1\,y_1+x_2\,y_2+\cdots+x_n\,y_n$.
+    \item[] $\R^n\;$, Sumprod with (positive-definite) symmetric matrix $A$: $$\;x\underset{A}{\sumprod} y=x\sumprod(A\,y)=(Ax)\sumprod y=x^t\,A\,y=\sum_{i=1}^n\sum_{j=1}^n x_i\cdot y_j\cdot a_{ij}$$
+    \item[] $\R[X]\;$, Integration: $\;\displaystyle\inner{ p}{q}=\int_0^1 p(x)\cdot q(x)\,dx$
+    \item[] $M_n(F)\;$, Trace: $\inner{A}{B}=\operatorname{tr}(A^t\,B)$ 
+  \end{itemize}
+\end{example}
+
+\begin{definition}[Induced Norm]
+  With a Euclidean scalar product, we can induce a norm, that is, we define $$\|u\|:=\sqrt{\inner{u}{u}}$$ which we can check it obeys all the axioms.
+\end{definition}
+
+\begin{theorem}[Cauchy-Schwarz]
+  $$\Forall{u,v \in V}|\inner{u}{v}|\leq \|u\|\cdot \|v\|$$
+  \begin{proof}
+    Let $t=\dfrac{\langle u,v\rangle}{\|v\|^2}$
+    \begin{align*}
+      \inner{u-t\cdot v}{u-t\cdot v}\geq 0\\
+      \LR \inner{u}{u}-2t\,\inner{u}{v}+t^2\inner{v}{v}\geq 0\\
+      \LR \|u\|^2-\frac{2|\inner{u}{v}|^2}{\|v\|^2}+\frac{|\inner{u}{v}|^2}{\|v\|^2}\geq 0\\
+      \|u\|^2\,\|v\|^2-|\inner{u}{v}|^2\geq 0
+    \end{align*}
+    We have the result, with equality if, and only if:
+    $$u=\frac{\inner{u}{v}}{\|v\|^2} v$$
+    That is, the vectors are parallel.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Polarization]
+  A norm $\|\cdot\|$ is induced by a scalar product iff
+  $$\Forall{u,v\in V} \|u+v\|^2+\|u-v\|^2=2\|u\|^2+2\|v\|^2$$
+  Further, the scalar product is defined by: $\inner{u}{v} = \dfrac{\|u+v\|^2-\|u-v\|^2}{4}$
+  \begin{proof}
+    We prove each direction:
+    \begin{itemize}
+      \item[$(\RA)$] We have: $\|u+v\|^2=\|u\|^2+2\inner{u}{v}+\|v\|^2$ and $\|u-v\|^2=\|u\|^2-2\inner{u}{v}+\|v\|^2\RA \|u+v\|^2+\|u-v\|^2=2\|u\|^2+2\|v\|^2$
+      \item[$(\LA)$] We prove that $\inner{u}{v} = \dfrac{\|u+v\|^2-\|u-v\|^2}{4}$ satisfies the definition of scalar product. We need to use the Cauchy functional equation.
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Gram Matrix]
+  From a basis $B=\seq{b}{n}$ of $V$, an Euclidean space, we define:
+  $$\Gram(B)=\begin{pmatrix}
+    \inner{b_1}{b_1}&\inner{b_1}{b_2}&\cdots&\inner{b_1}{b_n}\\
+    \inner{b_2}{b_1}&\inner{b_2}{b_2}&\cdots&\inner{b_2}{b_n}\\\vdots&\vdots&\ddots&\vdots \\
+    \inner{b_n}{b_1}&\inner{b_n}{b_2}&\cdots&\inner{b_n}{b_n}
+  \end{pmatrix}=[\inner{b_i}{b_j}]_{ij}$$
+\end{definition}
+
+\begin{lemma}[Calculating Scalar Products]
+  Let $x,y\in V$, then:
+  $$\inner{x}{y}=[x]_B^t\,\Gram(B)\,[y]_B=[x]_B\underset{\Gram(B)}{\sumprod}[y]_B$$
+  \begin{proof}
+    Let $[x]_B=\seq{x}{n}$ and $[y]_B=\seq{y}{n}$, In every scalar product, by linearity:
+    $$
+    \inner{\sum_{i=1}^n\,x_i\cdot b_i\;}{\;\sum_{j=1}^n\,y_j\cdot b_j}=\sum_{i=1}^n\sum_{j=1}^n\,x_i\cdot y_j\cdot \inner{b_i}{b_j}
+    $$
+  \end{proof}
+\end{lemma}
+
+\subsection{Orthogonality}
+
+\begin{definition}[Orthogonal]
+  We say $u,v\in V:$ $u\perp v$ iff $\inner{u}{v}=0$
+\end{definition}
+
+\begin{example}
+  Let $E=\seqt{e}{n}$ be the standard basis of $\R^n$, then $\inner{\tuple{e}_i}{\tuple{e}_j}=\tuple{e}_{\,i}\sumprod\tuple{e}_{,j}=\delta_{ij}=\begin{cases}1&\text{ if }i=j\\0&\text{ otherwise}\end{cases}$, that is, they are both orthogonal and normalized.
+\end{example}
+
+\begin{definition}[Orthogonal Complement]
+  Given a subset of $U\subseteq V$, we define:
+  $$U^\perp=\set{v\in V}{\Forall{u\in U} u\perp v}=\set{v\in V}{\Forall{u\in U} \inner{u}{v}=0}$$
+\end{definition}
+
+\begin{lemma}[Complement is Subspace]
+  For any subset $U\subseteq V$, $U^\perp$ is a linear subspace of $V$.
+
+  \begin{proof}
+    We check each condition:
+    \begin{enumerate}
+      \item $0\in U^\perp$, since $\Forall{v\in V}\inner{0}{v}=\inner{v}{0}=0$
+      \item $v,w\in U^\perp\RA\Forall{u\in U}\inner{u}{v+w}=\inner{u}{v}+\inner{u}{w}=0+0+=0\RA v+w\in U^\perp\,$
+      \item $v\in U^\perp\RA\Forall{u\in U}\inner{u}{\alpha\cdot v}=\alpha\cdot v\in U^\perp\,$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{proposition}[Double Perp]
+  For any $U\subseteq V$, $U\subseteq U^{\perp\perp}=\left(U^\perp\right)^\perp$
+\end{proposition}
+
+\begin{definition}[Orthogonal Sets]
+  We write $v\perp U \LR \Forall{u\in U}v\perp u\LR v\in U^\perp$ and $U\perp W \LR \Forall{u\in U\,,w\in W} u\perp w$
+\end{definition}
+
+\begin{lemma}[N\&SC for Orthogonality]
+  $$U\perp W\LR U\subseteq W^\perp \text{ and } W\subseteq U^\perp$$
+\end{lemma}
+
+\begin{proposition}[Spans don't change the Complement]
+  $S\perp T\LR \Span(S)\perp \Span(T)$.
+\end{proposition}
+
+\begin{lemma}
+  If $A,B\subseteq V$ and $A\perp B$, then $A\cap B\subseteq\{0\}$. 
+  \begin{proof}
+    Let $v\in A\cap B\RA v\in A$ and $v\in B$, $A\perp B\RA\inner{v}{v}=0\RA v=0$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Rows Perp Sols]
+  In $\R^n$, $S=\seq{a}{k}$:
+  $$
+  S^\perp=\sols\mrows{a}{k}=\sols[S]^t
+  $$
+  Then, for every matrix $A\in M_{n\times k}(F)\,\;\rows(A)\perp\sols(A)$, in the standard scalar product.
+  \begin{proof}
+    Let $S=S_r(A)\RA \rows(A)^\perp=S_r(A)^\perp=\sols(A)\RA \rows(A)\subseteq \rows(A)^{\perp\perp}=\sols(A)^\perp\RA \rows(A)\perp\sols(A)$
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Projection onto one vector]
+  Let $u\in V\setminus\{0\}$, we define $\proj_u=\dfrac{\inner{u}{\cdot}}{\|u\|^2}\cdot u$, that is $\proj_u:V\to V$ so that $\proj_u:v\mapsto \dfrac{\inner{u}{v}}{\|u\|^2}\cdot u$, which is linear due the linearity of the scalar product.
+\end{definition}
+
+\begin{lemma}[Calculations on Projection]
+  We have:
+  \begin{enumerate}
+    \item $\ker(\proj_u)=\{u\}^\perp$
+    \item $\Image(\proj_u)=\Span(u)$
+    \item $\proj_u^2=\proj_u$
+    \item $u\perp w\RA \proj_u\circ\proj_w =\proj_w\circ \proj_u=0$, the zero map.
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item By definition: $\ker(\proj_u)=\set{v\in V}{\proj_u(v)=\dfrac{\inner{u}{v}}{\|u\|^2}\cdot u=0}$ since $u\neq 0$, we get: $\ker(\proj_u)=\set{v\in V}{\inner{u}{v}=0}=\{u\}^\perp$
+      \item Notice $\proj_u(\lambda\cdot u)=\lambda\cdot u\RA \Span(u)\subseteq\Image(\proj_u)$. Also, $\Image(\proj_u)\subseteq\Span(u)$ is trivially given by the definition of $\proj_u$.
+      \item $\proj_u^2(v)=\proj_u\left(\dfrac{\inner{u}{v}}{\|u\|^2}\cdot u\right)=\dfrac{\inner{u}{v}}{\|u\|^2}\cdot \proj_u(u)=\dfrac{\inner{u}{v}}{\|u\|^2}\cdot u=\proj_u(v)$
+      \item $u\perp w\RA \Image(\proj_w)=\Span(w)\subseteq\{u\}^\perp=\ker(\proj_u)$ then, we must have $\Forall{v\in V}\proj_w(\proj_u(v))=0\RA \proj_u\circ\proj_w =0$.
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\subsection{Orthogonal Sequences}
+
+\begin{definition}[Orthogonal/Orthonormal Sequences]
+  Let $V$ be an Euclidean space, $K=\seq{e}{k}\in V^k$ is called \textbf{orthogonal} if: $0\notin K$ and $\Forall{i,j\in\{1,2,\cdots,n\}: i\neq j}e_i\perp e_j$.
+
+  It is called \textbf{orthonormal} if it is orthogonal and $\Forall{i\in\{1,2,\cdots,k\}}\|e_i\|=1$.
+\end{definition}
+
+\begin{proposition}[Kronecker Delta]
+  A sequence $K=\seq{e}{k}\in V^k$ is orthonormal iff $\inner{e_i}{e_j}=\delta_{ij}$. Moreover, it is orthogonal iff $\inner{e_i}{e_j}=\|e_i\|^2\delta_{ij}$.
+\end{proposition}
+
+\begin{theorem}[Orthogonal Sequences are LI]
+  Let $K=\seq{e}{n}$ be orthogonal, then $K$ is LI.
+  \begin{proof}
+    Let $K=\seq{e}{k}\in V^k$, let $\seq{\alpha}{k}\in F^k$ such that: $\displaystyle\sum_{i=1}^k \alpha_i\cdot e_i=0\RA 0=\inner{e_i\;}{\sum_{j=1}^k \alpha_j\cdot e_j}=\sum_{j=1}^k \alpha_j\cdot \inner{e_i}{e_j}=\alpha_i \RA \seq{\alpha}{k}=\tuple{0}$
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Coordinates in Orthogonal Basis]
+  Let $K=\seq{e}{n}$ is an orthogonal basis of $V$, then, for any $v\in V$:
+  $$
+  [v]_K=\begin{pmatrix}
+    \dfrac{\inner{e_1}{v}}{\|e_1\|^2}\\
+    \vdots\\
+    \dfrac{\inner{e_n}{v}}{\|e_n\|^2}
+  \end{pmatrix}\quad\text{ that is, }\quad v=\sum_{i=1}^n \proj_{e_i}(v)=\sum_{i=1}^n \dfrac{\inner{e_i}{v}}{\|e_i\|^2}\;\cdot e_i
+  $$
+  \begin{proof}
+    Let $\displaystyle v=\sum_{i=1}^n x_i\cdot e_i$ $$\RA \inner{e_i}{v}=\inner{e_i\,}{\sum_{j=1}^n x_j\cdot e_j}=\sum_{j=1}^n x_j\cdot \inner{e_i}{e_j}=\sum_{j=1}^n x_j\cdot\|e_i\|^2\,\delta_{ij}= x_i\cdot \|e_i\|^2$$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Parseval's Identity]
+  Let $K=\seq{e}{n}$ is an orthonormal basis of $V$, then, for any $v\in V$: $$\|v\|^2=\sum_{i=1}^n |\inner{e_i}{v}|^2$$
+  \begin{proof}
+    From the lemma above: $$v=\sum_{i=1}^n \inner{e_i}{v}\cdot e_i\RA \inner{v}{v}=\sum_{i=1}^n\sum_{j=1}^n \inner{e_i}{v}\cdot \inner{e_j}{v}\cdot \overbrace{\inner{e_i}{e_j}}^{\delta_{ij}}=\sum_{i=1}^n |\inner{e_i}{v}|^2$$
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Gram-Schmidt Process]
+  Let $S=\seq{v}{n}\in V^n$ be a linearly independent sequence, then there is a orthonormal sequence $K=\seq{e}{n}$ such that $\Span(K)=\Span(S)$. In particular:
+  \begin{align*}
+    u_1&=v_1&e_1&=\frac{u_1}{\|u_1\|}\\
+    u_2&=v_2-\proj_{u_1}(v_2)&e_2&=\frac{u_2}{\|u_2\|}\\
+    u_3&=v_3-\proj_{u_1}(v_3)-\proj_{u_2}(v_3)&e_3&=\frac{u_3}{\|u_3\|}\\
+    \vdots&&\vdots&\\
+    u_k&=v_k-\sum_{i=1}^{k-1}\proj_{u_i}(v_k)&e_k&=\frac{u_k}{\|u_k\|}\\
+    \vdots&&\vdots&\\
+    u_n&=v_n-\sum_{i=1}^{n-1}\proj_{u_i}(v_n)&e_n&=\frac{u_n}{\|u_n\|}\\
+  \end{align*}
+  \begin{proof}
+    To prove $\seq{u}{n}$ is orthogonal, we use induction:
+    \begin{itemize}
+      \item[Base] $\proj_{u_1}(u_2)=\proj_{u_1}(v_2)-\proj_{u_1}^2(v_2)=\proj_{u_1}(v_2)-\proj_{u_1}(v_2)=0\RA u_2\in \ker(\proj_{u_1})=\{u_1\}^\perp\RA u_2\perp u_1$
+      \item[Step] $j\in\{1,\cdots,k-1\}\,:\;\displaystyle\proj_{u_j}(u_k)=\proj_{u_j}(v_k)-\sum_{i=1}^{k-1}\proj_{u_j}\left(\proj_{u_i}(v_k)\right) =\proj_{u_j}(v_k)-\proj_{u_j}^2(v_k)=0\RA u_k\in \ker(\proj_{u_j})=\{u_j\}^\perp\RA u_k\perp u_j$
+    \end{itemize}
+    To prove the span is the same, notice $\dim\Span(K)=n=\dim\Span(S)$ and $K\subset\Span(S)$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Finite Span is easy]
+  Every finitely spanned Euclidean vector space has an orthonormal basis.
+\end{corollary}
+
+\subsection{Orthogonal Maps}
+
+\begin{definition}[Orthogonal Map]
+  For two Euclidean spaces $(V,\inner{\cdot}{\cdot}_V)$ and $(W,\inner{\cdot}{\cdot}_W)$. A linear map $Q:V\to W$ is orthogonal if preserves the scalar product, that is:
+  $$\Forall{u,v\in V}\inner{Q(u)}{Q(v)}_W=\inner{u}{v}_V$$
+\end{definition}
+
+\begin{lemma}[Geometrical Properties]
+  Let $Q$ be an orthogonal map. We have:
+  \begin{enumerate}
+    \item $\Forall{u,v\in V}u\perp v\LR Q(u)\perp Q(v)$
+    \item $\Forall{u\in V}\|Q(u)\|=\|u\|$
+    \item $Q$ is injective.
+    \item If $\lambda$ is an eigenvalue of $Q$, then $|\lambda|=1$
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item $\Forall{u,v\in V}u\perp v\LR 0=\inner{u}{v}_V=\inner{Q(u)}{Q(v)}_W \LR Q(u)\perp Q(v)$
+      \item $\Forall{u\in V}\|Q(u)\|^2=\inner{Q(u)}{Q(u)}=\inner{u}{u}=\|u\|^2$
+      \item $u\in \ker(Q)\RA 0=\|Q(u)\|=\|u\|\RA u=0\RA \ker(Q)=\{0\}$
+      \item If $\lambda$ is an eigenvalue, there is a $u\neq 0$ such that $Q(u)=\lambda\cdot u\RA \|u\|=\|Q(u)\|=\|\lambda\cdot u\|=|\lambda|\cdot\|u\|\RA |\lambda|=1$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Gram Matrix]
+  For $A\in M_{k\times n}(F)$, we define:
+  $$\Gram(A)=A^t\,A$$
+\end{definition}
+
+\begin{lemma}[N\&SC of Orthonormality]
+  For $A\in M_{k\times n}(F)$, $S_c(A)$ is orthonormal $\LR \Gram(A)=I$
+\end{lemma}
+
+\begin{corollary}[Rotation Equation]
+  $Q:\R^n\to \R^n$ is an orthogonal map $\LR \Gram([Q])=[Q]^t\,[Q]=I$
+\end{corollary}
+
+\begin{proposition}
+  This coincides with the definition we had before by taking the sumprod as the inner product and writing the sequence as a matrix.
+\end{proposition}
+
+\begin{proposition}[Orthogonal Coordinate Maps]
+  $K$ is an orthonormal sequence iff $Q_K$ (coordinate map) is an orthogonal map.
+  \begin{proof}
+    By definition, $K$ is orthonormal iff $\Gram(K)=I$ so, by a previous lemma:
+    $$\inner{u}{v}=[u]_K^t\,\Gram(K)\,[v]_K=Q_K(u)\sumprod \Big(\Gram(K)\,Q_K(v)\Big)$$ 
+    Hence, $\Gram(K)=I\LR Q_K(u)\sumprod Q_K(v)=\inner{u}{v}$
+  \end{proof}
+\end{proposition}
+
+\pagebreak
+
+\section{Direct Sum}
+
+\subsection{Sum of Subspaces}
+
+\begin{definition}[Sum of Subspaces]
+  Let $V$ be a linear space and $U$ and $W$ subspaces of $V$.
+  $$U+W:=\set{u+w}{u\in U\;,\;w\in W}$$
+\end{definition}
+
+\begin{lemma}[Analog of "Union" of Subspaces]
+  We have:
+  \begin{enumerate}
+    \item $U+W$ is a linear subspace of $V$.
+    \item If $U=\Span(S)$ and $W=\Span(T)$, then $U+W=\Span(S\concat T)$
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item $0+0=0\in U+W\;$, $\;(u_1+w_1)+(u_2+w_2)=(u_1+u_2)+(w_1+w_2)\in U+W\;$, $\;\alpha\cdot\big(u+w\big)=(\alpha\cdot u)+(\alpha\cdot w)\in U+W\;$.
+      \item $\displaystyle U+W=\set{\sum_{i=1}^n\,a_i\cdot s_i+\sum_{j=1}^k\,b_j\cdot t_j}{a_1,a_2,\cdots,a_n,b_1,b_2,\cdots,b_k\in \R}=\Span(S\concat T)$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Inequality of Dimensions]
+  For finitely spanned subspaces $U,W$: $$\dim U,\dim W\leq \dim(U+W)\leq \dim U+\dim W$$
+\end{corollary}
+
+\begin{lemma}[Intersection of Subspaces is Subspace]
+  Let $U,W\subseteq V$ be subspaces. Then, $U\cap W$ is also a subspace.
+  \begin{proof}
+    $0\in U$ and $0\in W\RA 0\in U\cap W$. $u_1,u_2\in U\cap W\RA$ $u,v\in U$ and $u,v\in W\RA$ $u+v,\alpha\cdot u\in U$ and $u+v,\alpha\cdot u\in W$ since they are subspaces, $\RA u+v,\alpha\cdot u\in U\cap W$.
+  \end{proof} 
+\end{lemma}
+
+\begin{definition}[Direct Sum]
+  If $U\cap W=\{0\}$, we write $U\oplus W=U+W$.
+\end{definition}
+
+\begin{definition}[Sum Function]
+  We define the sum function as:
+  \begin{align*}
+    \Sigma: U \times W&\to U+W\\
+    (u,w)&\mapsto u+w
+  \end{align*}
+\end{definition}
+
+\begin{lemma}[Kernel and Image of Sum]
+  We have:
+  \begin{enumerate}
+    \item $\ker(\Sigma)\cong U\cap W$
+    \item $\Image(\Sigma)=U+W$
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item $\ker(\Sigma)= \set{(u,w)\in U\times W}{u+w=0}=\left\{(u,-u)\in U\times W\right\}$, so we need $u\in U$ and $u\in W$, so: $\ker(\Sigma)=\set{(u,-u)}{u\in U\cap W}\cong U\cap W$, with the map $u\mapsto (u,-u)$.
+      \item $\Image(\Sigma)=\set{\Sigma(u,w)=u+w}{u\in U\;,\;w\in W}=U+W$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Grassman's Formula]
+  For $V$ finetely spanned:
+  $$\dim(U+W)=\dim U+\dim W-\dim(U\cap W)$$
+  \begin{proof}
+    $\dim(U\times W)=\dim U+\dim W$, use the dimension theorem with $\Sigma$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Equivalence of Direct Sum]
+  The following are equivalent:
+  \begin{enumerate}
+    \item $U\cap W=\{0\}\,$
+    \item Every $v\in U+W$ has an \textbf{unique} representation as a sum $v=u+w$ where $u\in U$ and $w\in W$
+    \item $\Sigma$ is an isomorphism.
+  \end{enumerate}
+  \begin{proof}
+    We prove the directions:
+    \begin{itemize}
+      \item[$(1\LR 3)$] 
+        \begin{itemize}
+          \item [$(\LA)$] $\Sigma$ is an isomorphism $\RA U\cap W\cong \ker\Sigma=\left\{\tuple{0}\right\}\RA U\cap W=\{0\}$.
+          \item [$(\RA)$] If $U\cap W=\{0\}\RA \ker\Sigma=\left\{\tuple{0}\right\}\,$.
+        \end{itemize} 
+      \item[$(2\LR 3)$] Trivial, since we can find an inverse for $\Sigma$, and shows $\Sigma^{-1}\,$ is a function.
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Decomposition]
+  If $U\oplus W=V$, we say that $W$ is the complement of $U$ (or $U,W$ are complement subspaces) in this case, every $v\in V$ has an \textbf{unique} representation as a sum $v=u+w$ where $u\in U$ and $w\in W$, called the $U$-$W$ decomposition of $V$. We can write the representation as $\Sigma^{-1}(v)$.
+\end{definition}
+
+\subsection{Orthogonal Decomposition}
+
+\begin{lemma}[Properties of Orthogonal Complement]
+  For any subspaces $U,W\subseteq V$
+  \begin{enumerate}
+    \item $U\cap U^\perp=\{0\}\,$
+    \item $(U+W)^\perp=U^\perp\cap W^\perp$
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item Double Inclusion:
+      \begin{itemize}
+        \item[$(\supseteq)$] Trivially given.
+        \item[$(\subseteq)$] $v\in U\cap U^\perp\RA v\in U \text{ and }\forall\,u\in U\,,\; \inner{u}{v}=0\xRightarrow{u=v}\inner{v}{v}=0\RA v=0$
+      \end{itemize}
+      \item Double Inclusion:
+      \begin{itemize}
+        \item[$(\supseteq)$] $v\in U^\perp\cap W^\perp\RA \begin{aligned}\forall\,&u\in U\,,\; \inner{u}{v}=0\\\forall\,&w\in W\,,\; \inner{w}{v}=0\end{aligned}\RA \forall\,u\in U+W\,,\;\inner{u}{v}=0\RA v\in (U+W)^\perp$
+        \item[$(\subseteq)$] By contrary: $v\notin U^\perp\cap W^\perp\RA$ either:
+        \begin{enumerate}
+          \item $v\notin U^\perp \RA\Exist{u\in U}\inner{u}{v}\neq 0$
+          \item $v\notin W^\perp \RA\Exist{w\in W}\inner{w}{v}\neq 0$
+        \end{enumerate}
+        $\RA\Exist{u\in U+W}\inner{u}{v}\neq 0\RA v\notin (U+W)^\perp$
+      \end{itemize}
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Orthogonal Decomposition]
+  Let $V$ be a finitely spanned Euclidean space and $U$ a linear subspace. Then: $$V=U\oplus U^\perp$$
+  \begin{proof}
+    Let $K$ be an orthonormal basis for $U$. Let $\displaystyle\sum_{i=1}^{\dim U}\,x_i\cdot e_i=u\in U$. We want to prove that $\forall\,v\in V\,,\;\exists\,u\in U: (v-u)\in U^\perp$. It is necessary and sufficient to check $\Forall{e_i\in K} (v-u)\perp e_i$, which has unique solution: $x_i=\inner{v}{e_i}\,$ (by orthonormality).
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Dimension of the Complement]
+  $$\dim U^\perp =\dim V-\dim U$$
+\end{corollary}
+
+\begin{lemma}[Double Perp]
+  Let $V$ finite-dimensional vector space. For any subspace $U\subseteq V$: $U^{\perp\perp}=U$.
+  \begin{proof}
+    We use the orthogonal decomposition: $$\dim U^{\perp\perp}=\dim V-\dim U^\perp = \dim V-(\dim V-\dim U)=\dim U$$
+    Since $U\subseteq U^{\perp\perp}$ is given, by Dimension Equality, $U^{\perp\perp}=U$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $U^\perp+W^\perp=(U\cap W)^\perp$
+\end{corollary}
+
+\begin{definition}[Projections]
+  Let the following classes of functions: $$\pi_j: (a_1,a_2,\cdots,a_n)\mapsto a_j$$
+  we define:
+  \begin{itemize}
+    \item[] Projection: $P_U=\pi_1\circ \Sigma_{U\times W}^{-1}\,$
+    \item[] Complement/Rejection: $P_W=\pi_2\circ \Sigma_{U\times W}^{-1}=Id_V-P_U\,$
+  \end{itemize}
+\end{definition}
+
+\begin{lemma}[Orthogonal Projection in a Basis]
+  Let $P_U=\pi_1\circ\Sigma_{U\times U^\perp}^{-1}$ be the projection map and $K=\seq{e}{\dim U}$ an ON basis of $U$.Then: $$P_U:v\mapsto\sum_{i=1}^{\dim U}\,\inner{v}{e_i}\cdot e_i$$
+  \begin{proof}
+    As before, with the proof of the Orthogonal Decomposition Theorem, let $u=\sum_{i=1}^{\dim U}\,\inner{v}{e_i}\cdot e_i$, then $\Forall{e_i\in K}(v-u)\perp e_i\RA v-u\in U^\perp$. And by the uniqueness of the orthogonal projection, we have the desired result.
+  \end{proof}
+\end{lemma}
+
+\end{document}

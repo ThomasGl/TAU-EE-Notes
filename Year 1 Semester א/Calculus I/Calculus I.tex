@@ -1,0 +1,1462 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+\title{%
+  Calculus I \\
+  \large Notes from TAU Course with Additional Information}
+\author{Gabriel Domingues}
+\date{2020-02-14}
+
+\let\emptyset\varnothing
+\let\RA\Rightarrow
+\let\LA\Leftarrow
+\let\LR\Leftrightarrow
+\renewcommand{\arraystretch}{1.5}
+
+\newcommand{\set}[2]{\left\{{#1}\;\middle|\;{#2}\right\}}
+\newcommand{\Forall}[1]{\forall\,{#1}\,,\,}
+\newcommand{\Exist}[1]{\exists\,{#1}:}
+\newcommand{\NExist}[1]{\nexists\,{#1}:}
+\newcommand{\seq}[2]{\left\{{#1}\right\}_{#2 =1}^\infty}
+
+\DeclareMathOperator{\N}{\mathbb{N}}
+\DeclareMathOperator{\R}{\mathbb{R}}
+\DeclareMathOperator{\D}{\mathcal{D}}
+\DeclareMathOperator{\U}{\mathcal{U}}
+\DeclareMathOperator{\Ran}{\mathcal{R}}
+\DeclareMathOperator{\Image}{Im}
+
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{definition}{Definition}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{example}{Example}[subsection]
+\newtheorem{remark}{Remark}[subsection]
+
+\begin{document}
+\maketitle
+
+\setlength{\parindent}{0ex}
+\setlength{\parskip}{1em}
+
+\text{}
+
+\tableofcontents
+
+\pagebreak
+
+\section{Real Analysis}
+
+\subsection{Sequences}
+
+\begin{definition}[Common Sets]
+  We denote:
+  \begin{itemize}
+    \item[] Natural Numbers: $\N=\{1,2,\cdots\}$ 
+    \item[] Integers: $\mathbb{Z} = \{0,\pm 1,\pm 2,\cdots\}$
+    \item[] Rationals: $\mathbb{Q}=\set{\dfrac{m}{n}}{m\in\mathbb{Z}\text{ and } n\in\N}$
+    \item[] Reals: $\R$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Sequence]
+  A sequence of real numbers is a set of numbers which are written in some particular order. There are infinitely many terms to the sequence:
+  $$a_1,a_2,\cdots,a_n,\cdots$$
+  Denote the entire sequence by: $\seq{a_n}{n}$ or just $\{a_n\}$. The set of all sequences with in a set $\U$ is denoted $\U^{\N}$.
+\end{definition}
+
+\begin{definition}[Bounded Sequences]
+  A sequence $\{a_n\}$ is:
+  \begin{itemize}
+    \item[] Bounded from \textbf{above} if: $\Exist{M\in\R}\Forall{n\in\N}a_n\leq M$
+    \item[] Bounded from \textbf{below} if: $\Exist{m\in\R}\Forall{n\in\N}a_n\geq m$
+    \item[] \textbf{Bounded} if it is bounded from both above and below.
+  \end{itemize}
+  We call every such $M$ and $m$ upper and lower bounds, respectively. 
+\end{definition}
+
+\begin{lemma}
+  A sequence $\{a_n\}$ is bounded iff: $$\Exist{M>0}\Forall{n\in\N}|a_n|\leq M$$
+  \begin{proof}
+    Let $A$ and $a$ be upper and lower bounds of $\{a_n\}$, respectively. Choose $M=\max\{|A|,|a|\}$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Monotonic Sequences]
+  A sequence $\{a_n\}$  is:
+  \begin{itemize}
+    \item[] Monotonic \textbf{increasing} if: $\Exist{N\in\N}\Forall{n\geq N}a_n\leq a_{n+1}$
+    \item[] Monotonic \textbf{decreasing} if: $\Exist{N\in\N}\Forall{n\geq N}a_n\geq a_{n+1}$
+    \item[] \textbf{Stricly} monotonic \textbf{increasing} if: $\Exist{N\in\N}\Forall{n\geq N}a_n < a_{n+1}$
+    \item[] \textbf{Stricly} monotonic \textbf{decreasing} if: $\Exist{N\in\N}\Forall{n\geq N}a_n > a_{n+1}$
+  \end{itemize}
+  Usually, we omit $N$ and shift the sequence so that it is monotonic $\forall\,n\in\N$.
+\end{definition}
+
+\begin{example}
+  $\seq{\dfrac{n^2}{2^n}}{n}$ is stricly monotonically decreasing:
+$$a_{n+1}<a_n \LR \frac{(n+1)^2}{2^{n+1}}<\frac{n^2}{2^n}\LR (n+1)^2<2n^2 \LR n>\sqrt{2}+1>2.4 \LR n\geq 3$$
+Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
+\end{example}
+
+\begin{lemma}[Triangle Inequality]
+  $\Forall{x,y\in\R}|x+y|\leq |x|+|y|$
+\end{lemma}
+
+\begin{definition}[Limit of a Sequence]
+  We say $L$ is the limit of $\{a_n\}$ if:
+  $$\Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N} |a_n-L| <\epsilon$$
+  We say: $\lim\limits_{n\to\infty}a_n=L$ or $\lim a_n=L$ or even $a_n\to L$. If the limit exists, the sequences \textbf{converges} (to L), otherwise, it \textbf{diverges}. Further, we write the choice of $N$ as $N(\epsilon)$.
+\end{definition}
+
+\begin{remark} If we take a sequence $\{a_n\}$, the idea of the limit $L$ is such that, for any interval $(L-\epsilon, L+\epsilon)$, we have a finite number of terms outside the interval and an infinite number of terms inside.
+\end{remark}
+
+\begin{theorem}[Uniqueness of Limit]
+  If a sequence $\{a_n\}$ has a limit $L$, then it is unique.
+  \begin{proof}
+    Suppose that there are two limits $L_1 \neq L_2$. By definition:
+    \begin{align*}
+      \Forall{\epsilon>0}\Exist{N_1\in\N}\Forall{n\geq N_1} |a_n-L_1| <\epsilon\\
+      \Forall{\epsilon>0}\Exist{N_2\in\N}\Forall{n\geq N_2} |a_n-L_2| <\epsilon
+    \end{align*}
+    Then, by the triangle inequality:
+    $$\Forall{n\geq \max\{N_1(\epsilon),N_2(\epsilon)\}}|L_1- L_2| \leq |L_1- a_n|+|a_n- L_2| < 2\epsilon$$
+    Which is a contradiction for $\epsilon=\frac{1}{2}| L_1- L_2|>0$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Limit $\RA$ Bounded]
+  Every convergent sequence is bounded.
+  \begin{proof}
+    Let $N=N(1)$ and $M=\max{\big\{|a_1|,\cdots,|a_{N-1}|, 1+| L| \big\}}$. Then, by definition of $a_n\to L$:
+    $$\Forall{n\geq N}| a_n|\leq | a_n-L|+| L| <1+| L| $$
+    Hence, $\Forall{n\in\N}| a_n|\leq M$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Linearity of Limits]
+  Suppose $\lim a_n=A$, $\lim b_n=B$ and $C$ is a constant. Then, the following are true:
+  \begin{enumerate}
+    \item $\lim C=C$
+    \item $\lim (C\cdot a_n)=C\cdot A$
+    \item $\lim (a_n\pm b_n)=A\pm B$ 
+  \end{enumerate}
+  \begin{proof}
+    By definition,
+    \begin{enumerate}
+    \item Pick $N=1$, we have: $\Forall{\epsilon>0}\Forall{n\geq 1} |c-c|=0<\epsilon$
+    \item Pick $N=N_A\left(\dfrac{\epsilon}{|c|}\right)$, we have: $$\Forall{\epsilon>0}\Forall{n\geq N} |c\cdot a_n-c\cdot A|=|c|\cdot|a_n-A| <\epsilon$$
+    \item Let $N=\max\left\{N_A\left(\dfrac{\epsilon}{2}\right),N_B\left(\dfrac{\epsilon}{2}\right)\right\}$
+    Then, by the triangle inequality: $\Forall{n\geq N}$
+    $$|(a_n\pm b_n)-(A\pm B)| =|(a_n-A)\pm(b_n-B)|\leq |a_n-A|+|b_n- B| < \epsilon$$
+    \end{enumerate}
+    Hence, it is a linear operation on the convergent sequences.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  If $\exists\lim a_n$ and $\nexists\lim b_n$, then $\nexists\lim(a_n+b_n)$. If $\nexists\lim a_n$ and $\nexists\lim b_n$, then there is no rule for $\lim(a_n+b_n)$.
+\end{remark}
+
+\begin{corollary}
+  $\lim a_n=A\LR \lim(a_n-A)=0$
+\end{corollary}
+
+\begin{theorem}
+  Let $\{b_n\}$ be bounded and $\lim a_n =0$. Then, $\lim(a_n\cdot b_n)=0$.
+  \begin{proof}
+    Let $M$ be a two-sided bound of $b_n$. if $\lim a_n=0$, take $N=N\left(\dfrac{\epsilon}{M}\right)$:
+    \begin{align*}
+      &\Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N}|a_n|<\frac{\epsilon}{M}\\
+      &\Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N}|a_n\cdot b_n -0|=|a_n|\cdot|b_n|\leq|a_n|\cdot M< \epsilon
+    \end{align*}
+    that is the definition of the limit being $0$. 
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Arithmetic of Limits]
+  Suppose $\lim a_n=A$, $\lim b_n=B$. Then, the following are true:
+  \begin{enumerate}
+    \item $\lim (a_n\cdot b_n)=A\cdot B$ 
+    \item If $B\neq 0$ and $b_n\neq 0$, $\;\lim \dfrac{a_n}{b_n}=\dfrac{A}{B}$ 
+  \end{enumerate}
+  \begin{proof}
+    We prove each one:
+    \begin{enumerate}
+      \item $\lim (a_n\cdot b_n)=\lim \Big[\overbrace{(a_n-A)}^{\to\;0}\cdot \overbrace{b_n}^\text{bounded}+A\cdot b_n\Big]=0+\lim(A\cdot b_n)=A\cdot B$ 
+      \item By the previous result, $\underbrace{\lim b_n}_B\cdot \lim \dfrac{a_n}{b_n}=\underbrace{\lim a_n}_A$ 
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Positivity]
+  Let $\{a_n\}$ be a positive sequence (bounded from below by $0$) then $L=\lim a_n$, if is exists, is also positive.
+  \begin{proof}
+    By contrary, suppose $L<0$, then: $\Forall{n\in\N}|a_n-L|\geq |L|$. The statement for $a_n\to L$ is a contradiction for $\epsilon=|L|$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Monotinicity]
+  If $M\geq a_n\geq m\RA M\geq \lim a_n\geq m$
+\end{corollary}
+
+\begin{theorem}[Sandwich/Squeeze Theorem]
+  Given three sequences $\{a_n\}$, $\{b_n\}$ and $\{c_n\}$. If $\lim a_n =\lim c_n = L$ and $$\Exist{N_0\in\N}\Forall{n\geq N_0}a_n\leq b_n\leq c_n$$
+  then, $\lim b_n = L$.
+  \begin{proof}
+    Take $\epsilon>0$:
+    \begin{align*}
+      &\Exist{N_1\in\N}\Forall{n\geq N_1}L-\epsilon<a_n<L+\epsilon\\
+      &\Exist{N_2\in\N}\Forall{n\geq N_2}L-\epsilon<c_n<L+\epsilon\\
+      &\Exist{N_0\in\N}\Forall{n\geq N_0}a_n\leq b_n\leq c_n
+    \end{align*}
+    Pick $N_3=\max\{N_0,N_1,N_2\}$. Then, $\Forall{n\geq N_3}$ $$L-\epsilon < c_n \leq b_n \leq a_n < L+\epsilon \RA |b_n -L |< \epsilon$$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Wide Sense]
+  We say that the sequence $\{a_n\}$ converges to $+\infty$ (eq. $-\infty$) if:
+  $$\Forall{M\in\R}\Exist{N\in\N}\Forall{n\geq N} a_n>M\quad(\text{eq. } a_n < M)$$
+  This a wide sense of the limit.
+\end{definition}
+
+\pagebreak
+
+\subsection{Cauchy Sequences}
+
+\begin{definition}[Supremum and Infimum]
+  For a set $A\subset\R$, we define:
+  \begin{itemize}
+    \item[] If $A$ is bounded from above, the supremum of $A$ is the lowest upper bound (denoted $\sup A$). Otherwise $\sup A=\infty$.
+    \item[] If $A$ is bounded from below, the infimum of $A$ is the greatest lower bound (denoted $\inf A$). Otherwise $\inf A=-\infty$.
+  \end{itemize}
+\end{definition}
+
+\begin{theorem}[Monotone Convergence]
+  A bounded monotonic sequence converges. Furthermore: 
+  \begin{itemize}
+    \item[] If $\{a_n\}$ is increasing, $\lim a_n=\sup\{a_n\}$
+    \item[] If $\{a_n\}$ is decreasing, $\lim a_n=\inf\{a_n\}$
+  \end{itemize}
+  \begin{proof}
+    We prove for increasing, since decreasing is analogous with $b_n=-a_n$. Let $M=\sup\{a_n\}$. For every $\epsilon >0$, there exists $N$ such that $a_N > M-\epsilon$ , since otherwise $M-\epsilon$ is an upper bound of $\{ a_n \}$, which contradicts to the definition of $M$. Then, since $\{a_n\}$ is increasing, and $M$ is its upper bound, for every $n\geq N$, we have $|a_n-M|=M-a_n\leq M-a_N<\epsilon$. Hence, by definition, the limit of $\{a_n\}$ is $\sup\{a_n\}$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Subsequence]
+  Given a sequence $\{a_n\}$, a subsequence $\{b_k\}$ is such that: $$b_k=a_{n_k}$$
+  where $\{n_k\}$ is a stricly increasing sequence of natural numbers.
+\end{definition}
+
+\begin{lemma}
+  A sequence $\{a_n\}$ converges to $L$ in the wide sense if and only if any subsequence of $\{a_n\}$ converges to the same limit $L$.
+\end{lemma}
+
+\begin{definition}[Partial Limit]
+  A real number $a$ is called a partial limit of the sequence $\{a_n\}$ if there exists a subsequence of $\{a_n\}$ which converges to $a$ in the wide sense.
+\end{definition}
+
+\begin{remark}
+  For a partial limit $a$ of $\{a_n\}$ for any interval $(a-\epsilon,a+\epsilon)$, we are only required to have an infinite number of terms inside. If there are infinitely many outside, there is no one limit $L$ and if there finitely many outside, it is the one limit $L=a$.
+\end{remark}
+
+\begin{theorem}[Bolzano-Weierstrass]
+  To any bounded sequence, that exists a convergent subsequence, i.e., there exists at least one partial limit.
+  \begin{proof}
+    By Monotone Convergence, we only need to prove that there exists a monotone subsequence of $\{a_n\}$. Call $a_m$ a "peak" if $\Forall{n\geq m}a_m\geq a_n$. 
+    \begin{itemize}
+      \item[] Case 1: $\{a_n\}$ has infinitely many peaks. Form a subsequence with these peaks denoted $a_{n_k}$. Since each of these terms is a peak and $n_1<n_2<...<n_k<...$ we have that $\seq{a_{n_k}}{k}$ is a monotonic decreasing subsequence of $\{a_n\}$.
+      \item[] Case 2: $\{a_n\}$ has only a finite number of peaks denoted $a_{n_1},a_{n_2},...,a_{n_k}$. Let $s_1=n_k+1$. Then, $a_{s_1}$ is not a peak, and so then there exists an $s_2$ such that $s_1<s_2$ and $a_{s_1}\leq a_{s_2}$. Also, $a_{s_2}$ is not a peak and so there exists an $s_3$ such that $s_2<s_3$ and $a_{s_2}\leq a_{s_3}$. By induction, we have a subsequence $a_{s_1}\leq a_{s_2}\leq ...\leq a_{s_m}\leq ...$, and so $\seq{a_{s_m}}{m}$ is a monotonic increasing subsequence of $\{a_n\}$.
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Limit Sup and Inf]
+  The supremum of the set of all partial limits of a sequence is called \textbf{upper partial limit} of the sequence $\{a_n\}$ and is denoted as:
+  $$\overline{\lim}\;a_n\quad\text{or}\quad\limsup a_n$$
+  The infimum of the set of all partial limits of a sequence is called \textbf{lower partial limit} of the sequence $\{a_n\}$ and is denoted as:
+  $$\underline{\lim}\;a_n\quad\text{or}\quad\liminf a_n$$
+\end{definition}
+
+\begin{theorem}[N\&SC for the existence of limit]
+  If a sequence $\{a_n\}$ is bounded and $\liminf a_n=\limsup a_n = a$, then $\lim a_n$ exists and is equal to $a$.
+  \begin{proof}
+    Say $\{a_n\}$ is bounded by the interval $[m,M]$. Take an $\epsilon>0$. Looking at the set $[m,M]\setminus(a-\epsilon,a+\epsilon)=[m,a-\epsilon]\cup[a+\epsilon,M]$, if there are infinetly many elements of the sequence, by Bolzano-Weierstrass there is a convergent subsequence, which contradicts either $\limsup a_n = a$ or $\liminf a_n = a$. Therefore, there are finetely many elements of the sequence in $[m,M]\setminus(a-\epsilon,a+\epsilon)$, hence in $\R\setminus(a-\epsilon,a+\epsilon)$, which is the definition of the limit.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Cauchy]
+  A sequence $\{a_n\}$ is called a Cauchy sequence if:
+  $$\Forall{\epsilon>0}\Exist{N\in\N}\Forall{m,n\geq N} |a_m-a_n|<\epsilon$$
+  equivalently:
+  $$\Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N}\Forall{p\in\N} |a_{n+p}-a_n|<\epsilon$$
+\end{definition}
+
+\begin{lemma}[Cauchy is Bdd]
+  Every Cauchy sequence is bounded.
+  \begin{proof}
+    Let $M=\max{\big\{|a_1|,\cdots,|a_{N-1}|, \epsilon+|a_N|\big\}}$. Then:
+    $$\Forall{n\geq N}|a_n|\leq |a_n-a_N|+|a_N|<\epsilon+|a_N|$$
+    Hence, $\Forall{n\in\N}|a_n|\leq M$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Convergent is Cauchy]
+  Let $\lim a_n=L$, then $\{a_n\}$ is Cauchy.
+  \begin{proof}
+    Then, by definition,
+    \begin{align*}
+      \Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N}|L-a_n|<\tfrac{\epsilon}{2}\\
+      \Forall{\epsilon>0}\Exist{N\in\N}\Forall{m\geq N}|a_m-L|<\tfrac{\epsilon}{2}\\
+    \end{align*}
+    Since $|a_m-a_n |\leq |L-a_n|+|a_m-L|<\tfrac{\epsilon}{2}+\tfrac{\epsilon}{2}=\epsilon$, it is Cauchy.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Cauchy Criterion]
+  $\{a_n\}$ is convergent $\LR$ it is Cauchy.
+  \begin{proof}
+    $(\RA)$ is the previous lemma. $(\LA)$: Suppose $\{a_n\}$ is Cauchy. $$\Forall{\epsilon>0}\Exist{N\in\N}\Forall{n\geq N}|a_n-a_N|<\tfrac{\epsilon}{2}$$
+    Then:
+    \begin{align*}
+      |a_n-a_N|<\tfrac{\epsilon}{2}\LR&\, a_N-\tfrac{\epsilon}{2}<a_n<a_N+\tfrac{\epsilon}{2}\\
+      & a_N-\tfrac{\epsilon}{2}\leq \liminf a_n \leq \limsup a_n\leq a_N+\tfrac{\epsilon}{2}\\
+      &\RA 0 \leq \limsup a_n - \liminf a_n \leq \tfrac{\epsilon}{2}+\tfrac{\epsilon}{2}=\epsilon
+    \end{align*}
+    Therefore, $\limsup a_n = \liminf a_n$. By the previous theorems, the sequence is bounded and $\limsup a_n = \liminf a_n$, therefore, it converges.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Series}
+
+\begin{definition}[Infinite Sum]
+  Given a sequence $\{a_n\}$, the sum $a_1+a_2+\cdots+a_n+\cdots=\sum_{k=1}^\infty a_k$ (also denoted $\sum a_n$) is called an (infinite) series. Consider partial sums:
+  $$S_n=\sum_{k=1}^n a_k=a_1+a_2+\cdots+a_n$$
+  If $\seq{S_n}{n}$ converges ($S_n\to S$), then the series is called \textbf{convergent}. Otherwise, the series is \textbf{divergent}. The number $S$ is called the sum of the series, that is, $S=\sum a_k$.
+\end{definition}
+
+\begin{example}[Basel]
+  $\displaystyle\sum_{n=1}^\infty\frac{1}{n^2}$ is convergent. Applying Cauchy to the partial sums, we get:
+  \begin{align*}
+    |S_{n+p}-S_n|&=\sum_{k=n+1}^{n+p} \frac{1}{k^2} <\sum_{k=n+1}^{n+p} \frac{1}{k(k+1)}\\
+    &=\sum_{k=n+1}^{n+p} \bigg(\frac{1}{k}-\frac{1}{k+1}\bigg)=\frac{1}{n}-\frac{1}{n+p}<\frac{1}{n}<\epsilon
+  \end{align*}
+  So, choose $N(\epsilon)=\lceil\frac{1}{\epsilon}\rceil$.
+\end{example}
+
+\begin{theorem}[Last Element]
+  If $\sum a_n$ converges, then $\lim a_n=0$.
+  \begin{proof}
+    $\lim a_n =\lim \big(S_n-S_{n-1}\big)=\lim S_n - \lim S_{n-1}=S-S=0$, where $S=\lim S_n$ and $S_n$ are the partial sums.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  If $\nexists\lim a_n$ or $\lim a_n = a \neq 0$, then $\sum a_n$ diverges.
+\end{corollary}
+
+\begin{remark}
+  The converse of the Last Element Theorem is not true.
+\end{remark}
+
+\begin{example}[Harmonic]
+  $\displaystyle\sum_{n=1}^\infty\frac{1}{n}$ is divergent. Applying Cauchy to the partial sums, we get:
+  $$|S_{n+p}-S_n|=\sum_{k=n+1}^{n+p} \frac{1}{k} \geq \frac{p}{n+p}\overset{p=n}{=}\frac{1}{2}$$
+  So, the sequence is not Cauchy.
+\end{example}
+
+\begin{lemma}[Geometric Series]
+  $\sum_{n=0}^\infty a\cdot q^n$ converges iff $|q|<1$.
+  \begin{proof}
+    Take the partial sums $S_n=\sum_{k=0}^n a\cdot q^k=a\cdot \dfrac{1-q^{n+1}}{1-q}$, which clearly converges iff $|q|<1$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Linearity of Infinite Sums]
+  If $\sum a_n$ and $\sum b_n$ converge, then $\sum (a_n\pm b_n)$ converges (to $\sum a_n \pm\sum b_n$) and $\sum c\cdot a_n$ converges (to $c\cdot\sum a_n$).
+  \begin{proof}
+    Take $A_n=\sum_{k=1}^n a_k$ and $B_n=\sum_{k=1}^n b_k$. We supposed $\exists\lim A_n$ and $\exists\lim B_n$. Notice $\sum_{k=1}^n(a_k+b_k)=A_n+B_n$ and $\sum_{k=1}^n c\cdot a_k=c\cdot A_n$. By the linearity of the limits, we have the result.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Bounded Series]
+  If $\Exist{N\in\N}\Forall{n\geq N} a_n \geq 0$, then $\sum a_n$ converges iff $\{S_n\}$ is bounded.
+  \begin{proof}
+    $\Exist{N\in\N}\Forall{n\geq N} a_n=S_n-S_{n-1} \geq 0\LR \{S_n\}$ is monotonically increasing. As a corollary of a previous theorem, a monotonically sequence has a limit iff it is bounded.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Comparision]
+  If $\Exist{N\in\N}\Forall{n\geq N}0\leq a_n\leq b_n$ then, $\sum b_n$ converges $\RA\sum a_n$ converges.
+  \begin{proof}
+    $\Forall{n\geq N}\sum_{k=N}^n a_k\leq \sum_{k=N}^n b_k$. By previous lemma, $\sum b_n$ converges $\RA\sum_{k=N}^n b_k$ is bounded from above. Hence, $\sum_{k=1}^n a_k=\sum_{k=1}^{N-1}a_k+\sum_{k=N}^n a_k$ is bounded from above (and below by $0$), so it converges.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  If $\Exist{N\in\N}\Forall{n\geq N}a_n\geq b_n\geq 0$ then, $\sum b_n$ diverges $\RA\sum a_n$ diverges.
+\end{corollary}
+
+\begin{remark}
+  These follow from the comparison test and the definition of limit.
+  \begin{enumerate}
+    \item If $\dfrac{a_n}{b_n}\to 0$, then, $\sum b_n$ converges $\RA\sum a_n$ converges.
+    \item If $\dfrac{a_n}{b_n}\to \infty$, then, $\sum b_n$ diverges $\RA\sum a_n$ diverges.
+  \end{enumerate}
+\end{remark}
+
+\begin{theorem}[Limit Comparision]
+  If $\Exist{N\in\N}\Forall{n\geq N} a_n>0$ and $b_n>0$ and $\lim\dfrac{a_n}{b_n}=L>0$ then, $\sum b_n$ converges $\LR\sum a_n$ converges.
+  \begin{proof}
+    $\lim\dfrac{a_n}{b_n}=L>0\RA \Exist{M>0}\Forall{n\in\N}\dfrac{a_n}{b_n}\leq M$. Hence, by linearity $\sum b_n$ converges $\RA \sum M\cdot b_n$ converges, by comparision, $\RA \sum a_n$ converges. To prove the converse, take $\lim\dfrac{b_n}{a_n}=\dfrac{1}{L}>0$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Cauchy Condesation]
+  Let $a_n$ be a decreasing non-negative sequence. Then, $\sum_{n=1}^\infty a_n$ converges $\LR \sum_{n=0}^\infty 2^n\cdot a_{2^n}$ converges.
+  \begin{proof}
+    Since $a_n$ is decreasing, we have the estimate: $$\Forall{n\in\N}\sum_{k=1}^{2^n-1}a_k\leq \sum_{k=0}^{n-1} 2^k\cdot a_{2^k}\leq 2\cdot\sum_{k=1}^{2^n-1}a_k$$
+    Hence, by the Sandwich Theorem, we are done.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[P-Series]
+  $\displaystyle\sum_{n=1}^\infty\frac{1}{n^p}$ converges iff $p>1$.
+  \begin{proof}
+    If $p\leq 0$, it diverges by last element. For $p>0$, $a_n=\dfrac{1}{n^p}$ is a decreasing non-negative sequence. By condesation: $2^n\cdot a_{2^n}=\dfrac{2^n}{(2^n)^p}=2^{n(1-p)}=\Big(2^{1-p}\Big)^n$, a geometric series. Hence it converges iff $2^{1-p}<1\LR p>1$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Leibnitz Criteria]
+  If $\sum (-1)^{n-1}\cdot a_n$ with $(a_n>0)$, an alternating series, satisfies:
+  \begin{enumerate}
+    \item $a_{n+1}\leq a_n$ (i.e. monotonically decreasing)
+    \item $\lim a_n =0$
+  \end{enumerate}
+  Then, the series converges.
+  \begin{proof}
+    Consider the parity $n$ for the partial sums $S_n$.
+    \begin{itemize}
+      \item Even: $S_{2(m+1)}=S_{2m}+(a_{2m+1}-a_{2m+2})\geq S_{2m}\RA \{S_{2m}\}$ is monotonically increasing. On the other hand, $$S_{2m}=a_1-a_{2m}-\sum_{k=1}^{m-1}\big(a_{2k}-a_{2k+1}\big)\leq a_1-a_{2m} < a_1$$ hence $S_{2m}$ is bounded form above. Therefore, $\lim_{m\to\infty}S_{2m}= S$.
+      \item Odd: $\displaystyle S_{2m+1}=S_{2m}+a_{2m+1}\RA\lim_{m\to\infty}S_{2m+1}=\lim_{m\to\infty}S_{2m}+\lim_{m\to\infty}a_{2m+1}=\lim_{m\to\infty}S_{2m}=S$.
+    \end{itemize}
+    Therefore, $\lim_{m\to\infty}S_{2m+1}=\lim_{m\to\infty}S_{2m}=S\RA \lim_{n\to\infty}S_n=S$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Absolute Convergence}
+
+\begin{definition}[Abs Convergence]
+  A series $\sum a_n$ converges absolutely if the series $\sum |a_n|$ converges.
+\end{definition}
+
+\begin{theorem}[Abs Convergence is Stronger]
+  If a series converges absolutely, then it converges.
+  \begin{proof}
+    $-|a_n|\leq a_n\leq |a_n|\RA 0\leq a_n+|a_n|\leq 2|a_n|$. By comparision test, let $b_n=a_n+|a_n|$, then $\sum a_n = \sum \big(b_n-|a_n|\big)$ converges.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Riemann Rearrangement]
+  If the series $\sum a_n$ absolutely converges and the sequence $b_n$ is obtained by a permutation of $a_n$, then $\sum b_n$ also absolutely converges and $\sum b_n = \sum a_n$.
+\end{theorem}
+
+\begin{theorem}[d'Alambert Criteria]
+  Given a sequence $\{a_n\}$:
+  \begin{enumerate}
+    \item If $\lim\,\left|\dfrac{a_{n+1}}{a_n}\right|<1$ then $\sum a_n$ converges absolutely.
+    \item If $\lim\,\left|\dfrac{a_{n+1}}{a_n}\right|>1$ (including wide sense) then $\sum a_n$ diverges.
+  \end{enumerate}
+  \begin{proof}
+    By definition of limit,
+    \begin{enumerate}
+      \item $\Exist{N\in\N}\Forall{n\geq N} |a_{n+1}|\leq r|a_n|$, where $r<1$. By induction, $\Forall{n\geq N}|a_n|\leq r^{n-N}|a_N|$. By comparision test with $r^{n-N}|a_N|$,  $\sum |a_n|$ converges.
+      \item $\Exist{N\in\N}\Forall{n\geq N} |a_{n+1}|\geq |a_n|>0\RA\lim a_n\neq 0\RA \sum a_n$ diverges.
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  Given a sequence $\{a_n\}$:
+  \begin{enumerate}
+    \item If $\limsup\,\left|\dfrac{a_{n+1}}{a_n}\right|<1$ then $\sum a_n$ converges absolutely.
+    \item If $\liminf\,\left|\dfrac{a_{n+1}}{a_n}\right|>1$ (including wide sense) then $\sum a_n$ diverges.
+  \end{enumerate}
+\end{lemma}
+
+\begin{theorem}[Cauchy Criteria]
+  Given a sequence $\{a_n\}$:
+  \begin{enumerate}
+    \item If $\limsup\,\sqrt[n]{|a_n|}<1$ then $\sum a_n$ converges absolutely.
+    \item If $\limsup\,\sqrt[n]{|a_n|}>1$ (including wide sense) then $\sum a_n$ diverges.
+  \end{enumerate}
+  \begin{proof}
+    By definition of limit superior, for infinetly many $n:$
+    \begin{enumerate}
+      \item $\sqrt[n]{|a_n|}\leq r$, that is, $|a_n|\leq r^n$, where $r<1$. By comparision with $r^n$,  $\sum |a_n|$ converges.
+      \item $|a_n|\geq 1\RA\lim a_n\neq 0\RA \sum a_n$ diverges.
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Power Series]
+  A series $\displaystyle\sum_{n=0}^\infty a_n (x-a)^n$ in the variable $x$ is called a power series.
+\end{definition}
+
+\begin{lemma}[Radius of Convergence]
+  Define $$\frac{1}{R}=\limsup\sqrt[n]{|a_n|}$$ if the RHS is finite and $0$ otherwise. Then,
+  \begin{align*}
+    \Forall{x\in(a-R,a+R)}\sum_{n=0}^\infty a_n(x-a)^n\text{ converges}\\
+    \sum_{n=0}^\infty a_n(x-a)^n\text{ converges }\RA x\in[a-R,a+R]
+  \end{align*}
+  \begin{proof}
+    It is a direct result of Cauchy's Criteria. The second proposition takes into account when the test is inconclusive.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  We have to check the endpoints $x=a\pm R$ separately.
+\end{remark}
+
+\pagebreak
+
+\section{Functions}
+
+\subsection{Basic Definitions}
+
+\begin{definition}[Functions]
+  Let $\D$ and $\Ran$ be two subsets of $\R$. A function from $\D$ to $\Ran$ is a weell-defined law which, to each $x\in\D$, there is a unique number $y\in\Ran$. The set $\D$ is called the domain of $f$ and the set $\Ran$ is caleld the range of $f$. Denote $f:\D\to\Ran$ or $y=f(x)$. The variable $x$ is called the \textbf{independent variable} and $y$ is a \textbf{dependent variable}. The variable $x$ is also called the \textbf{origin} of $y$ and $y$ is the \textbf{image} of $x$.
+
+  A set of points $\set{\big(\;x,f(x)\;\big)}{x\in\D}$ in the plane $\R^2$ is called a graph of a function $y=f(x)$ (denoted $G(f)$ or only $f$).
+\end{definition}
+
+\begin{definition}[Image and Domain]
+  For $f:\D\to\Ran$, the image is:
+  $$\Image(f)=\set{y\in\Ran}{\Exist{x\in\D} y=f(x)}=\set{f(x)}{x\in\D}
+  $$
+  i.e. the smallest possible range. We always have: $\Image(f)\subseteq\Ran$.
+
+  The biggest possible domain of $f$ is called the \textbf{existence domain} of $f$.
+\end{definition}
+
+\begin{definition}[Parity]
+  Given $f:\D\to\Ran$ such that $\D$ is symmetric, that is, $\forall x\in\D,\;-x\in\D$, the function is called:
+  \begin{itemize}
+    \item Even: $\Forall{x\in \D} f(-x)=f(x)$
+    \item Odd: $\Forall{x\in \D} f(-x)=-f(x)$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Periodicity]
+  Given $f:\D\to\Ran$ is called periodical if:
+  $$\Exist{T\neq 0}\Forall{x\in\D} x+T\in\D\;\text{ and }\;f(x+T)=f(x)$$
+  Furthermore, $T$ is called a period of $f$. The smallest such $T>0$ (if it exists) is called \textbf{the} period of $f$.
+\end{definition}
+
+\begin{definition}[Monotonicity]
+  Given $f:\D\to\Ran$ is called (eq. stricly) monotonic increasing if:
+  $$\Forall{x,y\in\D} x<y\RA f(x)\leq f(y)\;\big(\text{eq. }f(x)<f(y)\big)$$
+  And is called (eq. stricly) monotonic decreasing if:
+  $$\Forall{x,y\in\D} x<y\RA f(x)\geq f(y)\;\big(\text{eq. }f(x)>f(y)\big)$$
+\end{definition}
+
+\begin{definition}[Injectivity]
+  Given $f:\D\to\Ran$ is called injective or one-to-one if:
+  $$\Forall{x,y\in\D} x\neq y\RA f(x)\neq f(y)$$
+  equivalently, if:
+  $$\Forall{y\in\Image(f)}\Exist{!\,x\in\D}y=f(x)$$
+\end{definition}
+
+\begin{lemma}[Str Monotone is Inj]
+  $f:\D\to\Ran$ is strictly monotonic, then it is injective.
+  \begin{proof}
+    WLOG, $f$ is stricly monotonic increasing. If $f(x)=f(y)$, then, we have three cases. If $x>y$, $f(x)>f(y)$. If $y>x$, $f(y)>f(x)$. None of these are true, so were left with $x=y$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Surjectivity]
+  Given $f:\D\to\Ran$ is called surjective or onto if: $\Ran=\Image(f)$
+\end{definition}
+
+\begin{definition}[Inverse Function]
+  Given $f:\D(f)\to\ \Image(f)$ is one-to-one, one can define a function $g:\Image(f)\to\D(f)$ by $g(y)=x$, where $x$ is the unique value such that $y=f(x)$. Therefore, $g(f(x))=x$. The function $g$ is called \textbf{inverse function} of $f$. Notation: $g=f^{-1}$. Notice that: $\D(f^{-1})=\Image(f)$ and $\Image(f^{-1})=\D(f)$.
+
+  The graph of $f$ and $f^{-1}$ are symmetric with respect to the line $y=x$.
+\end{definition}
+
+\begin{definition}[Composition]
+  Let $f:\D(f)\to\Ran$ and $g:\D(g)\to\mathcal{S}$, the composition $h=g\circ f:\D(h)\to\mathcal{S}$ is defined as follows:
+  \begin{align*}
+    \D(h)&=\set{x\in\D(f)}{f(x)\in\D(g)}\\
+    \Forall{x\in \D(f)}&\;h(x)=g(f(x))
+  \end{align*}
+  where $\D(h)\neq\emptyset$.
+\end{definition}
+
+\pagebreak
+
+\subsection{Limits and Continuity}
+
+\begin{definition}[Limit of a Function]
+  Let $f$ be defined in an open interval $\U$ about a, except possibly at a itself ("except"). A number $L$ is called the limit of $f$ at point $a$ if:
+  \begin{itemize}
+    \item[](Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a \RA f(x_n)\to L$
+    \item[](Cauchy) $\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}0<|x-a|<\delta\RA |f(x)-L|<\epsilon$
+  \end{itemize}
+  We denote $L=\lim\limits_{x\to a}f(x)$. Notice, by Heine, the limit is unique, if it exists.
+\end{definition}
+
+\begin{lemma}[H\&C]
+  The Heine definition and the Cauchy definition of the limit are equivalent.
+  \begin{proof}
+    We prove each direction:
+    \begin{itemize}
+      \item[$(\RA)$] By contrary, suppose $\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x\in\U}0<|x-a|<\delta\RA |f(x)-L|\geq \epsilon$. Define the sequence $\{x_n\}\in\U$ by picking $x_n$ such that $|x_n-a|<\dfrac{1}{n}\RA |f(x)-L|\geq \epsilon$. Hence $x_n\to a$ since $a-\dfrac{1}{n}<x_n<a+\dfrac{1}{n}$, by sandwich theorem. Therefore $f(x_n)\not\to L$, by definition, so Heine does not hold.
+      \item[$(\LA)$] By contrary, suppose $\Exist{\{x_n\}\in\U^{\N}}x_n\to a$, but $f(x_n)\not\to L$. By definition of the limits:
+      \begin{align*}
+        \Forall{\delta>0}\Exist{N\in\N}\Forall{n\geq N}&|x_n-a|<\delta\\
+        \Exist{\epsilon>0}\Forall{N\in\N}\Exist{n_0\geq N}&|f(x_{n_0})-L|\geq \epsilon
+      \end{align*}
+      Hence $|x_{n_0}-a|<\delta\not\RA|f(x_{n_0})-L|<\epsilon$, so Cauchy does not hold.
+    \end{itemize}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Infinite Limit of Functions]
+  Let $f$ be defined in an open interval $\U$ about $a$, "except". We say $f(x)\to \infty$ (eq. $-\infty$) at $x=a$ if: (Cauchy) $$\Forall{M>0}\Exist{\delta>0}\Forall{x\in\U}0<|x-a|<\delta\RA f(x)>M \big(\text{eq. }f(x)<M\big)$$
+  (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a \RA f(x_n)\to \infty\;\big(\text{eq. }-\infty\big)$
+\end{definition}
+
+\begin{definition}[Limit at Infinity]
+  Let $f$ be defined in an unbounded open interval $(a,\infty)$ or $(-\infty,a)$. A number $L$ is called the limit of $f$ at $\infty$ (eq. $-\infty$) if: (Cauchy) $$\Forall{\epsilon>0}\Exist{M>0}\Forall{x\in\U}x>M\;\big(\text{eq. }x<M\big)\RA |f(x)-L|<\epsilon$$
+  (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to \infty \;\big(\text{eq. }-\infty\big) \RA f(x_n)\to L$
+\end{definition}
+
+\begin{lemma}
+  A periodic function $f:\R\to\R$ has no limit at $\pm\infty$.
+  \begin{proof}
+    Let $T$ be the period of $f$. Since $f$ is non-constant, $\Exist{x,y\in\R}f(x)\neq f(y)$. Take $x_n=x+nT$ and $y_n=y+nT$, we get $\Forall{n\in\N} f(x_n)=f(x)\neq f(y)=f(y_n)$. Hence $x_n,y_n\to\infty$, but $f(x_n)\to f(x)\neq f(y)\leftarrow f(y_n)$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Sandwich/Squeeze Theorem]
+  Given three functions defined on an open interval $\U$ about $a$, "except". If $\lim\limits_{x\to a}f(x) =\lim\limits_{x\to a}h(x) = L$ and $\Forall{x\in\U\setminus\{a\}} f(x)\leq g(x)\leq h(x)$, then, $\lim\limits_{x\to a}g(x) = L$
+  \begin{proof}
+    Heine definition and the Sandwich Theorem for sequences.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Continuity]
+  Let $f$ be defined on an open interval $\U$ around $a$. We say that $f$ is continuous at point $a$ if:
+  $$\lim_{x\to a}f(x)=f(a)$$
+  If $\Forall{a\in\U} f$ is continuous at $a$, then $f$ is continuous at $\U$.
+\end{definition}
+
+\begin{lemma}[Arithmetic of Limits of functions]
+  Suppose $\lim\limits_{x\to a}f(x)=F$, $\lim\limits_{x\to a}g(x)=G$ and $C$ is a constant:
+  \begin{enumerate}
+    \item $\lim\limits_{x\to a} c=c$, $\;\lim\limits_{x\to a} (c\cdot f(x))=c\cdot F$
+    \item $\lim\limits_{x\to a} (f(x)\pm g(x))=F\pm G$
+    \item $\lim\limits_{x\to a} (f(x)\cdot g(x))=F\cdot G$
+    \item If $G\neq 0$ and $g(x)\neq 0$, $\lim\limits_{x\to a} \dfrac{f(x)}{g(x)}=\dfrac{F}{G}$ 
+  \end{enumerate}
+  \begin{proof}
+    Heine definition and the previous results for sequences.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Arithmetic of Continuity]
+  If $f$ and $g$ are continuous, then: $c\cdot f(x)$, $f(x)\pm g(x)$, $f(x)\cdot g(x)$ and $\dfrac{f(x)}{g(x)}$ are continuous. Further $f\circ g$ is continuous.
+\end{corollary}
+
+\begin{definition}[Limit from the Side]
+  We say $x_n\to a^{+}$ iff $x_n\to a$ and $\Forall{n\in\N}x_n>a$. Analogously, $x_n\to a^{-}$ iff $x_n\to a$ and $\Forall{n\in\N}x_n<a$.
+\end{definition}
+
+\begin{definition}[One-Sided Limits]
+  We define:
+  \begin{itemize}
+    \item[] (From the right) $\lim\limits_{x\to a^{+}}f(x)=L$ iff: (Cauchy) $$\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}a<x<a+\delta\RA |f(x)-L|<\epsilon$$
+    (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a^{+} \RA f(x_n)\to L$
+    \item[] (From the left) $\lim\limits_{x\to a^{-}}f(x)=L$ iff: (Cauchy) $$\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}a-\delta<x<a\RA |f(x)-L|<\epsilon$$
+    (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a^{-} \RA f(x_n)\to L$
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  The proof of the equivalency of the definitions is the same.
+\end{remark}
+
+\begin{definition}[Continuity on Closed Sets]
+  We say $f$ is continuous on $[a,b]$ if it is continuous on $\U=(a,b)$ and both $\lim\limits_{x\to a^{+}}f(x)=f(a)$ and $\lim\limits_{x\to b^{-}}f(x)=f(b)$.
+\end{definition}
+
+\begin{theorem}[Two-Sided Limit Criteria]
+  Let $f$ be defined on an open interval $\U$ around $a$, "except". Then:
+  $$\lim\limits_{x\to a}f(x)=L\LR \lim\limits_{x\to a^{+}}f(x)=\lim\limits_{x\to a^{-}}f(x)=L$$
+  \begin{proof}
+    The $(\RA)$ direction is trivial. For the $(\LA)$ let $x_n\to a$, define $\{x^{+}_n\}$ as the (largest) subsequence of $x_n$ such that $\Forall{n\in\N},x^{+}_n>a$. Define $x^{-}_n$ analogously. Then, $x^{+}_n\to a^{+}$ and $x^{-}_n\to a^{-}$. By Heine, $f(x^{+}_n)\to L$ and $f(x^{-}_n)\to L$. Since $\{x_n\}=\{x^{+}_n\}\cup\{x^{-}_n\}$, we get: $f(x_n)\to L$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Classifing Continuity}
+
+\begin{definition}[Uniform Continuity]
+  A function $f:\U\to\R$ is uniformly continuous iff: (Cauchy) $$\Forall{\epsilon>0}\Exist{\delta >0}\Forall{x,y\in\U} |x-y|<\delta \RA |f(x)-f(y)|<\epsilon$$ 
+\end{definition}
+
+\begin{remark}
+  The main difference between uniform continuity and regular continuity is that the $\delta$ is chosen independent of $x$ and $y$, whereas the $\delta$ in regular continuity is, in general, dependent on the choice of $a$.
+\end{remark}
+
+\begin{theorem}[UC $\RA C^0$]
+  If $f$ is uniformly continuous on $\U$, then it is continuous on $\U$.
+  \begin{proof}
+    $a\in \U\RA\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U} |x-a|<\delta\RA|f(x)-f(a)|<\epsilon$, hence, by definition $\lim\limits_{x\to a}f(x)=f(a)$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Heine-Cantor]
+  If $f:[a,b]\to \R$ is continuous, then it is uniformly continuous.
+  \begin{proof}
+    By contrary, $$\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x,y\in[a,b]}|x-y|<\delta\RA |f(x)-f(y)|\geq\epsilon$$
+    Define $\{x_n\}$ and $\{y_n\}$ such that $\Forall{n\in\N},|x_n-y_n|<\dfrac{1}{n}$ and $|f(x_n)-f(y_n)|\geq\epsilon$. Since $x_n$ is bounded, there is a convergent subsequence $\seq{x_{n_k}}{k}$ with limit we denote $x_0\in[a,b]$. By Triangle Inequality, $$|y_{n_k}-x_0|\leq |x_{n_k}-x_0|+|x_{n_k}-y_{n_k}|\leq |x_{n_k}-x_0|+\dfrac{1}{n_k}$$ hence $y_{n_k}\to x_0$. Since $f$ is continuous, $\lim\limits_{k\to\infty}f(x_{n_k})=f(x_0)=\lim\limits_{k\to\infty}f(y_{n_k})$. But $\Forall{k\in\N}|f(x_{n_k})-f(y_{n_k})|\geq \epsilon>0$. By taking $k\to\infty$, there is a contradiction.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  If $f:[a,\infty)\to\R$ is continuous and $\lim\limits_{x\to\infty}f(x)$ exists and is finite, then, $f$ is uniformly continuous.
+  \begin{proof}
+    Let $\epsilon>0$. By definition, $$\Exist{M\in\R}\Forall{x\in\U}x>M\RA |f(x)-L|<\dfrac{\epsilon}{3}$$ Then, $\Forall{x,y>M} |f(x)-f(y)|\leq |f(x)-L|+|L-f(y)|<\dfrac{2\epsilon}{3}<\epsilon$. Since $[a,M]$ is compact, $f$ is UC there, so, $$\Exist{\delta>0}\Forall{x,y\in[a,M]}|x-y|<\delta\RA|f(x)-f(y)|<\dfrac{\epsilon}{3}$$
+    $\Forall{x\in[a,M]}\Forall{y>M} |x-y|<\delta\RA |x-M|<\delta\text{ and }|y-M|<\delta\RA|f(x)-f(y)|\leq |f(x)-f(M)|+|f(M)-f(y)|<\epsilon$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Lipschitz Continuity]
+  Let $f:\U\to\R$ is Lipschitz continuous (on $\U$) if:
+  $$\Exist{K>0}\Forall{x,y\in\U} |f(x)-f(y)|<K|x-y|$$
+\end{definition}
+
+\begin{theorem}[LpC $\RA$ UC]
+  Let $f:\U\to\R$ is Lipschitz continuous (on $\U$), then $f$ is uniformly continuous on $\U$.
+  \begin{proof}
+    Choose $\delta(\epsilon)=\dfrac{\epsilon}{K}$ on the definition.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The converse is not true. Counterexample: $f(x)=\sqrt{|x|}$ is uniformly continuous on $\R$, but not Lipschitz continuous (cusp at $x=0$).
+\end{remark}
+
+\begin{definition}[Types of Discontinuity]Let $f$ be defined on an open interval about $a$, "except".
+  \begin{itemize}
+    \item[] The point $a$ is a \textbf{removable} discontinuity point of $f$ if:\begin{itemize}
+      \item[(a)] $\exists\,\lim\limits_{x\to a} f(x)$
+      \item[(b)] $\lim\limits_{x\to a} f(x)\neq f(a)$ or $f(a)$ is not defined.
+    \end{itemize}
+    \item[] The point $a$ is a \textbf{jump/first kind} discontinuity point of $f$ if:\begin{itemize}
+      \item[(a)] $\exists\,\lim\limits_{x\to a^{-}} f(x)$ and $\exists\,\lim\limits_{x\to a^{+}} f(x)$
+      \item[(b)]  $\lim\limits_{x\to a^{-}} f(x) \neq\,\lim\limits_{x\to a^{+}} f(x)$
+    \end{itemize}
+    \item[] The point $a$ is a \textbf{essential/second kind} discontinuity point of $f$ if: At least one of $\lim\limits_{x\to a^{-}} f(x)$ and $\lim\limits_{x\to a^{+}} f(x)$ does not exist.
+  \end{itemize}
+\end{definition}
+
+\pagebreak
+
+\subsection{Continuity Theorems}
+
+\begin{definition}[Boundedness]
+  A function $f$ is bounded on $\D$ if
+  $$\Exist{M>0}\Forall{x\in\D} |f(x)|\leq M$$
+  or equivalently, $\Exist{m,M\in\R}\Forall{x\in\D} m\leq f(x)\leq M$
+\end{definition}
+
+\begin{theorem}
+  Suppose that $g(x)$ is bounded and $\lim\limits_{x\to a}f(x)=0$. Then, $\lim\limits_{x\to a}\big[f(x)\cdot g(x)\big]=0$.
+  \begin{proof}
+    Heine definition and the previous lemma for sequences.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Boundedness Theorem]
+  Let $f:[a,b]\to\R$ be continuous, then $f$ is bounded.
+  \begin{proof}
+    By contrary, suppose $f$ is not bounded from above on $[a,b]$. Then, $\Forall{n\in\N},\Exist{x_n\in[a,b]}f(x_n)>n$. This defines a sequence $\seq{x}{n}$. Because $[a,b]$ is bounded,by Bolzano-Weierstrass, there exists a convergent subsequence $\seq{x_{n_k}}{k}$ with limit $x_0\in[a,b]$. Since $f$ is continuous, $f(x_{n_k})\to f(x_0)$. But $\Forall{k\in\N}f(x_{n_k})>n_{k}\geq k$ which implies that $f(x_{n_k})\to \infty$, contradiction. Therefore, $f$ is bounded from above on $[a,b]$. Analogously, to prove it is bounded from below.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Weierstrass/Extreme Value Theorem]
+  Let $f$ be continuous on the closed interval $[a,b]$. Then $f$ gets its maximal and minimal values on $[a,b]$.
+  \begin{proof}
+    We prove for the maximal, since the minimal is analogous. Since $f$ is bounded, take $M=\sup\set{f(x)}{x\in[a,b]}$. We just need to show $\Exist{x_0\in[a,b]}f(x_0)=M$. 
+    
+    Take $f(x_n)=M-\dfrac{1}{n}$, so that $f(x_n)\to M$. $\{x_n\}$ is bounded, so by Bolzano-Weierstrass, there is $\seq{x_{n_k}}{k}$ with limit $x_0\in[a,b]$. Since $f$ is continuous, $f(x_{n_k})\to f(x_0)=M$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Cauchy/Intermediate Value Theorem]
+  Let $f$ be continuous on $[a,b]$ and let $y\in\R\;:\;f(a)<y<f(b)$ or $f(a)>y>f(b)$. Then $$\Exist{c\in (a,b)} f(c)=y$$
+  \begin{proof}
+    We will prove for $f(a)<y<f(b)$. Let $S=\set{x\in [a,b]}{f(x)\leq y}$. Then $S$ is non-empty since $a\in S$, and $S$ is bounded above by $b$. Let $c=\sup S$ so that $c\in(a,b)$. Let's prove that $f(c)=y$.
+
+    Let $\epsilon>0$. Since $f$ is continuous, $\Exist{\delta >0}\Forall{x\in[a,b]}|x-c|<\delta\RA|f(x)-f(c)|<\epsilon$. That is, $\Forall{x\in (c-\delta ,c+\delta)}f(x)-\epsilon <f(c)<f(x)+\epsilon$. By the properties of the supremum, there exists some $\alpha\in (c-\delta ,c]$ that is contained in $S$, and so $f(c)<f(\alpha)+\epsilon \leq y+\epsilon$. Picking $\beta\in (c,c+\delta )$, we know that $\beta\notin S$ because $c$ is the supremum of $S$. This means that $f(c)>f(\beta)-\epsilon >y-\epsilon$
+    Since, $\Forall{\epsilon >0} y-\epsilon <f(c)\leq y+\epsilon$, we get $f(c)=y$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Let $f$ be continuous on $[a,b]$. If $f(a)\cdot f(b)<0$, then $\Exist{c\in(a,b)}f(c)=0$
+\end{corollary}
+
+\begin{theorem}[Brouwer's Fixed Point Theorem]
+  $f:[a,b]\to[a,b]$ continuous, then $\Exist{x_0\in[a,b]} f(x_0)=x_0$
+  \begin{proof}
+    Let $g(x)=f(x)-x$. Then, we get: $g(b)=f(b)-b\leq b-b=0$ and $g(a)=f(a)-a\geq a-a=0$. Then, either $g(b)=0$, or $g(a)=0$ or $g(b)<0<g(a)$, so by IVT, $\Exist{c\in (a,b)} g(c)=0$. Either way, $\Exist{c\in[a,b]}g(c)=0$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Let $f$ be continuous on $[a,b]$. Then $\Image(f)$ is a closed interval $[m,M]$, where $M$ is the maximum of $f$ and $m$ is the minimum.
+\end{corollary}
+
+\begin{definition}[Intermediate Value Property]
+  $f:[a,b]\to\R$ has intermediate value property if, for any $y\in\R\;:\;f(a)<y<f(b)$ or $f(a)>y>f(b)$, then $$\Exist{c\in (a,b)} f(c)=y$$ 
+\end{definition}
+
+\begin{theorem}[Darboux]
+  Let $f:[a,b]\to\R$ be differentiable on $(a,b)$, then $f'$ has the intermediate value property in $[\alpha,\beta]\subset(a,b)$.
+  \begin{proof}
+    Supose $f'(\alpha)>y>f'(\beta)$. Let $g:[a,b]\to\R$ such that $g (x)=f(x)-yx$.  Since $g$  is continuous on $[\alpha,\beta]$, by Weierstrass (EVT), $g$ attains its maximum in $[\alpha,\beta]$.
+    
+    Because $g'(\alpha)=f'(\alpha)-y>0$, we know $g$ cannot attain its maximum value at $\alpha$. Likewise, because $g'(b)=f'(b)-y<0$, we know $g$ cannot attain its maximum value at $\beta$.
+    
+    Therefore, $g$ must attain its maximum value at some point $x\in (a,b)$. Hence, by Fermat's theorem, $g'(x)=0$, i.e. $f'(x)=y$
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  If $f:[a,b]\to\R$ is differentiable on $(a,b)$, then there are no removable or jump discontinuity. Hence if $\exists\lim\limits_{x\to c^{-}}f'(x)$ and $\exists\lim\limits_{x\to c^{+}}f'(x)$ for $c\in (a,b)$, then $\lim\limits_{x\to c^{+}}f'(x)=\lim\limits_{x\to c^{+}}f'(x)=f'(c)$.
+\end{corollary}
+
+\pagebreak
+
+\section{Differential Calculus}
+
+\subsection{Derivatives}
+
+\begin{definition}[Derivative]
+  Given a function $f:\D\subseteq \R\to\R$, the derivative a point $a\in\D$, so that there is an open interval in $\D$ around $a$, is defined as: $$f'(a)=\lim_{x\to a}=\frac{f(x)-f(a)}{x-a}$$
+  If the limit exists, $f$ is differentiable at $a$. We can also take the derivative at each point and get a function $f':\D'\subseteq\D\to\R$ such that:
+  $$f'(x)=\lim_{\delta\to 0}\frac{f(x+\delta)-f(x)}{\delta}$$
+  $\D'$ is the domain of differentiability.
+\end{definition}
+
+\begin{remark}
+  The line tangent to the curve of the graph of $f$ has slope $f'(a)$ at point $a$. Actually the tangent line has formula $y=f'(a)\cdot \big(x-a\big)+f(a)$. Furthermore, the normal line to the curve ( if $f'(a)\neq 0$ ) has equation $y=-\dfrac{1}{f'(a)}\cdot \big(x-a\big)+f(a)$
+\end{remark}
+
+\begin{lemma}[Infinetesimal Function]
+  Let $f$ be defined on an open interval $\U$ about $a$. Then, $f$ is differentiable at $a$ iff $\exists\,L\in\R$ and $\exists\,\varphi:\U\to \R$ with $\lim\limits_{x\to a} \varphi(x)=0$, such that: $\dfrac{f(x)-f(a)}{x-a}=L+\varphi(x)$. In that case, $L=f'(a)$.
+\end{lemma}
+
+\begin{theorem}
+  If $f$ is differentiable at $a$, then $f$ is continuous at $a$.
+  \begin{proof}
+    By the previous lema,
+    $$f(x)=f(a)+\Big(f'(a)+\varphi(x)\Big)\cdot (x-a)\RA \lim_{x\to a} f(x)=f(a)$$
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The derivative function might not be continuous. Example: $f(x)=x^2sin(1/x)$ is differentiable everywhere, $f'(x)$ is not continuous at $0$.
+\end{remark}
+
+\begin{lemma}[Product Rule and Arithmetic of Limits]
+  If $\exists\,f'(x)$ and $\exists\,g'(x)$:
+  \begin{enumerate}
+    \item $(c\cdot f(x))'=c\cdot f'(x)$
+    \item $(f(x)+g(x))'=f'(x)+g'(x)$
+    \item (Product Rule) $(f\cdot g)'(x)=f'(x)\cdot g(x)+f(x)\cdot g'(x)$
+    \item (Quotient Rule) $\displaystyle\left(\frac{f}{g}\right)'(x)=\frac{f'(x)\cdot g(x)-f(x)\cdot g'(x)}{g(x)^2}$ 
+  \end{enumerate}
+  \begin{proof}
+    The first two follow from linearity. We will only show the product rule.
+    \begin{align*}
+      (f\cdot g)'(x)&=\lim_{\delta\to 0}\dfrac{f(x+\delta)\cdot g(x+\delta)-f(x)\cdot g(x)}{\delta}=\\
+      &=\lim_{\delta\to 0}\bigg[f(x+\delta)\cdot\dfrac{g(x+\delta)-g(x)}{\delta}+\dfrac{f(x+\delta)-f(x)}{\delta}\cdot g(x)\bigg]\\
+      &=f'(x)\cdot g(x)+f(x)\cdot g'(x)
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Power Rule]
+  $\displaystyle p(x)=\sum_{k=0}^n a_k\cdot x^k \RA p'(x)=\sum_{k=1}^n k\cdot a_k\cdot x^{k-1}$
+\end{corollary}
+
+\begin{lemma}
+  Let $f$ be an invertible and continuous in an open interval about $a$. If $\exists\,f'(a)$ and $f'(a)\neq 0$, then, the inverse function $f^{-1}$ is differentiable at $b=f(a)$ and:
+  $$\big(f^{-1}\big)'(b)=\frac{1}{f'(a)}=\frac{1}{f'\big(f^{-1}(b)\big)}$$
+  \begin{proof}
+    By definition of the derivative:
+    \begin{align*}
+      \big(f^{-1}\big)'(b)&=\lim_{y\to b}\frac{f^{-1}(y)-f^{-1}(b)}{y-b}=\lim_{y\to b}\frac{f^{-1}(y)-f^{-1}(b)}{f\big(f^{-1}(y)\big)-f\big(f^{-1}(b)\big)} \\
+      &=\left(\lim_{y\to b}\frac{f\big(f^{-1}(y)\big)-f\big(f^{-1}(b)\big)}{f^{-1}(y)-f^{-1}(b)}\right)^{-1}
+    \end{align*}
+    Since $f$ is bijective and continuous, $f^{-1}(y)\to f^{-1}(b)$ as $y\to b$. Then, since $x=f^{-1}(y)$ and $a=f^{-1}(b)$: $$\big(f^{-1}\big)'(b)=\left(\lim_{x\to a}\frac{f(x)-f(a)}{x-a}\right)^{-1}=\Big(f'(a)\Big)^{-1}=\Big(f'\big(f^{-1}(b)\big)\Big)^{-1}$$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Chain Rule]
+  Let $g$ be differentiable in an open interval about $a$ and $f$ be differentiable in an open interval about $b=g(a)$. Then, $f\circ g$ is differentiable at $a$ and:
+  $$\big(f\circ g\big)'(a)=f'\big(g(a)\big)\cdot g'(a)=\big(f'\circ g\big)(a)\cdot g'(a)$$
+  \begin{proof}
+    We can represent:
+    \begin{align*}
+      \frac{g(x)-g(a)}{x-a}&=g'(a)+\alpha(x)\\
+      \frac{f(y)-f(a)}{y-b}&=f'\big(b\big)+\beta(y)
+    \end{align*}
+    Putting it together, we get:
+    \begin{align*}
+      f\big(g(x)\big)-f\big(g(a)\big)&=\Big(f'\big(g(a)\big)+\beta\big(g(x)\big)\Big)\cdot\Big(g(x)-g(a)\Big)\\
+      &=\Big(f'\big(g(a)\big)+\beta\big(g(x)\big)\Big)\cdot\Big(g'(a)+\alpha(x)\Big)\cdot\big(x-a\big)
+    \end{align*}
+    By definition of the derivative: $(f\circ g)'(a)=$ $$=\lim_{x\to a}\frac{f\big(g(x)\big)-f\big(g(a)\big)}{x-a}=\lim_{x\to a}\Big(f'\big(g(a)\big)+\beta\big(g(x)\big)\Big)\cdot\Big(g'(a)+\alpha(x)\Big)$$
+    Since $\lim\limits_{x\to a}\alpha(x)=0$ and $\lim\limits_{x\to a}\beta\big(g(x)\big)=\lim\limits_{y\to b}\beta(y)=0$, we get:
+    $$
+    \left\{\begin{aligned}
+      &\lim\limits_{x\to a}\Big(f'\big(g(a)\big)+\beta\big(g(x)\big)\Big)=f'\big(g(a)\big)\\
+      &\lim\limits_{x\to a}\Big(g'(a)+\alpha(x)\Big)=g'(a)
+    \end{aligned}\right\}
+    \RA \big(f\circ g\big)'(a)=f'\big(g(a)\big)\cdot g'(a)
+    $$
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Mean Value Theorems and Taylor}
+
+\begin{theorem}[Fermat]
+  Let $f$ be defined on an open interval $\U$ and let $f$ be differentiable at $x_0\in\U$. If $f$ gets its maximal (or minimal) value at $x_0$, then: $f'(x_0)=0$
+  \begin{proof}
+    WLOG $f(x_0)$ is the maximal value of $f$ at $\U=(a,b)$. Then: $$\Forall{\delta\in (a-x_0,b+x_0)} f(x_0+\delta)\leq f(x_0)$$
+    \begin{itemize}
+      \item $\delta>0:\;\dfrac{f(x_0+\delta)-f(x_0)}{\delta}\leq 0\RA \lim\limits_{\delta\to 0^{+}}\dfrac{f(x_0+\delta)-f(x_0)}{\delta}\leq 0$
+      \item $\delta<0:\;\dfrac{f(x_0+\delta)-f(x_0)}{\delta}\geq 0\RA \lim\limits_{\delta\to 0^{-}}\dfrac{f(x_0+\delta)-f(x_0)}{\delta}\geq 0$
+    \end{itemize}
+    Hence, since the derivate exists, the one sided limits are equal: $$\displaystyle 0\leq \lim_{\delta\to 0^{-}}\dfrac{f(x_0+\delta)-f(x_0)}{\delta}=f'(x_0)=\lim_{\delta\to 0^{+}}\dfrac{f(x_0+\delta)-f(x_0)}{\delta}\leq 0$$ $\RA f'(x_0)=0$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Rolle]
+  Let $f$ be defined on an closed interval $[a,b]$. If $f$ is continuous on $[a,b]$, differentiable on $(a,b)$ and $f(a)=f(b)$, then, $\Exist{c\in(a,b)}f'(c)=0$.
+  \begin{proof}
+    Since $[a,b]$ is compact (closed and bounded), $f$ is bounded. Using Weierstrass Theorem, $f$ gets its maximum $M$ and minimum $m$ on $[a,b]$. Consider the following possibilities:
+    \begin{itemize}
+      \item $m=M:\;\RA f(x)=\text{const.}\RA \Forall{c\in (a,b)}f'(x)=0$.
+      \item $m<M:\;\RA$ at least one of $\{m,M\}$ are obtained in $(a,b)$, otherwise $f(a)\neq f(b)$. Therefore, by Fermat's Theorem, let $c$ be the value for minimum or maximum, we have: $f'(c)=0$.
+    \end{itemize}
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Lagrange/Mean Value Theorem]
+  Let $f$ be defined on an closed interval $[a,b]$. If $f$ is continuous on $[a,b]$ and differentiable on $(a,b)$, then, $$\Exist{c\in(a,b)}f'(c)=\frac{f(b)-f(a)}{b-a}$$
+  \begin{proof}
+    Let $g(x)=f(a)-f(x)+\dfrac{f(b)-f(a)}{b-a}\cdot(x-a)$, so that $g(a)=g(b)=0$. Also, notice that $g'(x)=-f'(x)+\dfrac{f(b)-f(a)}{b-a}$. Then, by Rolle's Theorem, $\Exist{c\in(a,b)}$ $$0=g'(c)=-f'(c)+\frac{f(b)-f(a)}{b-a}\RA
+    f'(c)=\frac{f(b)-f(a)}{b-a}$$
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Cauchy Mean Value Theorem]
+  Let $f$ and $g$ be defined on an closed interval $[a,b]$. If $f$ and $g$ are continuous on $[a,b]$ and differentiable on $(a,b)$, then, $$\Exist{c\in(a,b)}f'(c)\cdot\big(g(b)-g(a)\big)=g'(c)\cdot\big(f(b)-f(a)\big)$$
+  \begin{proof}
+    Let $h(x)=\big(f(x)-f(a)\big)\cdot\big(g(b)-g(a)\big)-\big(f(b)-f(a)\big)\cdot\big(g(x)-g(a)\big)$, so that $h(a)=h(b)=0$. Also, notice that $h'(x)=f'(x)\cdot\big(g(b)-g(a)\big)-\big(f(b)-f(a)\big)\cdot g'(x)$. Then, by Rolle's Theorem, $\Exist{c\in(a,b)}$ $$0=h'(c)=f'(c)\cdot\big(g(b)-g(a)\big)-\big(f(b)-f(a)\big)\cdot g'(c)$$$\RA
+    f'(c)\cdot\big(g(b)-g(a)\big)=g'(c)\cdot\big(f(b)-f(a)\big)$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Higher Order Derivatives]
+  Suppose that $f$ is differentiable. If $f'$ is differentiable, we say that $f$ is \textbf{twice} differentiable. Notation: $f''(x)=(f')'(x)$. It is called the second derivative of $f$. Similarly, we define the $n$-th derivative, denoted $f^{(n)}(x)$.
+\end{definition}
+
+\begin{definition}[$C^k$ classes]
+  We define $f\in C^0$ if $f$ is continuous. Further, we define $f\in C^k\LR f'\in C^{k-1}$. If $f$ is infinetly differentiable, we write $C^\infty$.
+\end{definition}
+
+\begin{theorem}[Taylor's Formula]
+  Let $f$ be $n+1$ times differentiable (with $n\in \N_0$) on an open interval $\U$ about $a$ and let $x\in\U$. Then, $\exists\,c$ between $a$ and $x$, which might depend on $x$, such that: $$f(x)=\sum_{k=0}^n\frac{f^{(k)}(a)}{k!}\,(x-a)^k+R_n(x)$$
+  With $\displaystyle R_n(x)=\frac{f^{(n+1)}(c)}{(n+1)!}\,(x-a)^{n+1}$ , called the Lagrange Remainder.
+  \begin{proof}
+    Denote $\displaystyle T_n(x)=\sum_{k=0}^n\frac{f^{(k)}(a)}{k!}\,(x-a)^k$. Fixing $x$, let:
+    $$g(t)=f(x)-\sum_{k=0}^n\frac{f^{(k)}(t)}{k!}\,(x-t)^k\;-\Big[f(x)-T_n(x)\Big]\,\frac{(x-t)^{n+1}}{(x-a)^{n+1}}$$
+    Notice that $g$ is continuous between $a$ and $x$ (on $[a,x]$ or $[x,a]$). Also, $g(a)=g(x)=0$. Moreover, $g$ is differentiable between $a$ and $x$ with:
+    $$g'(t)=-\frac{f^{(n+1)}(t)}{n!}\,(x-t)^n\;+(n+1)\,\Big[f(x)-T_n(x)\Big]\,\frac{(x-t)^n}{(x-a)^{n+1}}$$
+    Hence, by Rolle's Theorem, $\exists\,c$ between $a$ and $x$ such that: $$0=g'(c)=-\frac{f^{(n+1)}(t)}{n!}\,(x-c)^n\;+(n+1)\,\Big[f(x)-T_n(x)\Big]\,\frac{(x-c)^n}{(x-a)^{n+1}}$$ $$\LR f(x)-T_n(x)=\frac{f^{(n+1)}(c)}{(n+1)!}\,(x-a)^{n+1}=R_n(x)$$
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  In order of stronger to weaker: $\text{Taylor}>\text{Lagrange}>\text{Rolle}$.
+\end{remark}
+
+\begin{definition}[Analytical Function]
+  If $\Forall{x\in\U}\lim\limits_{n\to\infty}R_n(x)=0$ and $f\in C^\infty$, we have: $$f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}\,(x-a)^n$$ the Taylor Series. If $a=0$, the series is called MacLaurin Series. Then, we call $f$ an analytical function (denoted $f\in C^\omega$), that is, it's Taylor Series converges pointwise to $f$ in some open interval. 
+\end{definition}
+
+\begin{remark}[Error]
+  If we want to calculate with an error of less than $\varepsilon$ we only need to find $n$ such that:
+  $$\Big|R_n(x)\Big|=\frac{|f^{(n+1)}(c)|\cdot |x|^{n+1}}{(n+1)!}<\varepsilon$$
+\end{remark}
+
+\begin{theorem}[L'Hôpital's Rule]
+  Suppose that $f$ and $g$ are continuous on a closed interval $[a, b]$, and are differentiable on the open interval $(a, b)$. Suppose that $g'(x)$ is never zero on $(a, b)$, and that $\lim\limits_{x\to a^{+}}\dfrac{f'(x)}{g'(x)}$ exists, and that $f(a)=g(a)=0$. Then, $$\lim\limits_{x\to a^{+}}\dfrac{f(x)}{g(x)}=\lim\limits_{x\to a^{+}}\dfrac{f'(x)}{g'(x)}$$
+  It is also true for $x\to a^{-}$, so also true for $x\to a$.
+  \begin{proof}
+    $\Forall{x\in(a,b)}$ $f$ and $g$ are continuous on  $[a, x]$ and differentiable on $(a, x)$. By Cauchy's MVT $\Exist{c\in(a,x)} f'(c)\cdot g(x)=f(x)\cdot g'(c)$. Then: $$\lim\limits_{x\to a^{+}}\dfrac{f(x)}{g(x)}=\lim\limits_{x\to a^{+}}\dfrac{f'(c)}{g'(c)}=\lim\limits_{c\to a^{+}}\dfrac{f'(c)}{g'(c)}$$
+    Since $c\to a^{+}$ as $x\to a^{+}$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  We can continue the theorem to the $n$-th derivative:
+  $$\lim_{x\to a}\frac{f(x)}{g(x)}=\lim_{x\to a}\frac{f^{(n)}(x)}{g^{(n)}(x)}$$
+  It is also valid for $a=\pm\infty$ and the limit in the wide sense.
+\end{remark}
+
+\begin{lemma}[SC for LpC]
+  If $f:\U\to\R$ is differentiable at $\U$ and the derivative is bounded, then $f$ is Lipschitz continuous.
+  \begin{proof}
+    Let $K=\sup|f'(x)|$ then, by Lagrange's $\Forall{x,y\in\U}\Exist{c\in(x,y)} \dfrac{f(x)-f(y)}{x-y}=f'(c)\RA |f(x)-f(y)|\leq K |x-y|$
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Investigation of Functions}
+
+\begin{definition}[Extremum Point]
+  Let $f$ be defined on an open interval $\U$ about $a$. We say that $f$ has a \textbf{local minimum (eq. maximum)} at $a$ if exists an open interval $\mathcal{I}\subseteq \U$ about $a$ such that: $$\Forall{x\in \mathcal{I}} f(x)\geq f(a)\;\Big(\text{eq. }f(x)\leq f(a)\Big)$$ The point $a$ which is either a local minimum or local maximum point is called a \textbf{local extremum point}.
+\end{definition}
+
+\begin{definition}[Critical Point]
+  We say that $a$ is a \textbf{critical point} of $f$ if either $f'(a)=0$ or $\nexists f'(a)$.
+\end{definition}
+
+\begin{lemma}[NC for Local Extremum]
+  $a$ is a local extremum $\RA a$ is a critical point.
+  \begin{proof}
+    If $f$ is differentiable at $a$, we use Fermat's Theorem. Otherwise, $\nexists\,f'(a)$. Either way, $a$ is a critical point.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[SC I for Local Extremum]
+  If $\exists f'$ and $\exists f''$ which are on continuous on an open interval about $a$ and $f'(a)=0$ and $f''(a)\neq 0$. Then, $a$ is local extremum and:
+  \begin{itemize}
+    \item If $f''(a)<0$, $a$ is local maximum.
+    \item If $f''(a)>0$, $a$ is local minimum.
+  \end{itemize}
+  \begin{proof}
+    If $f''(a)>0$ and $f''$ is continuous, then $f''(a)>0$ in some open interval around $a$. From Taylor's Formula we get: $$f(x)=f(a)+f'(a)\,(x-a)+\frac{1}{2}\,f''(c)\,(x-a)^2\geq f(a)+f'(a)\,(x-a)= f(a)$$
+    since $\frac{1}{2}\,f''(c)\,(x-a)^2\geq 0$. Analogously, for local maximum.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[SC II for Local Extremum]
+  Let $a$ is critical point of $f$. $f$ is continuous at $a$ and differntiable on an open interval about $a$, "except".
+  \begin{itemize}
+    \item If $f'$ changes sign from negative to positive at $a$, then $a$ is a local minimum.
+    \item If $f'$ changes sign from positive to negative at $a$, then $a$ is a local maximum.
+    \item Else, $a$ is not a local extremum point.
+  \end{itemize}
+\end{lemma}
+
+\begin{definition}
+  Let $f$ be defined on a domain $\D$. We say that $f$ has a \textbf{global minimum (eq. maximum)} at $a$ if $$\Forall{x\in\D} f(x)\geq f(a)\;\Big(\text{eq. }f(x)\leq f(a)\Big)$$
+\end{definition}
+
+\begin{theorem}
+  Let $f$ be continuous on $[a,b]$, then $f$ has at least one global maximum and at least one global minimum. Further, if $c$ is a global extremum, then it is either an endpoint or a critical point.
+  \begin{proof}
+    The first part is exactly Weierstrass' Theorem. The second part follow from: if $c$ is a global extremum, then it is either a local extremum on $(a,b)$, in which case it is a critical point. Else, $c=a$ or $c=b$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Convexity]
+  Let $f$ be differentiable at $a$. We say that $f$ is \textbf{convex upward (eq. downward)} at $a$ if exits an open interval about $a$ in which the graph of the function is situated under (eq. above) the tangent line to $f$ at $(a,f(a))$, i.e. 
+  \begin{align*}
+    \Exist{\delta>0}\Forall{x\in (a-\delta,a+\delta)} &f(x)\leq f(a)+f'(a)(x-a)\\
+    \bigg(\text{eq. }&f(x)\geq f(a)+f'(a)(x-a)\bigg)
+  \end{align*}
+  In an interval, $f$ is \textbf{convex upward (eq. downward)} if, for every point in the interval, it is convex upward (eq. downward).
+\end{definition}
+
+\begin{theorem}
+  Let $f$ be twice differentiable on the interval $(a,b)$.
+  \begin{enumerate}
+    \item If $\Forall{x\in(a,b)} f''(x)>0$, $f$ is convex downward on $(a,b)$
+    \item If $\Forall{x\in(a,b)} f''(x)<0$, $f$ is convex upward on $(a,b)$
+  \end{enumerate}
+  \begin{proof}
+    $\Forall{x\in(a,b)}$ by Taylor's formula, for $n=1$, $\Exist{c\in(a,x)}$
+    $$f(x)=f(a)+f'(a)(x-a)+\frac{1}{2}\,f''(c)\,(x-a)^2$$
+    Then, we have either $f''(c)>0\RA f(x)\geq f(a)+f'(a)(x-a)$ or, on the other case, $f''(c)<0\RA f(x)\leq f(a)+f'(a)(x-a)$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Inflection Point]
+  Let $f$ be continuous on an open interval about $a$ and is differentiable at $a$ in a wide sense. We say $a$ is an \textbf{inflection point} of $f$ if exists an interval $(a-\delta,a+\delta)$ such that the function changes its convexity passing through $a$.
+\end{definition}
+
+\begin{remark}
+  It may happen that at an inflection point $a$ the derivative equals $0$ (ex. $f(x)=x^3$, $a=0$) or $\infty$ (ex. $f(x)=\sqrt[3]{x}$, $a=0$) or any value $L$ (ex. $f(x)=L\,\sin{x}$, $a=0$)
+\end{remark}
+
+\begin{definition}[Asymptotes]
+  Let $f$ be defined (for some $\delta>0$) on either $(a-\delta,a)$ or $(a,a+\delta)$ or $(a-\delta,a+\delta)$ "except". If at least one of the one-sided limits of $f$ is equal to $\pm\infty$, the we say that the straight line $x=a$ is a \textbf{vertical asymptote} of $f$.
+
+  The straight line $y=ax+b$ is called an \textbf{oblique asymptote} of $f$ at $+\infty\;(\text{eq. }-\infty)$ if:
+  $$\lim_{x\to+\infty}\big[f(x)-(ax+b)\big]=0\;\left(\text{eq. }\lim_{x\to-\infty}\big[f(x)-(ax+b)\big]=0\right)$$
+  
+  In the case $a=0$, the asymptote is also called a \textbf{horizontal asymptote}.  
+\end{definition}
+
+\begin{lemma}
+  The asymptote at $\pm\infty$ (if it exists) is unique.
+  \begin{proof}
+    Let $a_1x+b_1$ and $a_2x+b_2$ be asymptote of $f$ at $\infty$. $$\left\{
+    \begin{aligned}
+      &\lim_{x\to\infty}\big[f(x)-(a_1x+b_1)\big]=0\\
+      &\lim_{x\to\infty}\big[(a_2x+b_2)-f(x)\big]=0\\
+    \end{aligned}\right\}
+    \RA \lim_{x\to\infty}\big[(a_2x+b_2)-(a_1x+b_1)\big]=0$$
+    $\RA a_2=a_1 \text{ and } b_1=b_2$. Analogously, for $-\infty$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Calculating Asymptotes]
+  Let $f$ be defined on $(c,\infty)$. If there exists $a=\lim\limits_{x\to\infty}\dfrac{f(x)}{x}$ and $b=\lim\limits_{x\to\infty}\big[f(x)-ax\big]$, then the straight line $y=ax+b$ is a unique oblique asymptote of $f$ at $+\infty$. Analogously, for $-\infty$.
+\end{theorem}
+
+\pagebreak
+
+\section{Integral Calculus}
+
+\subsection{Indefinite Integral}
+
+\begin{definition}[Indefinite Integral]
+  A function $F$ is called an antiderivative of $f$ in the domain $\D$ if $\Forall{x\in\D}\;F'(x)=f(x)$. If $F$ is an antiderivative of $f$, then $F(x)+C$ also is. The set of all antiderivatives of $f$,i.e. $F(x)+C$ is called the \textbf{indefinite integral} of $f$ and is denoted by: $$\int f(x)\,dx=F(x)+C$$
+\end{definition}
+
+\begin{remark}
+  We have the following properties:
+  \begin{enumerate}
+    \item If $\exists f'$, then $\displaystyle\int f'(x)\,dx=f(x)+C$
+    \item The integration is linear: $\displaystyle\int \Big[a\cdot f(x)+b\cdot g(x)\Big]\,dx=a\cdot\int f(x)\,dx+b\cdot\int g(x)\,dx$
+  \end{enumerate}
+\end{remark}
+
+\begin{example}
+  We have:
+  \begin{enumerate}
+    \item $\displaystyle\int x^\alpha\,dx=\frac{x^{\alpha+1}}{\alpha+1}+C$, if $\alpha\neq -1$
+    \item $\displaystyle\int\dfrac{dx}{x}=\ln|x|+C$
+    \item $\displaystyle\int \Big[a\cdot \cos{x}+b\cdot \sin{x}\Big]\,dx=a\cdot\sin{x}-b\cdot\cos{x}+C$
+    \item $\displaystyle\int\dfrac{dx}{1+x^2}=\arctan{x}+C$
+    \item $\displaystyle\int\dfrac{f'(x)}{f(x)}\,dx=\ln|f(x)|+C$
+  \end{enumerate}
+\end{example}
+
+\begin{lemma}[Substitution]
+  The chain rule states:$$[f(u(x))]'=f'(u(x))\cdot u'(x) \RA \displaystyle\int f(u)\cdot u'\,dx=\int f(u)\,du$$
+  We also write: $\displaystyle\int f(x)\,dx=\left\{\begin{array}{lr}x=g(t)\\dx=g'(t)\,dt\end{array}\right\}=\int f(g(t))\,g'(t)\,dt$
+\end{lemma}
+
+\begin{lemma}[Integration by Parts]
+  The product rule states:
+  \begin{align*}
+  (u\cdot v)'(x)&=u'(x)\cdot v(x)+u(x)\cdot v'(x)\RA u\cdot v'=(u\cdot v)'-u'\cdot v\\
+  &\RA \int u\cdot v'\,dx=uv-\int u'\cdot v\,dx
+  \end{align*}
+\end{lemma}
+
+\begin{lemma}[Integration of Trigonometric Functions]
+  We have:
+  \begin{enumerate}
+    \item Prosthaphaeresis:
+    \begin{align*}
+      \sin(\alpha)\cdot\sin(\beta)&=\frac{1}{2}\Big(\cos(\alpha-\beta)-\cos(\alpha+\beta)\Big)\\
+      \cos(\alpha)\cdot\cos(\beta)&=\frac{1}{2}\Big(\cos(\alpha-\beta)+\cos(\alpha+\beta)\Big)\\
+      \sin(\alpha)\cdot\cos(\beta)&=\frac{1}{2}\Big(\sin(\alpha+\beta)+\sin(\alpha-\beta)\Big)\\
+      \cos(\alpha)\cdot\sin(\beta)&=\frac{1}{2}\Big(\sin(\alpha+\beta)-\sin(\alpha-\beta)\Big)
+    \end{align*}
+    \item $\displaystyle\int \sin^{2k+1}(x)\cdot\cos^m(x)\,dx=\int (1-\cos^2(x))^k\cdot\sin(x)\cdot\cos^m(x)\,dx=\left\{\begin{array}{lr}u=\cos{x}\\u'=-\sin{x}\end{array}\right\}=-\int(1-u^2)^k\cdot u^m\,du$
+    \item We use recursively: $\cos^2(x)=\dfrac{1+\cos(2x)}{2}$ . $\displaystyle\int \sin^{2k}(x)\cdot\cos^{2m}(x)\,dx=\int\left(\frac{1-\cos(2x)}{2}\right)^k\,\left(\frac{1+\cos(2x)}{2}\right)^m\,dx$
+  \end{enumerate}
+\end{lemma}
+
+\begin{example}
+  We have:
+  \begin{enumerate}
+    \item $\displaystyle\int\,\sin(3x)\,\cos(7x)\,dx=\frac{1}{2}\int\bigg[\sin(10x)-\sin(4x)\bigg]\,dx=\frac{1}{2}\bigg[-\frac{\cos(10x)}{10}+\frac{\cos(4x)}{4}\bigg]+C=-\frac{\cos(10x)}{20}+\frac{\cos(4x)}{8}+C$
+    \item $\displaystyle\int\,\sin^3(x)\,\cos^2(x)\,dx=\left\{\begin{array}{lr}u=\cos{x}\\u'=-\sin{x}\end{array}\right\}=-\int(1-u^2)\cdot u^2\,du=\frac{u^5}{5}-\frac{u^3}{3}+C=\frac{\cos^5{x}}{5}-\frac{\cos^3{x}}{3}+C$
+    \item $\displaystyle\int\cos^4(x)\,dx=\frac{1}{4}\int\big[1+2\cos(2x)+\cos^2(2x)\big]\,dx=\frac{1}{8}\int\big[3+4\cos(2x)+\cos(4x)\big]\,dx=\frac{3}{8}\,x+\frac{1}{4}\,\sin(2x)+\frac{1}{32}\,\sin(4x)+C$
+  \end{enumerate}
+\end{example}
+
+\begin{lemma}[Substitutions]
+  We get:
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|p{2.3cm}|c|c|}\hline
+      Expression & Substitution & Differential & Identity \\\hline
+      $\sqrt{a^2-x^2}$  & $x=a\sin{\theta}$ $\quad\theta\in\big[-\tfrac{\pi}{2},\tfrac{\pi}{2}\big]$ & $dx=a\cos{\theta}\,d\theta$  & $\sqrt{1-\sin^2{\theta}}=\cos{\theta}$  \\\hline
+      $\sqrt{a^2+x^2}$  & $x=a\tan{\theta}$ $\quad\theta\in\big(-\tfrac{\pi}{2},\tfrac{\pi}{2}\big)$ & $dx=a\sec^2{\theta}\,d\theta$  & $\sqrt{1+\tan^2{\theta}}=\sec{\theta}$  \\\hline
+      $\sqrt{x^2-a^2}$  & $x=a\sec{\theta}$ $\quad\theta\in\big[0,\tfrac{\pi}{2}\big)$ & $dx=a\tan{\theta}\,\sec{\theta}\,d\theta$  & $\sqrt{\sec^2{\theta}-1}=\tan{\theta}$ \\\hline
+    \end{tabular}
+  \end{table}
+\end{lemma}
+
+\begin{example}
+  We get:
+  \begin{enumerate}
+    \item $\displaystyle\int\frac{\sqrt{9-x^2}}{x^2}\,dx=\left\{\begin{array}{lr}x=3\sin{\theta}\\dx=3\cos{\theta}\,dx\end{array}\right\}=\int\cot^2{\theta}\,d\theta=-\cot{\theta}-\theta+C=-\frac{\sqrt{9-x^2}}{x}-\arcsin{\frac{x}{3}}+C$
+    \item $\displaystyle\int\frac{x}{\sqrt{x^2+4}}\,dx=\left\{\begin{array}{lr}x=2\tan{\theta}\\dx=2\sec^2{\theta}\,dx\end{array}\right\}=2\int\tan{\theta}\cdot\sec{\theta}\,d\theta=2\sec{\theta}+C=\sqrt{x^2+4}+C$
+  \end{enumerate}
+\end{example}
+
+\begin{definition}[Simple Rational Function]
+  A rational function is a function $f(x)=\dfrac{P(x)}{Q(x)}$, where $P$ and $Q$ are polynomials. A rational function $f(x)=\dfrac{P(x)}{Q(x)}$ is called \textbf{simple} is $\deg P<\deg Q$.
+\end{definition}
+
+\begin{lemma}[Simplifing RFs]
+  If a rational function is not simple, it can be written as the sum of a polynomial and a simple rational function.
+  \begin{proof}
+    By polynomial long division, we have: $P(x)=Q(x)\cdot S(x)+R(x)$ with $\deg R<\deg Q$, then $f(x)=S(x)+\dfrac{R(x)}{Q(x)}$, so $\dfrac{R(x)}{Q(x)}$ is simple.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Basic RF]
+  We identify four basic simple rational functions:
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+      $f(x)$ & $\displaystyle \int f(x)\,dx (+C)$ \\\hline
+      $\dfrac{A}{x-\alpha}\,$ & $A\ln\vert x-\alpha\vert$ \\\hline
+      $\dfrac{A}{(x-\alpha)^n}\,$ & $A\dfrac{(x-\alpha)^{1-n}}{1-n}$\\\hline
+      $\dfrac{Ax+B}{x^2+2px+q}\,$ & $\dfrac{A}{2}\,\ln\vert x^2+2px+q\vert +\dfrac{B-Ap}{\sqrt{q-p^2}}\,\arctan\bigg(\dfrac{x+p}{\sqrt{q-p^2}}\bigg)$ \\\hline
+      $\dfrac{Ax+B}{(x^2+2px+q)^n}\,$ & $\dfrac{A}{2}\,\dfrac{(x^2+2px+q)^{1-n}}{1-n}+\dfrac{B-Ap}{(q-p^2)^{n-\frac{1}{2}}}\;\mathcal{I}_n\bigg(\dfrac{x+p}{\sqrt{q-p^2}}\bigg)$ \\\hline
+    \end{tabular}
+  \end{table}
+
+  so that $p^2-q<0$ and $n\in\N_{>1}$.
+  \begin{enumerate}
+    \item $\displaystyle\int\frac{Ax+B}{x^2+2px+q}\,dx=\int\dfrac{Ax+B}{(x+p)^2+\sqrt{q-p^2}^2}=\left\{\begin{array}{lr}a=\sqrt{q-p^2}\\t=x+p\\dt=dx\end{array}\right\}=\int \frac{At\,dt}{t^2+a^2}+(B-Ap)\int\frac{dt}{t^2+a^2}=\frac{A}{2}\,\ln|t^2+a^2|+\frac{B-Ap}{a}\,\arctan\left(\frac{t}{a}\right)+C=\dfrac{A}{2}\,\ln|x^2+px+q|+\dfrac{B-Ap}{\sqrt{q-p^2}}\,\arctan\left(\dfrac{x+p}{\sqrt{q-p^2}}\right)+C\,$
+
+    \item $\displaystyle\int\frac{Ax+B}{(x^2+2px+q)^n}\,dx=\left\{\begin{array}{lr}a=\sqrt{q-p^2}\\t=x+p\\dt=dx\end{array}\right\}=A\int \frac{t\,dt}{(t^2+a^2)^n}+(B-Ap)\int\frac{dt}{(t^2+a^2)^n}=\frac{A}{2}\,\frac{(t^2+a^2)^{1-n}}{1-n}+(B-Ap)\frac{1}{a^{2n-1}}\,\mathcal{I}_n\bigg(\frac{t}{a}\bigg)+C=\frac{A}{2}\,\frac{(x^2+2px+q)^{1-n}}{1-n}+\frac{\big(B-Ap\big)}{\sqrt{q-p^2}^{2n-1}}\,\mathcal{I}_n\bigg(\frac{x+p}{\sqrt{q-p^2}}\bigg)+C\,$
+  \end{enumerate}
+  Where $\displaystyle\mathcal{I}_n(u)=\int\frac{du}{(u^2+1)^n}$ is given by a recursive formula.
+\end{definition}
+
+\begin{theorem}[Partial Fraction Decomposition]
+  Every simple rational function can be written as a sum of basic rational functions.
+  \begin{proof}
+    Let $f(x)=\dfrac{R(x)}{Q(x)}\,$
+    \begin{enumerate}
+      \item If $Q(x)=A\,(x-\alpha_1)(x-\alpha_2)\cdots(x-\alpha_k)$: $$\frac{R(x)}{Q(x)}=\frac{A_1}{x-\alpha_1}+\frac{A_2}{x-\alpha_2}+\cdots+\frac{A_k}{x-\alpha_k}=\sum_{i=1}^k\frac{A_k}{x-\alpha_k}$$ where they are given explicitly by: $\displaystyle A_i=\lim_{x\to\alpha_i}(x-\alpha_i)\,f(x)$. 
+      \item If $Q(x)=A\,(x-\alpha_1)^{m_1}(x-\alpha_2)^{m_2}\cdots(x-\alpha_k)^{m_k}\;,\,m_i\in\N_{>1}$: $$\frac{R(x)}{Q(x)}=\sum_{i=1}^k\sum_{j=1}^{m_i}\frac{A_{i,j}}{(x-\alpha_i)^j}$$ where they are given by: $\displaystyle A_{i,j}=\frac{1}{(m_i-j)!}\lim_{x\to\alpha_i}\frac{d^{\,m_i-j}}{dx^{\,m_i-j}}(x-\alpha_i)^{m_i}\,f(x)$.
+      \item If $Q(x)=A\,(x^2+2p_1 x+q_1)\cdot(x^2+2p_k x+q_k)\,(x-\alpha_1)\cdots(x-\alpha_l);$, where $p_i^2-q_i<0$: $$ \frac{R(x)}{Q(x)}=\frac{P_1x+Q_1}{x^2+2p_1x+q_1}+\cdots+\frac{P_kx+Q_k}{x^2+2p_kx+q_k}+\frac{A_1}{x-\alpha_1}+\cdots+\frac{A_l}{x-\alpha_l}$$
+      \item If $Q(x)=A\,(x^2+2p_1 x+q_1)^{m_1}(x^2+2p_2 x+q_2)^{m_2}\cdots(x^2+2p_k x+q_k)^{m_k}$, where $m_i\in\N_{>1}$ and $p_i^2-q_i<0$: $$\frac{R(x)}{Q(x)}=\sum_{i=1}^k\sum_{j=1}^{m_i}\frac{P_{i,j}\,x+Q_{i,j}}{(x^2+2p_i x+q_i)^j}$$
+    \end{enumerate}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Every rational function has an antiderivative in closed form, that is, there is an expression using only elementary functions for its antiderivative.
+\end{corollary}
+
+\pagebreak
+
+\subsection{Definite Integrals}
+
+\begin{definition}[Riemann Sums and Integral]
+  Let $f$ be defined on the closed interval $[a,b]$. Let $n\in\N$ and $T$ is a partition for $[a,b]$ on $n$ sub-intervals. $$T: a=x_0<x_1<\cdots<x_{i-1}<x_i<\cdots<x_n=b$$
+
+  Denote $\Delta x_i=x_i-x_{i-1}$ and we denote $\|T\|=\max\limits_{i=1,\,2,\,\cdots,\,n}\,\Delta x_i$, the norm of the partition.
+  
+  Choose a point $c_i\in[x_{i-1},x_i]$. Then, the sum $\displaystyle\sum_{i=1}^n\,f(c_i)\,\Delta x_i$ is called the \textbf{Riemann sum} of $T$.
+  
+  A function f(x) is called Riemann integrable over $[a,b]$ if there exists the limit $\displaystyle I=\lim_{\|T\|\to 0}\sum_{i=1}^n\,f(c_i)\,\Delta x_i$ and the limit is independent on the choice of $T$ and $c_i$. This limit is denoted by $\displaystyle I=\int_a^b\,f(x)\,dx$ and is called the \textbf{definite integral} (or the Riemann integral).
+\end{definition}
+
+\begin{remark}
+  The Riemann sum approximates the area under the curve $y=f(x)$ and the $x$-axis by rectangles of base $\Delta x_i$ and height $f(c_i)$. Therefore, the Riemann integral is \textit{exactly} that area.
+\end{remark}
+
+\begin{lemma}
+  We have:
+  \begin{enumerate}
+    \item $\displaystyle\int_a^a\,f(x)\,dx=0$
+    \item $\displaystyle\int_a^b\,f(x)\,dx=-\int_b^a\,f(x)\,dx$
+    \item $\displaystyle\int_b^a\,c\,dx=c\,(b-a)$
+    \item If $f$ is not bounded on $[a,b]$, then $f$ is not Riemann integrable on $[a,b]$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{example}
+  We define the following bounded function: $$
+  1_\mathbb{Q}(x)=\begin{cases}
+    1\,&\text{ if }x\in \mathbb{Q}\\
+    0\,&\text{ otherwise}
+  \end{cases}$$
+  It is not Riemann integrable on any $[a,b]$.
+  \begin{proof}
+    Take any partition $T$ on $[a,b]$ and choose:
+    \begin{itemize}
+      \item $\displaystyle c_i\in\mathbb{Q}\,:\;\sum_{i=1}^n f(c_i)\,\Delta x_i=\sum_{i=1}^n \Delta x_i=b-a$
+      \item $\displaystyle c_i\notin\mathbb{Q}\,:\;\sum_{i=1}^n f(c_i)\,\Delta x_i=0$
+    \end{itemize}
+    Since $b-a\neq 0$, $\displaystyle\nexists\,\lim_{\|T\|\to 0}\sum_{i=1}^n\,f(c_i)\,\Delta x_i$, since it depends on the choice of $c_i$.
+  \end{proof}
+\end{example}
+
+\begin{definition}[Darboux Upper and Lower integrals]
+  Let $f$ be defined and bounded on the closed interval $[a,b]$. Let $n\in\N$ and $T$ is a partition for $[a,b]$ on $n$ sub-intervals. $$T: a=x_0<x_1<\cdots<x_{i-1}<x_i<\cdots<x_n=b$$
+  
+  Denote $\Delta x_i=x_i-x_{i-1}$ and we denote $\|T\|=\max\limits_{i=1,\,2,\,\cdots,\,n}\,\Delta x_i$, the norm of the partition. Define $m_i=\inf\limits_{x\in[x_{i-1},x_i]}f(x)$ and $M_i=\sup\limits_{x\in[x_{i-1},x_i]}f(x)$. 
+  
+  Then, the sum $\displaystyle L(T)=\sum_{i=1}^n\,m_i\,\Delta x_i$ is called the \textbf{lower Darboux sum} of $T$ and the sum $\displaystyle U(T)=\sum_{i=1}^n\,M_i\,\Delta x_i$ is called the \textbf{upper Darboux sum} of $T$.
+  
+  Denoting $M=\sup\limits_{x\in[a,b]}f(x)$ and $m=\inf\limits_{x\in[a,b]}f(x)$, we notice: 
+  \begin{align*}
+    m\,(b-a)=\sum_{i=1}^n\,m\,\Delta x_i\leq\sum_{i=1}^n\,m_i\,\Delta x_i=L(T)\leq A\\ A\leq U(T)=\sum_{i=1}^n\,M_i\,\Delta x_i\leq \sum_{i=1}^n\,M\,\Delta x_i=M(b-a)
+  \end{align*}
+  We define: $\sup\limits_T L(T)=L$ the \textbf{lower Darboux integral} and $\inf\limits_T U(T)=U$ the \textbf{upper Darboux integral} denoted
+  $$\underline{\int_a^b}f(x)\,dx=L\;\text{ and }\; U=\overline{\int_a^b}f(x)\,dx$$
+  If $U=L$, the function is said to be \textbf{Darboux integrable}.
+\end{definition}
+
+\begin{lemma}[N\&SC for Darboux Integrability]
+  $f$ is Darboux integrable iff $\Forall{\epsilon>0}\Exist{T}U(T)-L(T)<\epsilon$
+  \begin{proof}
+    That condition is equivalent to $\lim\limits_{\|T\|\to 0}\big(U(T)-L(T)\big)=0$
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[DI $\LR$ RI]
+  Any Riemann sum $\displaystyle R(T,c)=\sum_{i=1}^n\,f(c_i)\,\Delta x_i$ is between the Darboux sums: $U(T)\geq R(T,c)\geq L(T)$. If $\displaystyle\lim_{\|T\|\to 0}U(T)=\lim_{\|T\|\to 0}L(T)=I$, by Sandwich, $\lim\limits_{\|T\|\to 0}R(T)=I\RA f$ is Riemann integrable over $[a,b]$. That is, $\displaystyle \underline{\int_a^b}f(x)\,dx=\overline{\int_a^b}f(x)\,dx=\int_a^b f(x)\,dx$
+\end{lemma}
+
+\begin{theorem}
+  Every continuous function is Riemann Integrable.
+  \begin{proof}
+    Since $f$ is defined on a closed interval $[a,b]$, it is uniformly continuous. So, $\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x,y\in[a,b]}|x-y|<\delta\RA |f(x)-f(y)|<\epsilon$. Then, given $\epsilon>0$, choose the constant partition $\|T_n\|=\dfrac{1}{n}<\min\{1,\delta\}$. Therefore, $M_i-m_i<\epsilon$, so $U(T_n)-L(T_n)<\sum_{i=1}^n \epsilon\cdot\dfrac{1}{n}=\epsilon$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Piecewise Continuity]
+  A function $f$ which is defined and bounded on $[a,b]$ is called piecewise continuous if it has at most a finite number of discontinuity points and all of them are removable or of the first kind.
+\end{definition}
+
+\begin{theorem}
+  Every piecewise continuous function if Riemann Integrable.
+  \begin{proof}
+    By linearity of the integral, split the interval so that we are left with the integral of only continuous functions.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}
+  Every bounded monotonic function is Riemann Integrable.
+  \begin{proof}
+    WLOG, let $f$ be increasing on $[a,b]$. Given $\epsilon>0$, choose the constant partition $\|T_n\|=\dfrac{1}{n}<\dfrac{\epsilon}{f(b)-f(a)}$. Further $M_i=f(x_i)$ and $m_i=f(x_{i-1})$. Therefore, $\displaystyle U(T)-L(T)=\sum_{i=1}^n\Big[f(x_i)-f(x_{i-1})\Big]\,\dfrac{1}{n}=\dfrac{f(b)-f(a)}{n}<\epsilon$
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Intermediate Integral Theorem]
+  Let $f$ be continuous on $[a,b]$, then $\Exist{c \in [a,b]}$ $$\int_a^b\,f(x)\,dx=f(c)\,(b-a)$$
+  \begin{proof}
+    Take $g(t)=f(t)\cdot(b-a)-\displaystyle\int_a^b\,f(x)\,dx$, which is continuous, since $f$ is continuous. By Weierstrass' theorem, $f$ achieves a maximum $M$ and a minimum $m$ on $[a,b]$. By Darboux Integration, $m\cdot(b-a)\leq \displaystyle\int_a^b\,f(x)\,dx\leq M\cdot(b-a)$, hence, by IVT, $\Exist{c\in[a,b]}g(c)=0$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Fundamental Theorem of Calculus}
+
+\begin{theorem}[FTC I]
+  Let $f$ be continuous on $(a,b)$ and $c\in (a,b)$. Then, the function $\displaystyle F(x)=\int_c^x f(t)\,dt$ is an antiderivative function of $f$ on $(a,b)$, i.e. $\Forall{x\in (a,b)}F'(x)=f(x)$.
+  \begin{proof}
+    Given $\delta>0$, for any $x\in (a,b)$ such that $x+\delta \in (a,b)$, by Intermediate Integral Theorem, $\Exist{\tau\in[x,x+\delta]}$
+    \begin{align*}
+      F(x+\delta)-F(x)=\int_c^{x+\delta}\,f(t)\,dt-\int_c^x\,f(t)\,dt=\int_x^{x+\delta}\,f(t)\,dt=f(\tau)\,\delta\\
+      \RA F'(x)=\lim_{\delta\to 0}\frac{F(x+\delta)-F(x)}{\delta}=\lim_{\delta\to 0}\,f(\tau)=f(x)
+    \end{align*}
+    since $\tau\in[x,x+\delta]$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The theorem is also true for a piecewise continuous function, with the caveat $F'(x)=f(x)$ for $x$ a continuity point.
+\end{remark}
+
+\begin{theorem}[Newton-Leibnitz / FTC II]
+  Let $f$ be continuous on $[a,b]$ and let $F$ be an arbitrary antiderivative function of $f$ on $(a,b)$. Then: $$\int_a^b\,f(x)\,dx=F(b)-F(a)$$
+  \begin{proof}
+    Let $c\in (a,b)$. By FTC, $\displaystyle G(x)=\int_c^x\,f(t)\,dt$ is an antiderivative of $f$. Taking any other antiderivative $F(x)=G(x)+C$. Calculate: 
+    \begin{align*}
+      F(b)-F(a)&=\big(G(b)+C\big)-\big(G(a)+C\big)=G(b)-G(a)\\&=\int^b_c\,f(t)\,dt-\int_c^a\,f(t)\,dt=\int_a^b\,f(t)\,dt
+    \end{align*}
+  \end{proof}
+  Notation: $\displaystyle \int_a^b\,f(x)\,dx=F(x)\Big|_a^b=F(b)-F(a)$.
+\end{theorem}
+
+\begin{remark}
+  If $f$ is piecewise continuous then: $$\int_a^b\,f(x)\,dx=F(b^{-})-F(a^{+})$$ where $\displaystyle F(b^{-})=\lim_{x\to b^{-}}F(x)$ and $\displaystyle F(a^{+})=\lim_{x\to a^{+}}F(x)$.
+\end{remark}
+
+\begin{lemma}[Leibnitz Formula]
+  $$ \frac{d}{dx}\,\int_{a(x)}^{b(x)}\,f(t,x)\,dt=f\big(b(x),x\big)\cdot b'(x)-f\big(a(x),x\big)\cdot a'(x)+\int_{a(x)}^{b(x)}\,\partial_x f(t,x)\,dt $$ where $\displaystyle\partial_x f(t,x)=\lim_{\delta\to 0}\frac{f(t,x+\delta)-f(t,x)}{\delta}$.
+\end{lemma}
+
+\begin{definition}[Improper Integral]
+  An integral is said to be improper if either (or both) bounds are infinite or the function is unbounded in the interval of integration. We calculate by the following:
+  \begin{align*}
+    &\int^\infty_a f(x)\,dx=\lim_{R\to\infty}\int^R_a f(x)\,dx\\
+    &\int^b_{-\infty} f(x)\,dx=\lim_{R\to\infty}\int^b_{-R} f(x)\,dx\\
+    &\int^b_a f(x)\,dx=\lim_{\epsilon\to 0}\bigg[\int^b_{c+\epsilon} f(x)\,dx+\int^{c-\epsilon}_a f(x)\,dx\bigg]
+  \end{align*}
+\end{definition}
+
+\begin{example}
+  \begin{align*} 
+    &\int^\infty_1 x^{-\frac{4}{3}}\,dx=\lim_{R\to\infty}\int^R_1 x^{-\frac{4}{3}}\,dx=\lim_{R\to\infty}-3\,x^{-\frac{1}{3}}\bigg|^R_1=3\\
+    &\int^{-1}_{-\infty} x^{-\frac{4}{3}}\,dx=\lim_{R\to\infty}\int^{-1}_{-R} x^{-\frac{4}{3}}\,dx=\lim_{R\to\infty}-3\,x^{-\frac{1}{3}}\bigg|^{-1}_{-R}=3\\
+    &\int^{-1}_1 x^{-\frac{1}{3}}\,dx=\lim_{\epsilon\to 0}\bigg[\int^1_{\epsilon} x^{-\frac{1}{3}}\,dx+\int^{-\epsilon}_{-1} x^{-\frac{1}{3}}\,dx\bigg]
+  \end{align*}
+\end{example}
+
+\begin{theorem}[Integral Test]
+  Let $f:[N,\infty)\to\R$ be an integrable function that is monotone decreasing.
+  $$\sum_{n=N}^\infty f(n)\text{ converges}\LR \int_N^\infty f(x)\,dx\text{ converges}$$
+  \begin{proof}
+    We have the following estimate: $\Forall{M\in\N}$
+    $$\int_N^{M+1} f(x)\,dx\leq \sum_{n=N}^M f(n) \leq f(N)+\int_N^M f(x)\,dx$$
+    Taking limit of both sides, we get the result.
+  \end{proof}
+\end{theorem}
+
+\end{document}
