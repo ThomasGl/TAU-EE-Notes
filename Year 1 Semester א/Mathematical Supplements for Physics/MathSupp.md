@@ -43,7 +43,7 @@ General idea: $\displaystyle F(x)=\int f(x)\,dx$ is a function such that $F'(x)=
 ## Indefinite Integrals
 
 | Technique                      | Operation                                                                                                                                                                                                                                                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Substitution                   | $\displaystyle\int f\big(g(x))\,g'(x)\,dx=\left\{\begin{array}{lr}u=g(x)\\du=g'(x)\,dx\end{array}\right\}=\int f(u)\,du\,$                                                                                                                                                                                                            |
 | Integration by Parts           | $\displaystyle\int f(x)\,g'(x)\,dx=\left\{\begin{array}{lr}u=f(x)\Rightarrow du= f'(x)\,dx\\dv=g'(x)\,dx\Leftarrow v=g(x)\end{array}\right\}=f(x)\cdot g(x)-\int g(x)\,f'(x)\,dx\,$                                                                                                                                                   |
 | Partial Fraction Decomposition | $\displaystyle \begin{aligned}\int \frac{P(x)}{Q(x)}\,dx=\,\int R(x)\,dx+\sum_{i=1}^N\sum_{j=1}^{\mu_i}\int\frac{A_{i,j}}{(x-\alpha_i)^j}\,dx+\sum_{i=1}^M\sum_{j=1}^{\nu_i}\int\frac{B_{i,j}\,x+C_{i,j}}{(x^2+p_i\,x+q_i)^j}\,dx\\ Q(x)=\prod_{i=0}^N(x-\alpha_i)^{\mu_i}\cdot \prod_{j=0}^M(x^2+p_j\,x+q_j)^{\nu_j}\end{aligned}\,$ |
@@ -55,7 +55,7 @@ General idea: $\displaystyle F(x)=\int f(x)\,dx$ is a function such that $F'(x)=
 **General:**
 
 | Expression             | Substitution                                                                                          | Differential                                | Identity                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+|------------------------|-------------------------------------------------------------------------------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------|
 | $ax^2+bx+c\,$          | $t=x+\dfrac{b}{2a}\,$                                                                                 | $dt=dx$                                     | $\begin{aligned}ax^2+bx+c=at^2-\dfrac{\Delta}{4a}\\\text{where }\;\Delta=b^2-4ac\end{aligned}\,$ |
 | $\sqrt[n]{x^m}\,$      | $u=\sqrt[n]{x}\,$                                                                                     | $dx=n\,u^{n-1}\,du$                         | $\sqrt[n]{x^m}=u^m$                                                                              |
 | $\sqrt{a^2-x^2}\,$     | $\begin{aligned}x&=a\sin{\theta}\\ &\theta\in\big[-\tfrac{\pi}{2},\tfrac{\pi}{2}\big]\end{aligned}\,$ | $dx=a\cos{\theta}\,d\theta\,$               | $\sqrt{1-\sin^2{\theta}}=\cos{\theta}\,$                                                         |
@@ -97,7 +97,7 @@ We can also plug in: $z=\dfrac{\sin{x}}{1+\cos{x}}=\dfrac{1-\cos{x}}{\sin{x}}\,$
 To do repeated IBP, we create a table:
 
 | Sign | $D$ (Differentiate) | $I$ (Integrate) |
-| ---- | ------------------- | --------------- |
+|------|---------------------|-----------------|
 | $+$  | $f(x)$              | $g'''(x)$       |
 | $-$  | $f'(x)$             | $g''(x)$        |
 | $+$  | $f''(x)$            | $g'(x)$         |
@@ -112,7 +112,7 @@ where the products are taken diagonally $\searrow$ with alternating signs, excep
 **Example:** $\displaystyle \int x^3\,e^x\,dx$
 
 | Sign | $D$    | $I$   |
-| ---- | ------ | ----- |
+|------|--------|-------|
 | $+$  | $x^3$  | $e^x$ |
 | $-$  | $3x^2$ | $e^x$ |
 | $+$  | $6x$   | $e^x$ |
@@ -415,7 +415,7 @@ where $\displaystyle\chi(s)=a_n\,\prod_{i=0}^N(s-\alpha_i)^{\mu_i}\cdot \prod_{j
 For the following common cases:
 
 | $\chi(s)$                  | $y(x)$                                                        |
-| -------------------------- | ------------------------------------------------------------- |
+|----------------------------|---------------------------------------------------------------|
 | $(s-\alpha)$               | $A\,e^{\alpha\,x}\,$                                          |
 | $(s-\alpha_1)(s-\alpha_2)$ | $A\,e^{\alpha_1\,x}+B\,e^{\alpha_2\,x}\,$                     |
 | $(s-\beta)^2+\omega^2$     | $\Big[A\sin(\omega\,x)+B\cos(\omega\,x)\Big]\,e^{\beta\,x}\,$ |
@@ -430,7 +430,7 @@ For the form: $\displaystyle a_n\,y^{(n)}+a_{n-1}\,y^{(n-1)}+\cdots+a_1\,y'+a_0\
 Method of Undermined Coefficients
 
 | Terms in $f(x)$                               | Terms in $y_p(x)$                             |
-| --------------------------------------------- | --------------------------------------------- |
+|-----------------------------------------------|-----------------------------------------------|
 | $a\,e^{s\,x}\,$                               | $A\,e^{s\,x}\,$                               |
 | $a\,\sin(\omega\,x)+b\,\cos(\omega\,x)\,$     | $A\,\sin(\omega\,x)+B\,\cos(\omega\,x)\,$     |
 | $a_n\,x^n+a_{n-1}\,x^{n-1}+\cdots+a_1\,x+a_0$ | $A_n\,x^n+A_{n-1}\,x^{n-1}+\cdots+A_1\,x+A_0$ |
@@ -452,7 +452,7 @@ This happens because of the following idea: If $y(x)$ is a solution for $\chi(D)
 In cartesian coordinates, we have these definitions:
 
 | Operator   | Formula                                                                                                                                           |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | Gradient   | $\nabla\phi=\dfrac{\partial\phi}{\partial x}\,\hat{x}+\dfrac{\partial\phi}{\partial y}\,\hat{y}+\dfrac{\partial\phi}{\partial z}\,\hat{z}\,$      |
 | Curl       | $\displaystyle\nabla\times \vec{F}=\begin{vmatrix}\hat{x}&\hat{y}&\hat{z}\\\partial_{x}&\partial_{y}&\partial_{z}\\F_x&F_y&F_z\end{vmatrix}\,$    |
 | Divergence | $\displaystyle\nabla\cdot\vec{F}=\frac{\partial F_x}{\partial x}+\frac{\partial F_y}{\partial y}+\frac{\partial F_z}{\partial z}\,$               |
@@ -664,7 +664,7 @@ This can be shown by Partial Fraction Decomposition.
 A rational function in the following variables is solvable by:
 
 | Variables                                                                      | Substitution                                                                                                | Differential                  | Changed Variables                                                                                                                                                                        |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | $e^x$                                                                          | $u=e^x$                                                                                                     | $dx=\dfrac{du}{u}\,$          | $u$                                                                                                                                                                                      |
 | $x,\,\sqrt{ax+b}\,$                                                            | $t=\sqrt{ax+b}\,$                                                                                           | $dx=\dfrac{2t\,dt}{a}\,$      | $\dfrac{t^2-b}{a},\,t$                                                                                                                                                                   |
 | $\sin{x},\,\cos{x}\,$                                                          | $z=\tan\dfrac{x}{2}\,$                                                                                      | $dx=\dfrac{2\,dz}{1+z^2}\,$   | $\dfrac{2z}{1+z^2}\,,\;\dfrac{1-z^2}{1+z^2}\,$                                                                                                                                           |
@@ -770,7 +770,7 @@ $$
 If $\mathcal{F}$ does not depend on all three variables, we may reduce to a first-order ODE by:
 
 | $\mathcal{F}\,$ of | Substitution | ODE                          |
-| ------------------ | ------------ | ---------------------------- |
+|--------------------|--------------|------------------------------|
 | $x,y'$             | $p(x)=y'(x)$ | $p'=\mathcal{F}(x,p)$        |
 | $y,y'$             | $y'=p(y)$    | $p\cdot p'=\mathcal{F}(y,p)$ |
 | $x$                | $p(x)=y'(x)$ | $p'=\mathcal{F}(x)$          |
@@ -790,7 +790,7 @@ where $\rho$ is the homogeneous solution with $\rho(0)=\rho'(0)=\cdots=\rho^{(n-
 For the following common cases:
 
 | $\chi(s)$                  | $\rho(x)$                                                        |
-| -------------------------- | ---------------------------------------------------------------- |
+|----------------------------|------------------------------------------------------------------|
 | $(s-\alpha)$               | $e^{\alpha\,x}\,$                                                |
 | $(s-\alpha_1)(s-\alpha_2)$ | $\dfrac{e^{\alpha_1\,x}-\,e^{\alpha_2\,x}}{\alpha_1-\alpha_2}\,$ |
 | $(s-\beta)^2+\omega^2$     | $\dfrac{\sin(\omega\,x)}{\omega}\,e^{\beta\,x}\,$                |
@@ -843,7 +843,7 @@ The idea is: whenever you have a differential $dq$, we need to multiply by $h_q$
 Further, we get these general formulas for common calculations:
 
 | Quantity        | General Form                                                                                                                                                                                                                                                                               |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Line Element    | $\displaystyle d\vec{r}=\sum_i\,h_i\,\widehat{q}_i\,dq_i=h_1\,\widehat{q}_1\,dq_1+h_2\,\widehat{q}_2\,dq_2+h_3\,\widehat{q}_3\,dq_3\,$                                                                                                                                                     |
 | Surface Element | $\displaystyle d\vec{S}=h_2\,h_3\,\widehat{q}_1\,dq_2\,dq_3+h_1\,h_3\,\widehat{q}_2\,dq_1\,dq_3+h_1\,h_2\,\widehat{q}_3\,dq_1\,dq_2\,$                                                                                                                                                     |
 | Gradient        | $\displaystyle \nabla f=\sum_i\,\frac{1}{h_i}\,\frac{\partial f}{\partial q_i}\,\widehat{q}_i=\frac{1}{h_1}\,\frac{\partial f}{\partial q_1}\,\widehat{q}_1+\frac{1}{h_2}\,\frac{\partial f}{\partial q_2}\,\widehat{q}_2+\frac{1}{h_3}\,\frac{\partial f}{\partial q_3}\,\widehat{q}_3\,$ |

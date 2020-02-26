@@ -10,10 +10,17 @@
 \usepackage{xargs}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
 
 \title{%
   Linear Algebra \\
-  \large Notes from TAU Course with Additional Information}
+  \large Notes from TAU Course with Additional Information \\
+  Lecturer: Dr. Eli Leher
+}
 \author{Gabriel Domingues}
 \date{2020-02-03}
 
@@ -102,6 +109,8 @@
 \setlength{\parskip}{1em}
 
 \tableofcontents
+
+\doclicenseThis
 
 \pagebreak
 
@@ -419,7 +428,7 @@ Examples include $\mathbb{Q}$ and $\mathbb{R}$ with addition and multiplication 
   If $\sols(H)=\{\tuple{0}\}$ (trivial), then the solution of the linear system is either unique or empty.
 \end{corollary}
 
-\subsection{Basis and Subspaces of $F^k$}
+\subsection{Basis and Subspaces of Tuples}
 
 \begin{definition}[Basis of Tuples]
   We say $S=\seqt{v}{n}$ is a basis for a set $U\subseteq F^k$ if every element in $U$ can be uniquely represented as linear combination of $S$, that is:
@@ -1968,7 +1977,7 @@ Further, we can algorithmically compute $M^B_C$ by Gauss-Jordan Elimination: Tak
 \end{theorem}
 
 \begin{definition}[Diagonalizable Linear Map]
-  Let $V$ be a finetely spanned vector space over $F$ and $T: V \to V$ be a linear transformation. $T$ is called diagonalizable if there is a basis $B$ of $V$ such that $[T]_B$ is diagonal.
+  Let $V$ be a finitely spanned vector space over $F$ and $T: V \to V$ be a linear transformation. $T$ is called diagonalizable if there is a basis $B$ of $V$ such that $[T]_B$ is diagonal.
 \end{definition}
 
 \begin{lemma}[EigenBasis of Linear Map]
