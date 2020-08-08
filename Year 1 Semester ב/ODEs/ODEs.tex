@@ -1,0 +1,1243 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage[italicdiff]{physics}
+\usepackage{paralist}
+\usepackage{cancel}
+\usepackage{xargs}
+\usepackage[symbol,stable]{footmisc}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
+
+\title{%
+  Ordinary Differential Equations \\
+  \large Notes from TAU Course with Additional Information \\
+  Lecturer: Ron Erez
+}
+\author{Gabriel Domingues}
+\date{\today}
+
+\let\emptyset\varnothing
+\let\RA\Rightarrow
+\let\LA\Leftarrow
+\let\LR\Leftrightarrow
+\renewcommand{\arraystretch}{0.75}
+
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\newcommand*{\vertbar}{\rule[-1.5ex]{0.5pt}{2.5ex}}
+
+\newcommand{\set}[2]{\left\{{#1}\;\middle|\;{#2}\right\}}
+\newcommand{\Forall}[1]{\forall\,{#1}\,,\,}
+\newcommand{\Exist}[1]{\exists\,{#1}:}
+\newcommand{\NExist}[1]{\nexists\,{#1}:}
+
+\DeclareMathOperator{\R}{\mathbb{R}}
+\DeclareMathOperator{\C}{\mathbb{C}}
+\DeclareMathOperator{\N}{\mathbb{N}}
+\DeclareMathOperator{\I}{\mathcal{I}}
+\DeclareMathOperator{\A}{\mathcal{A}}
+\DeclareMathOperator{\Y}{\mathcal{Y}}
+\DeclareMathOperator{\D}{\mathfrak{D}}
+\DeclareMathOperator{\id}{id}
+
+\newcommand{\seq}[2][n]{{\left\{#2\right\}}_{#1\in\N}}
+\newcommand{\der}[2][n]{{#2}^{(#1)}}
+\newcommand{\ints}[1][n]{\{1,2,\cdots,#1\}}
+\newcommand*{\pdx}{\partial_x}
+\newcommand*{\pdy}{\partial_y}
+\newcommand{\tuple}[1]{\underline{#1}}
+\newcommand{\Lapl}[2][s]{\mathcal{L}\left\{#2\right\}(#1)}
+\newcommand{\inner}[2]{\left\langle{#1},{#2}\right\rangle}
+
+\newcommandx{\mcols}[4][1={},2={}]{
+  \left[
+    \begin{array}{cccc}
+      \vertbar & \vertbar && \vertbar \\
+      {#1} \tuple{#3}_{\,1} {#2} & {#1} \tuple{#3}_{\,2} {#2} &\cdots& {#1} \tuple{#3}_{\,#4} {#2}   \\
+      \vertbar & \vertbar && \vertbar
+    \end{array}
+  \right]
+}
+
+\makeatletter
+\def\@xfootnote[#1]{\protected@xdef\@thefnmark{#1}\@footnotemark\@footnotetext}
+\makeatother
+\makeatletter
+\def\titlefootnote{\ifx\protect\@typeset@protect\expandafter\footnote\else\expandafter\@gobble\fi}
+\makeatother
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\addtocontents{toc}{\protect\footnotetext[1]{Note: Chapter 2 can be skipped on a first reading.}}
+
+\doclicenseThis
+
+\pagebreak
+
+\section{First Order ODEs}
+
+\subsection{General Analysis}
+
+\begin{definition}[Implicit ODE]
+  Given a function $\mathcal{F}:U\subset \R^{1+n}\to \R$, an implicit first-order ODE is an equation of the following form: $$\mathcal{F}(x,y,y',\cdots, y^{(n)})\equiv 0$$ for a function $y:\R\to\R$ which is $n$-times differentiable. Further, we call $n$ the order of the ODE. If, possible, we way write it in explicit form ($y$).
+\end{definition}
+
+\begin{definition}[First Order ODE]
+  Given a function $F:U\subset \R^2\to \R$, an (explicit) first-order ODE is an equation of the following form: $$y'=F(x,y)$$ for a function $y:\I\subseteq\R\to\R$ differentiable.
+\end{definition}
+
+\begin{lemma}[Constant Function Solutions]
+  For $F:\A\times\mathcal{B}\to \R$, if $\Exist{\lambda\in\R}\Forall{x\in \A}F(x,\lambda)=0$, then $y(x)\equiv \lambda$ is a solution to the differential equation $y'=F(x,y)$.
+  \begin{proof}
+    $y(x)\equiv \lambda\RA y'(x)\equiv 0\RA y'(x)\equiv 0\equiv F(x,\lambda)= F(x,y(x))$.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}[Integration]
+  \label{integration}
+  If $F$ is independent of $y$, that is, $F(x,y)=G(x)$, then the ODE $y'=F(x,y)$ can be resolved by simple integration.
+\end{remark}
+
+\begin{definition}[Autonomous]
+  If $F$ is independent of $x$, that is, $F(x,y)=G(y)$, then the ODE $y'=F(x,y)$ is called autonomous.
+\end{definition}
+
+\begin{lemma}
+  If $y(x)=\gamma(x)$ is a solution to an autonomous ODE, then $y_a(x)=\gamma(x+a)$ is also a solution, for any $a\in\R$.
+  \begin{proof}
+    Simply, notice $y_a'(x)=\gamma'(x+a)=F(x+a,\gamma(x+a))=G(\gamma(x+a))=G(y_a(x))=F(x,y_a(x))$, since $y=\gamma(x)$ is a solution.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Substitution / Change of Variables]
+  \label{change_of_vars}
+  For the equation $y'=F(x,y)$, let $y=G(x,z)$ for some $G:U\subset\R^2\to\R$ differentiable. We get: $$F(x,G(x,z))=y'=\pdx G(x,z)+z'\cdot\pdy G(x,z)$$
+  which is now an ODE in $z$, which we may solve $z(x)$ and substitute back $y(x)=G(x,z(x))$.
+\end{lemma}
+
+
+
+\begin{definition}[Higher Order ODE]
+  Given a function $F:U\subset \R^{1+n}\to \R$, an (explicit) $n$-th order ODE is an equation of the following form: $$\der{y}=F(x,y,\cdots,\der[n-1]{y})$$ for a function $y:\I\subseteq\R\to\R$ twice differentiable.
+\end{definition}
+
+\begin{lemma}[Integration]
+  The solution for $\der{y}=f$ is:
+  $$y(x)=\sum_{k=0}^{n-1}\frac{C_k}{k!}\,(x-a)^k+\frac{1}{n!}\int_a^x (x-t)^n\cdot f(t)\dd{t}$$
+  \begin{proof}
+    $\displaystyle y'(x)=\sum_{k=1}^{n-1}\frac{C_k}{(k-1)!}\,(x-a)^{k-1}+\frac{1}{(n-1)!}\int_a^x (x-t)^{n-1}\cdot f(t)\dd{t}$ and, by induction, $\displaystyle \der[n-1]{y}(x)=C_{n-1}+\int_a^x f(t)\dd{t}$, then $\der{y}(x)=f(x)$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Reduction of Order]
+  If $F(x,y,y')$ is independent of:
+  \begin{enumerate}
+    \item $y$, that is, $F(x,y,y')=G(x,y')$, then: let $p(x)=y'(x)$. We get the first-order equation: $p'(x)=G(x,p(x))$
+    \item $x$, that is, $F(x,y,y')=G(y,y')$, then: let $p$ be such that $y'=p(y)$. We get the first-order equation: $p'(y)\cdot p(y)=G(y,p(y))$
+  \end{enumerate}
+  \begin{proof}
+    We only prove the last relation, the rest is immediately clear. By the chain rule, $\displaystyle y''(x)=\dv{(p(y))}{x}=\dv{p}{y}\cdot\dv{y}{x}=p'(y)\cdot y'(x)=p'(y)\cdot p(y)$
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  In the first case, we retrieve $y$ from $p$ by direct integration (cf. \ref{integration}). In the second, we use separation of variables (cf. \ref{separation}).
+\end{remark}
+
+\pagebreak
+
+\subsection{Linearizing ODEs}
+
+\begin{theorem}[General First Order Linear ODE]
+  \label{mu_linear}
+  For the equation: $$y'+P(x)\cdot y=Q(x)$$ let $\displaystyle \mu(x)=\exp\left[\int P(x)\dd{x}\right]=\exp\left[\int_a^x P(t)\dd{t}\right]$, called the integrating factor. The solution is:
+  $$y(x)=\frac{1}{\mu(x)}\int\mu(x)\cdot Q(x)\dd{x}=\frac{1}{\mu(x)}\left[y(a)+\int_a^x\mu(t)\cdot Q(t)\dd{t}\right]$$
+  where $y(a)$ is arbitrary.
+  \begin{proof}
+    By definition, we get: $\mu'(x)=P(x)\cdot \mu(x)$ and $\mu(a)=1$. By multiplying both sides of the integrating factor:
+    \begin{align*}
+      y'(x)\cdot\mu(x)+y(x)\cdot \overbrace{P(x)\cdot\mu(x)}^{\mu'(x)}=\mu(x)\cdot Q(x)\\
+      (y\cdot \mu)'(x)=\mu(x)\cdot Q(x)\;\text{(Integrating both sides)}\\
+      y(x)\cdot\mu(x)-y(a)=\int_a^x\mu(t)\cdot Q(t)\dd{t}
+    \end{align*}
+    We have a solution.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  We wrote the indefinite integrals where we can pick any antiderivative.
+\end{remark}
+
+\noindent Our goal now is to find substitutions to transform into a general linear ODE.
+
+\begin{lemma}[Bernoulli ODE]
+  For $\alpha\in\R\setminus\{0,1\}$:
+  $$y'+P(x)\cdot y=Q(x)\cdot y^\alpha$$
+  let $z=y^{1-\alpha}$. We get: $$z'+(1-\alpha)\,P(x)\cdot z=(1-\alpha)\,Q(x)$$
+  \begin{proof}
+    Calculate: $z'=(1-\alpha)\,y^{-\alpha}\cdot y'=(1-\alpha)\,y^{-\alpha}\cdot(-P(x)\,y+Q(x)\cdot y^n)=-(1-\alpha)\,P(x)\cdot y^{1-\alpha}+(1-\alpha)\,Q(x)=-(1-\alpha)\,P(x)\cdot z+(1-\alpha)\,Q(x)$
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Homogeneous function]
+  A function $F:U\subseteq \R^2\to\R$ is homogeneous of degree $k$ if: $\Forall{\lambda\in\R}\Forall{x,y\in U}F(\lambda\cdot x,\lambda \cdot y)=\lambda^k\cdot F(x,y)$.
+  If $F$ is homogeneous, then the ODE $y'=F(x,y)$ is called homogeneous.
+\end{definition} 
+
+\begin{lemma}
+  \label{hom_func}
+  If  $F:U\subseteq \R^2\to\R$ is homogeneous of degree $k$, then exists $G: V\subseteq\R\to\R$ such that $F(x,y)=x^k\cdot G\left(\dfrac{y}{x}\right)$.
+  \begin{proof}
+    Let $G(z)=F(1,z)$. We get: $F(x,y)=F\left(x\cdot 1,x\cdot\dfrac{y}{x}\right)=x^k\cdot F\left(1,\dfrac{y}{x}\right)=x^k\cdot G\left(\dfrac{y}{x}\right)$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Homogeneous ODE]
+  Let $z=\dfrac{y}{x}$, then $y'=F(x,y)$ homogeneous of degree $k$ becomes: $x\cdot z'+z=x^k\cdot G(z)$ where $G(z)=F(1,z)$.
+  \begin{proof}
+    $y=x\cdot z$ and $F(x,y)=x^k\cdot G(z)$ (cf. \ref{hom_func}). Apply \ref{change_of_vars}.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Exact ODEs}
+
+\begin{lemma}[Implicit Solution]
+  \label{implicit}
+  If $\phi(x,y)=\text{const.}$ is such that any curve that satifies it a solution to the ODE $y'=F(x,y)$, then: $$F(x,y)=-\frac{\pdx\phi(x,y)}{\pdy\phi(x,y)}$$ where $\pdx$ is the partial derivative.
+  \begin{proof}
+    We differentiate both sides of $\phi(x,y(x))=\text{const.}$ wrt $x$, we get: $ \pdx\phi(x,y(x))+y'(x)\cdot\pdy\phi(x,y(x))=0$
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Exact]
+  An ODE of the form $y'=F(x,y)=-\dfrac{M(x,y)}{N(x,y)}$, which is written: $$M\dd{x}+N\dd{y}=0$$ such that $\pdy M=\pdx N$ is called exact.
+\end{definition}
+
+\begin{theorem}[N\&SC Exact]
+  An ODE $M\dd{x}+N\dd{y}=0$ is exact iff $\Exist{\phi:\R^2\to\R}\phi(x,y)=\text{const.}$ is an implicit solution. Moreover $M=\pdx\phi$ and $N=\pdy\phi$.
+  \label{NSC exact}
+  \begin{proof}
+    The converse was given in \ref{implicit} with the observation that $\pdy\pdx\phi= \pdx\pdy\phi$. By Green, if $\pdy M=\pdx N$, then $\vec{L}=(M,N)$ is path-independent. By the converse of the gradient theorem, $\Exist{\phi:\R^2\to\R}M=\pdx\phi$ and $N=\pdy\phi$. Then, $d\phi=M\dd{x}+N\dd{y}=0\RA \phi(x,y)=\text{const.}$, where $y$ can be some (differentiable) function of $x$ on the curve.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Separable First Order]
+  \label{separation}
+  If there are functions $\phi,\psi$ , such that $F(x,y)=\dfrac{\varphi(x)}{\psi(y)}$, then there is a solution $y(x)$ given implicitly: $$\int_{y(a)}^{y}\psi(s)\dd{s}=\int_a^x\varphi(t)\dd{t}$$ where $y(a)$ is arbitrary. Or, equivaletly, $\Psi(y)-\Phi(x)=\text{const.}$ is an implicit solution, where $\Psi$ and $\Phi$ are antiderivatives of $\psi$ and $\varphi$, respectively.
+  \begin{proof}
+    Follows directly from \ref{NSC exact} with $M(x,y)=-\varphi(x)$ and $N=\psi(y)$, we get $\phi(x,y)=\Psi(y)-\Phi(x)$ is an implicit solution.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  For an exact ODE $M\dd{x}+N\dd{y}=0$, the implicit solution is given by the following integral: $$\phi(x,y)=\int_{x_0}^x M(t,y)\dd{t}+\int_{y_0}^y N(x_0,s)\dd{s}=\int_{x_0}^x M(t,y_0)\dd{t}+\int_{y_0}^y N(x,s)\dd{s}$$
+  \begin{proof}
+    We'll only prove the first one. $\pdx\phi(x,y)=M(x,y)$ and $\displaystyle\pdy\phi(x,y)=N(x_0,y)+\int_{x_0}^x M_y(t,y)\dd{t}=N(x_0,y)+\int_{x_0}^x N_x(t,y)\dd{t}=N(x,y)$
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Inexact]
+  Let $M\dd{x}+N\dd{y}=0$, where $\pdy M\neq \pdx N$. Consider an integrating factor $\mu(x,y)=\exp\Big[\beta(x,y)\Big]$ such that $\pdy(\mu\cdot M)=\pdx(\mu\cdot N)$, that is: $$\pdy M-\pdx N=N\cdot\pdx\beta-M\cdot \pdy\beta$$
+  We consider these inexact cases where we can express the following as functions of:
+  \begin{compactenum}
+    \item $\xi(x)=\dfrac{\pdy M-\pdx N}{N}$: $\displaystyle\mu(x)=\exp\left[\int\xi(x)\dd{x}\right]=\exp\left[\int_a^x\xi(t)\dd{t}\right]$ 
+    \item $\zeta(y)=\dfrac{\pdy M-\pdx N}{-M}$: $\displaystyle\mu(y)=\exp\left[\int\zeta(y)\dd{y}\right]=\exp\left[\int_b^y\zeta(s)\dd{s}\right]$ 
+    \item $\eta(z)=\dfrac{\pdy M-\pdx N}{N\cdot\pdx z-M\cdot\pdy z}$: $\displaystyle\mu(z)=\exp\left[\int\eta(z)\dd{z}\right]=\exp\left[\int_c^z\eta(r)\dd{r}\right]$ where $z=f(x,y)$.
+  \end{compactenum}
+  \begin{proof}
+    We check:
+    \begin{compactenum}
+      \item Dividing by $N$: $\xi(x)=\pdx\beta-\frac{M}{N}\cdot \pdy\beta$. We get: $\pdy\beta\equiv 0$ and $\pdx\beta=\xi$, it satifies the equation.
+      \item Dividing by $-M$: $\zeta(y)=\pdy\beta-\frac{N}{M}\cdot \pdx\beta$. We get: $\pdx\beta\equiv 0$ and $\pdy\beta=\zeta$, it satifies the equation.
+      \item Dividing by $N\cdot\pdx z-M\cdot\pdy z: \eta(z)=\dfrac{N\cdot \pdx\beta-M\cdot\pdy\beta}{N\cdot\pdx z-M\cdot\pdy z}$. We get: $\pdx\beta=(\pdx z)\cdot\eta(z)$ and $\pdy\beta=(\pdy z)\cdot\eta(z)$, it satifies the equation.
+    \end{compactenum}
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\section[Theory of Analysis (*)]{Theory of Analysis \titlefootnote[(*)]{This chapter can be skipped on a first reading.}}
+
+\subsection{Limit of Functions}
+
+\begin{definition}[Banach Space]
+  A Banach space $E$ is a normed vector space (norm $\|\cdot\|$) such that every Cauchy sequence converges.
+\end{definition}
+
+\begin{definition}[Lipschitz]
+  A function $f: E\to F$ between two normed vector spaces, is Lipschitz continuous if, and only if: $$\Exist{K>0}\Forall{x,y\in X}\|f(x)-f(y)\|_F\leq K\cdot \|x-y\|_E$$
+  Then, $K$ is called the Lipschitz constant of $f$. If $K<1$,$f$ is called a contraction.
+\end{definition}
+
+\begin{theorem}[Banach Fixed Point Theorem]
+  \label{banach_fixed}
+  Given a Banach space $(E,\|\cdot\|)$, a contraction $F: E\to E$ has a unique fixed point $x^{*}$. In particular, $\Forall{x\in E}$ $$x^{*}=\lim_{n\to\infty}{F^n(x)}$$ where $F^n=(F\circ \dots \circ F)(x)\,,\;n$ times. 
+  \begin{proof}
+    First, if $F$ has a fixed point, it is unique. If $x$ and $y$ are fixed points, $\|x-y\|=\|F(x)-F(y)\|\leq K \|x-y\|\LR 0 \leq (K-1)\|x-y\|\RA \|x-y\|=0\LR x=y$, since $K<1$. Now, we show  that $F$ has a fixed point. By induction, $\Forall{x\in E} \|F^{n+1}(x)-F^n(x)\|\leq K^n \|F(x)-x\|$. Therefore, $\Forall{m,n\in\N}$ $$\|F^m(x)-F^n(x)\|\leq \left|\frac{K^n-K^m}{1-K}\right|\cdot\|F(x)-x\|$$
+    Hence, the sequence $\seq{F^n(x)}$ is Cauchy in $E$, so it converges to some element $x^{*}$. But, $\|F^{n+1}(x)-F^n(x)\|\to 0$. Therefore, $\|F(x^{*})-x^{*}\|=0 \LR F(x^{*})=x^{*}$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  \label{iter_banach_fixed}
+  Given a Banach space $(E,\|\cdot\|)$, a function $F: E\to E$, if $F^k$ is a contraction, for some $k\in\N$, then $F$ has a unique fixed point $x^{*}$, given the same as before, that is, $\Forall{x\in E}x^{*}=\lim\limits_{n\to\infty}{F^n(x)}$.
+  \begin{proof}
+    By \ref{banach_fixed}, $F^k$ has a unique fixed point $x^{*}$. So, $F^k(F(x^{*}))=F(F^k(x^*))=F(x^{*})$, since the fixed point is unique, we must have $F(x^{*})=x^{*}$. To prove uniqueness, observe any fixed point of $F$ is a fixed point of $F^k$, which is unique.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Continuous Function]
+  The space of continuous functions $f:[a,b]\to\R$ is defined as: $$C([a,b])=\set{f:[a,b]\to\R}{f\text{ continuous}}$$
+  Furthermore, it is a vector space $(C([a,b]),\R)$ with pointwise addition and scalar multiplication:
+  $(f+g)(x)=f(x)+g(x)\;$ and $\;(\alpha\cdot f)=\alpha\cdot f(x)$
+\end{definition}
+
+\begin{definition}[Uniform Norm]
+  We define the following norm in $C([a,b])$:
+  $$\|f\|_\infty= \sup\limits_{x\in [a,b]}|f(x)|$$
+  which, we can check obeys every axiom of a norm. We say $f_n\to f$ uniformly iff $\|f-f_n\|_\infty\to 0$
+\end{definition}
+
+\begin{theorem}
+  \label{continuous_fn_banach}
+  $C([a,b])$ is a Banach space with $\|\cdot\|_\infty$. That is, if $\seq{f_n}$ is Cauchy then, $\Exist{f\in C([a,b])}f_n\to f$ uniformly.
+  \begin{proof}
+    Given in Calculus II.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{continuous_Rn_banach}
+  $C([a,b],\R^n)=\set{f:[a,b]\to\R^n}{f_i\in C([a,b])}$ is a Banach Space with norm $\|f\|_\infty= \sup\limits_{x\in [a,b]}\|f(x)\|$.
+\end{corollary}
+
+\begin{lemma}
+  \label{convergence_lemma}
+  If $f_n\to f$ uniformly in $\I$, then:
+  \begin{compactenum}
+    \item $\Forall{x\in\I}f_n(x)\to f(x)$
+    \item if $f_n$ are continuous, and $x_n\to x$, then $f_n(x_n)\to f(x)$.
+  \end{compactenum}
+  \begin{proof}
+    Exercise in Calculus II.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Equicontinuity]
+  \label{def_equicontinuous}
+  A family $\mathcal{F}\subset C([a,b])$ is equicontinuous at $t\in[a,b]$ if: $$\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in[a,b]}|x-t|<\delta\RA \Forall{f\in\mathcal{F}}|f(x)-f(t)|<\epsilon$$ A family with common Lipschitz constant $K$ is immediately equicontinuous.
+\end{definition}
+
+\begin{theorem}[Arzela-Ascoli]
+  \label{arzela_ascoli}
+  A sequence $\seq{f_n\in C([a,b])}$ that is equicontinuous and bounded (that is, $\seq{\|f_n\|}$ is bounded) has a converging subsequence.
+  \begin{proof}
+    Given in Analysis.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Existence and Uniqueness}
+
+\begin{theorem}[Picard-Lindelöf/ E\&U]
+  \label{picard-lindelof}
+  Let $F:\mathcal{R}\subseteq \R^2\to\R$ be continuous and Lipschitz on $y$ (second variable) defined on the closed rectangle $\mathcal{R}=\A\times\mathcal{B}$. That is, $\Forall{x\in\A}\Forall{y_1,y_2\in\mathcal{B}}|F(x,y_1)-F(x,y_2)|\leq K |y_1-y_2|$ for some $K\in\R$. Then, there is a (closed) interval $\I\subseteq\A$ such that the solution to the differential equation: $$y'(x)=F(x,y(x))\;\text{ with }\,y(x_0)=y_0$$ exists and is unique on $\I$, with $x_0\in\I$.
+  \begin{proof}
+    First, let $\mathcal{R}=[x_0-a,x_0+a]\times [y_0-b,y_0+b]$ and $\I=[x_0-\theta,x_0+\theta]$ for some $a,b,\theta>0$. Define $E=\set{\gamma\in C(\I)}{\gamma(x_0)=y_0\text{ and }\|\gamma-y_0\|_\infty\leq b}$ and require $\theta\leq a$. Then, $E$ is a Banach space with uniform norm (cf. \ref{continuous_fn_banach}).
+    We define a function $\Gamma:E\to E$ as follows: $$\Gamma[\varphi](x)=y_0+\int_{x_0}^x F(t,\varphi(t))\dd{t}$$
+    Let $M=\sup\limits_{(x,y)\in\mathcal{R}}|F(x,y)|$, which only depends on $F$. To guarantee that the range of $\Gamma$ is correct, i.e. $\varphi\in E\RA \Gamma[\varphi]\in E$, we need:
+    \begin{align*}
+      |\Gamma[\varphi](x)-y_0|&=\left|\int_{x_0}^x F(t,\varphi(t))\dd{t}\right|\leq \int_{x_0}^x \big|F(t,\varphi(t))\big|\dd{t}\leq M|x-x_0|\leq M\cdot\theta\\
+      \RA& \Forall{x\in\I}\big|\Gamma[\varphi](x)-y_0\big|\leq M\cdot\theta \RA \;\big\|\Gamma[\varphi]-y_0\big\|_\infty\leq M\cdot\theta
+    \end{align*}
+    If we require that $\theta\leq\dfrac{b}{M}$, we get: $\Forall{\varphi\in E}\Gamma[\varphi]\in E$, as needed. Now, let us prove $\Gamma$ is a contraction. Since $F$ is Lipschitz on $y$:
+    \begin{align*}
+      \Forall{x\in\I}&\big|\Gamma[\varphi](x)-\Gamma[\psi](x)\big|=\left|\int_{x_0}^x \Big[F(t,\varphi(t))-F(t,\psi(t))\Big]\dd{t}\right|\\
+      &\leq \int_{x_0}^x \Big|F(t,\varphi(t))-F(t,\psi(t))\Big|\dd{t}\leq K\int_{x_0}^x \big|\varphi(t)-\psi(t)\big|\dd{t}\\ &\leq K\cdot|x-x_0|\cdot \big\|\varphi-\psi\big\|_\infty \leq K\cdot\theta\cdot \big\|\varphi-\psi\big\|_\infty
+    \end{align*}
+    Hence $\big\|\Gamma[\varphi]-\Gamma[\psi]\big\|_\infty\leq  K\cdot\theta\cdot \big\|\varphi-\psi\big\|_\infty$.
+    If we choose $\theta<\dfrac{1}{K}$, $\Gamma$ is a contraction. By \ref{banach_fixed}, $\Exist{!\,\gamma\in E}\Gamma[\gamma]=\gamma$. By FTC, $\gamma'(x)=F(x,\gamma(x))$ and $\gamma(x_0)=y_0$, by construction of $\Gamma$.
+  \end{proof}
+\end{theorem}
+
+\noindent Now that we prove that the theorem is true, we shall try to improve the size/range of the interval $\I$ around $x_0$.
+
+\begin{lemma}[Interval of E\&U]
+  \label{interval_of_uniqueness}
+  For $F$ satisfing conditions of Picard-Lindelöf (cf. \ref{picard-lindelof}), the interval of solution $\I=[x_0-\theta,x_0+\theta]$, where $\theta=\min\left\{a,\dfrac{b}{M}\right\}$ and $M=\sup\limits_{(x,y)\in\mathcal{R}}|F(x,y)|$.
+  \begin{proof}
+    The requirements $\theta\leq a$ and $\theta\leq\dfrac{b}{M}$ do not change. However, we may drop $\theta<\dfrac{1}{K}$ for the following reason: Instead of $\Gamma$ being a contraction, we shall prove $\Exist{k\in\N}\Gamma^k$ is a contraction. As before,
+    \begin{align*}
+      \Forall{x\in\I}&\big|\Gamma^k[\varphi](x)-\Gamma^k[\psi](x)\big|\leq K\int_{x_0}^x \big|\Gamma^{k-1}[\varphi](t)-\Gamma^{k-1}[\psi](t)\big|\dd{t}\\ &\leq\cdots\leq \frac{1}{k!}\,K^k\cdot|x-x_0|^k\cdot \big\|\varphi-\psi\big\|_\infty \leq \frac{(K\cdot\theta)^k}{k!}\, \big\|\varphi-\psi\big\|_\infty
+    \end{align*}
+    Using the integral $\displaystyle \left|\int_{x_0}^x\int_{x_0}^{t_1}\int_{x_0}^{t_2}\cdots \int_{x_0}^{t_{k-1}}\dd{t_1}\dd{t_2}\cdots\dd{t_k}\right|=\dfrac{|x-x_0|^k}{k!}$ (it's a simplex). For sufficiently large $k\in\N$, $\dfrac{(K\cdot\theta)^k}{k!}<1$, so $\Gamma^k$ is a contraction. By \ref{iter_banach_fixed}, this is sufficient for existence and uniqueness of a fixed point.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[E\& U for Systems]
+  \label{pl_systems}
+  Let $\tuple{F}:\mathcal{R}\subseteq \R^{1+n}\to\R^n$ be continuous and Lipschitz on $\tuple{y}$ (second variable) defined on the closed cylinder $\mathcal{R}=\A\times\mathcal{B}$ for $\A\subseteq\R$. That is, $$\Forall{x\in\A}\Forall{\tuple{y}_1,\tuple{y}_2\in\mathcal{B}}\|\tuple{F}(x,\tuple{y}_1)-\tuple{F}(x,\tuple{y}_2)\|\leq K \|\tuple{y}_1-\tuple{y}_2\|$$ for some $K\in\R$. Then, there is a (closed) interval $\I\subseteq\A$ such that the solution to the differential system: $$\tuple{y}'(x)=\tuple{F}(x,\tuple{y}(x))\;\text{ with }\,\tuple{y}(x_0)=\tuple{y}_0$$ exists and is unique on $\I$, with $x_0\in\I$.
+  \begin{proof}
+    Let $\mathcal{R}=[x_0-a,x_0+a]\times K_b(\tuple{y}_0)$ (cf. Calculus II) and define the set $E=\set{\tuple{\gamma}\in C(\I,\R^n)}{\tuple{\gamma}(x_0)=\tuple{y}_0\text{ and }\|\tuple{\gamma}-\tuple{y}_0\|_\infty\leq b}$ (cf. \ref{continuous_Rn_banach}). The proof follows exactly as \ref{picard-lindelof} and \ref{interval_of_uniqueness} with the same estimate $\theta=\min\left\{a,\dfrac{b}{M}\right\}$, where $M=\sup\limits_{(x,\tuple{y})\in\mathcal{R}}\|\tuple{F}(x,\tuple{y})\|$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Picard Iteration]
+  Let $\varphi_0(x)\equiv y_0$, define: $$\varphi_n(x)=y_0+\int_{x_0}^x F(t,\varphi_{n-1}(t))\dd{t}$$
+  for $n\in\N$. Then, $\seq{\varphi_n}$ converges uniformly to the solution of $y'=F(x,y)$, with $y(x_0)=y_0$.
+  \begin{proof}
+    Follow directly from \ref{banach_fixed}, using $\Gamma$ defined in\ref{picard-lindelof}.
+  \end{proof}
+\end{lemma}
+
+\begin{example}
+  If want to solve $y'=2x\cdot y$ with $y(0)=1$, we get, by induction: $$\varphi_0(x)=1;\varphi_1(x)=1+\int_0^x 2t\dd{t}=1+x^2\RA\varphi_n(x)=\sum_{k=0}^n\frac{x^{2k}}{k!}$$
+  Hence, taking the limit, $y(x)=e^{x^2}$.
+\end{example}
+
+\begin{definition}[Uniqueness Property]
+  \label{def_uniqueness}
+  An ODE said to have the uniqueness property if $\gamma_1:\I_1\to\R$ and $\gamma_2:\I_2\to\R$ are both solutions and $\Exist{x_0\in\I_1\cap\I_2}\gamma_1(x_0)=\gamma_2(x_0)$, then: $$\Forall{x\in\I_1\cap\I_2}\gamma_1(x)=\gamma_2(x)$$
+\end{definition}
+
+\begin{theorem}[Extension of Picard-Lindelöf]
+  \label{uniqueness_picard}
+  If $F:\mathcal{R}\subseteq \R^2\to\R$ is continuous and Lipschitz on $y$ (second variable), then $y'=F(x,y)$ has the uniqueness property (cf. \ref{def_uniqueness}).
+  \begin{proof}
+    Let $\mathcal{J}=\set{x\in\I_1\cap\I_2}{\gamma_1(x)=\gamma_2(x)}$. $x_0\in\mathcal{J}$, so it is not empty. Since $\gamma_1$ and $\gamma_2$ are continuous, $\mathcal{J}=(\gamma_2-\gamma_1)^{-1}(\{0\})$ is closed (on $\I_1\cap\I_2$). Take $s_0\in\mathcal{J}$. By Picard-Lindelöf, $\Exist{\theta>0}$ the solution to $y'=F(x,y)$ and $y(s_0)=\gamma_1(s_0)=\gamma_2(s_0)$ exists and is unique in $(s_0-\theta,s_0+\theta)$. Hence, $(s_0-\theta,s_0+\theta)\cap(\I_1\cap\I_2)\subseteq\mathcal{J}$. Therefore, $\mathcal{J}$ is open (on $\I_1\cap\I_2$). By connectedness (cf. Calculus II), a non-empty open and closed set must be $\mathcal{J}=\I_1\cap\I_2$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Existence and Approximate Solutions}
+
+\begin{lemma}[Smooth Approximation]
+  \label{c_inf_approx}
+  Let $\tuple{F}:U\subseteq\R^k\to\R^n$ continuous, then there is a sequence $\seq{\tuple{F}_n\in C^\infty(U,\R^n)}$ the converge uniformly to $\tuple{F}$ in compact subsets of $U$ (cf. Calculus II).
+  \begin{proof}
+    Define $\varphi_n\in C^\infty(\R^k,\R)$ (called a mollifier) such that $\varphi_n(\tuple{x})=0$ if $\|\tuple{x}\|\geq\frac{1}{n}$, $\Forall{\tuple{x}\in\R^k}\varphi_n(\tuple{x})\geq 0$ and $\displaystyle\int_{\R^k} \varphi_n(\tuple{x})\dd[k]{\tuple{x}}=\int_{K_{\frac{1}{n}}(\tuple{0})} \varphi_n(\tuple{x})\dd[k]{\tuple{x}}=1$ (there are many examples). Then, define $$\tuple{F}_n(\tuple{x})=\int_{\R^k} \varphi_n(\tuple{x}-\tuple{y})\cdot \tuple{F}(\tuple{y})\dd[k]{\tuple{y}}=\int_{\R^k} \varphi_n(\tuple{y})\cdot \tuple{F}(\tuple{x}-\tuple{y})\dd[k]{\tuple{y}}$$ by Leibnitz Rule (cf. Calculus I), $\displaystyle \der[j]{\tuple{F}}_n(\tuple{x})=\int_{\R^k}\der[j]{\varphi}_n(\tuple{x}-\tuple{y})\cdot \tuple{F}(\tuple{y})\dd[k]{\tuple{y}}$. So, $\tuple{F}_n$ is $C^\infty$. Now, we prove that $\tuple{F}_n\to \tuple{F}$ uniformly on some compact set $\mathcal{R}\subseteq U$. Calculing: $\displaystyle\|\tuple{F}_n(\tuple{x})-\tuple{F}(\tuple{x})\|=\left\|\int_{\R^k} \varphi_n(\tuple{x}-\tuple{y})\cdot \big[\tuple{F}(\tuple{y})-\tuple{F}(\tuple{x})\big]\dd[k]{\tuple{y}}\right\|\leq\int_{\R^k} \varphi_n(\tuple{x}-\tuple{y})\cdot \big\|\tuple{F}(\tuple{y})-\tuple{F}(\tuple{x})\big\|\dd[k]{\tuple{y}}=\int_{K_{\frac{1}{n}}(\tuple{x})} \varphi_n(\tuple{x}-\tuple{y})\cdot \big\|\tuple{F}(\tuple{y})-\tuple{F}(\tuple{x})\big\|\dd[k]{\tuple{y}}$. Since $\tuple{F}$ is continuous, it is uniformly continuous on $\mathcal{R}$ (cf. Calculus II). Hence $\Forall{\epsilon>0}\Exist{\delta>0}\Forall{\tuple{x},\tuple{y}\in \mathcal{R}}\|\tuple{x}-\tuple{y}\|<\delta\RA \|\tuple{F}(\tuple{x})-\tuple{F}(\tuple{y})\|<\epsilon$. Choose $\dfrac{1}{n}\leq\delta$, then $\|\tuple{F}_n(\tuple{x})-\tuple{F}(\tuple{x})\|<\epsilon$. Therefore, $\tuple{F}_n\to\tuple{F}$ uniformly.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  \label{approx_lipschitz}
+  The following are true: 
+  \begin{compactenum}[(i)]
+    \item $\Forall{n\in\N}\sup\limits_{\tuple{x}\in U}\|\tuple{F}_n(\tuple{x})\|\leq\sup\limits_{\tuple{x}\in U}\|\tuple{F}(\tuple{x})\|$
+    \item $\tuple{F}_n$ are Lipschitz with a common constant.
+  \end{compactenum}
+  \begin{proof}
+    Since $\varphi_n$ is $C^\infty$, it is Lipschitz continuous. $\displaystyle \|\tuple{F}_n(\tuple{x}_2)-\tuple{F}_n(\tuple{x}_1)\|\leq\int_{\mathcal{R}} \|\varphi_n(\tuple{x}_2-\tuple{y})-\varphi_n(\tuple{x}_1-\tuple{y})\|\cdot \tuple{F}(\tuple{y})\dd[k]{\tuple{y}}
+    \leq K\cdot\|\tuple{x}_2-\tuple{x}_1\|\cdot\int_{\mathcal{R}} \tuple{F}(\tuple{y})\dd[k]{\tuple{y}}$.
+  \end{proof}
+\end{corollary}
+
+\begin{theorem}[Peano Existence]
+  \label{peano_existence}
+  Let $\tuple{F}:\mathcal{R}\subseteq \R^{1+n}\to\R^n$ be continuous, where $\mathcal{R}$ is a closed cylinder. Then, there is a (closed) interval $\I$ such that the solution to the differential equation/system: $$\tuple{y}'(x)=\tuple{F}(x,\tuple{y}(x))\;\text{ with }\,\tuple{y}(x_0)=\tuple{y}_0$$ exists on $\I$, with $x_0\in\I$.
+  \begin{proof}
+    Let $\mathcal{R}=[x_0-a,x_0+a]\times K_b(\tuple{y}_0)$. Take $\seq{\tuple{F}_n\in C^\infty(,\R^n)}$ that converge uniformly to $F$ (cf. \ref{c_inf_approx}). By \ref{picard-lindelof}, \ref{interval_of_uniqueness} and \ref{approx_lipschitz}, for each $n\in\N$ there is a unique solution $\tuple{y}_n(x)$ to the equation $\tuple{y}_n'(x)=F_n(x,\tuple{y}_n(x))$ with $\tuple{y}_n(x_0)=\tuple{y}_0$ on the interval $[x_0-\theta_n,x_0+\theta_n]$ where $\theta_n=\min\left\{a,\dfrac{b}{M_n}\right\}$. Using \ref{approx_lipschitz}, we define $\theta=\min\left\{a,\dfrac{b}{M}\right\}\leq \theta_n$ and $\I=[x_0-\theta,x_0+\theta]$. Writing in integral form: $\displaystyle \tuple{y}_n(x)=\tuple{y}_0+\int_{x_0}^x \tuple{F}_n(t,\tuple{y}_n(t))\dd{t}$. We now prove $\seq{\tuple{y}_n}$ is equicontinuous: (cf. \ref{def_equicontinuous}) $$\|\tuple{y}_n(x_2)-\tuple{y}_n(x_1)\|=\left\|\int_{x_1}^{x_2} \tuple{F}_n(t,\tuple{y}_n(t))\dd{t}\right\|\leq M\cdot |x_2-x_1|$$ By \ref{arzela_ascoli}, there is a converging subsequence $\seq[k]{\tuple{y}_{n_k}}$ let $\tuple{y}_{n_k}\to \tuple{y}$ uniformly in $\I$. Taking $n=n_k\to\infty$ on both sides of the integral equation, and using \ref{convergence_lemma} $\tuple{F}_{n_k}(t,\tuple{y}_{n_k}(t))\to \tuple{F}(t,\tuple{y}(t))$, then, $\tuple{y}$ is a solution to $\displaystyle \tuple{y}(x)=\tuple{y}_0+\int_{x_0}^x \tuple{F}(t,\tuple{y}(t))\dd{t}$, hence it is a solution to the initial value system in $\I$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The proof of \ref{peano_existence} is simply to take an approximation of $\tuple{F}$, solve each ODE using \ref{picard-lindelof} and show the solutions converge to a solution to the original ODE.
+\end{remark}
+
+\begin{lemma}[Grönwall]
+  \label{gronwall}
+  Let $\Forall{x>a}u'(x)\leq \beta(x)\cdot u(x)$, then $$\Forall{x\geq a}u(x)\leq u(a)\cdot\exp\left[\int_a^x\beta(t)\dd{t}\right]$$
+  \begin{proof}
+    Let $\displaystyle v(x)=\exp\left[\int_a^x\beta(t)\dd{t}\right]$, so $v'(x)=\beta(x)\cdot v(x)$ and $v(x)\geq 0$. By the quotient rule: $$\dv{}{x}\,\left(\frac{u(x)}{v(x)}\right)=\frac{u'(x)\cdot v(x)-u(x)\cdot v'(x)}{v(x)^2}=\frac{u'(x)-\beta(x)\cdot u(x)}{v(x)}\leq 0$$ Then, $\dfrac{u(x)}{v(x)}$ is monotonically decreasing (technically, non-increasing). Then, $\Forall{x\leq a}\dfrac{u(x)}{v(x)}\leq\dfrac{u(a)}{v(a)}=u(a)$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  Same statement as \ref{uniqueness_picard}.
+  \begin{proof}
+    Define: $\displaystyle u(x)=\int_{x_0}^x\big\|\gamma_1(t)-\gamma_2(t)\big\|\dd{t}$. Then:
+    \begin{align*}
+      u'(x)=\|\gamma_1(x)-\gamma_2(x)\|=\left\|\int_{x_0}^x\big[F(t,\gamma_1(t))-F(t,\gamma_2(t))\big]\dd{t}\right\|\\\leq \int_{x_0}^x\big\|F(t,\gamma_1(t))-F(t,\gamma_2(t))\big\|\dd{t}\leq K\cdot \int_{x_0}^x\big\|\gamma_1(t)-\gamma_2(t)\big\|\dd{t}=K\cdot u(x)
+    \end{align*}
+    Moreover, $u(x_0)=0$ and $u(x)\geq 0$. By \ref{gronwall}, $u(x)\leq u(x_0)\cdot e^{K(x-x_0)}=0$. Hence, $u(x)\equiv 0$, then $u'(x)\equiv 0$, so $\gamma_1\equiv \gamma_2$.
+  \end{proof}
+\end{corollary}
+
+\pagebreak
+
+\section{Linear ODEs}
+
+\subsection{General Analysis}
+
+\begin{definition}[Linear ODE]
+  For $\mathcal{F}:U\subset\R^{1+n}\to \R$, the implicit ODE $\mathcal{F}(x,y',\cdots,\der{y})=0$ is called linear iff $F$ is linear on $y',\cdots,\der{y}$, equivaletly: $$\sum_{k=0}^n a_k(x)\cdot\der[k]{y}=b(x)$$
+  For functions $a_k(x)$ and $b(x)$. Where $\der[0]{y}=y$.
+\end{definition}
+
+\begin{definition}[Homogeneous Linear ODE]
+  If $b(x)\equiv 0$ in the following definition, the ODE is homogeneous. 
+\end{definition}
+
+\begin{definition}[Differential Operator]
+Define the operator: $$\begin{aligned}L:C^n(\R)&\to C(\R)\\
+\varphi&\mapsto L[\varphi](x)=\sum_{k=0}^n a_k(x)\cdot\der[k]{\varphi}(x)\end{aligned}$$ Then, the ODE $\sum_{k=0}^n a_k(x)\cdot\der[k]{y}=b(x)$ is expressed as $L[y](x)=b(x)$. We may rewrite it as: $$L=\sum_{k=0}^n a_k(x)\cdot \D^k$$ where $\D$ is the differentiating operator.
+\end{definition}
+
+\begin{lemma}
+  The operator $L$ is linear, where $C^n(\R)$ is equipped with addition and scalar multiplication of functions.
+  \begin{proof}
+    The differentiating operator is linear (cf. Calculus I) and multiplication operators $a_k(x)\cdot\id$ are also linear. By composition and sum (cf. Linear Algebra), $L$ is linear.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  The set of solutions to a homogeneous ODE $L[y]\equiv 0$ is $\ker(L)$, hence it is a vector subpace of $C^n(\R)$.
+\end{corollary}
+
+\pagebreak
+
+\subsection{Fundamental Set and Wronskian}
+
+\begin{definition}
+  \label{def_fundamental}
+  A set $\{y_1,y_2,\cdots,y_n\}\subset C^n(\I)$ is linearly dependent if: $$\Exist{(a_1,a_2,\cdots,a_n)\in\R^n\setminus\{\vec{0}\}}\sum_{k=1}^n a_k\cdot y_k(x)\equiv 0$$ It is linear independent otherwise. For that set, $\Y=(y_1,\cdots,y_n)$ ordered as a sequence, we define the fundamental matrix: $$M_{\Y}(x)=\begin{bmatrix}
+    y_1(x)&y_2(x)&\cdots&y_n(x)\\
+    y_1'(x)&y_2'(x)&\cdots&y_n'(x)\\
+    \vdots&\vdots&\ddots&\vdots\\
+    \der[n-1]{y}_1(x)&\der[n-1]{y}_2(x)&\cdots&\der[n-1]{y}_n(x)
+  \end{bmatrix}$$ and the Wronskian: $W_{\Y}(x)=\det(M_{\Y}(x))$
+\end{definition}
+
+\begin{lemma}
+  A set $\Y=\{y_1,y_2,\cdots,y_n\}\subset C^n(\I)$ is linearly dependent iff $W_{\Y}\equiv 0$.
+  \begin{proof}
+    By definition, it is linearly independent iff $\Exist{(a_1,a_2,\cdots,a_n)\in\R^n\setminus\{\vec{0}\}}\sum_{k=1}^n a_k\cdot y_k(x)\equiv 0$. Differentiating, we obtain the following system: $$\begin{bmatrix}
+      y_1(x)&y_2(x)&\cdots&y_n(x)\\
+      y_1'(x)&y_2'(x)&\cdots&y_n'(x)\\
+      \vdots&\vdots&\ddots&\vdots\\
+      \der[n-1]{y}_1(x)&\der[n-1]{y}_2(x)&\cdots&\der[n-1]{y}_n(x)
+    \end{bmatrix}\,\begin{bmatrix}
+      a_1\\a_2\\\vdots\\a_n
+    \end{bmatrix}=\begin{bmatrix}
+      0\\0\\\vdots\\0
+    \end{bmatrix}$$ which, for a given $x\in\I$, has a non-trivial solution iff the determinant is zero (cf. Linear Algebra), that is, $W_{\Y}(x)=0$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $\Exist{x_0\in\I}W_{\Y}(x_0)\neq 0$ iff $\Y$ is linearly independent.
+\end{corollary}
+
+\begin{definition}
+  For a linear ODE $L[y](x)=b(x)$, a linear independent set of solutions for the homogeneous equation is called a fundamental set.
+\end{definition}
+
+\begin{theorem}[Abel's Formula]
+  Let $y_1,y_2,\cdots y_n$ be solutions to the homogeneous ODE $\sum_{k=0}^n a_k(x)\cdot\der[k]{y}(x)\equiv 0$, then: $$W_{\Y}(x)=C\,\exp\left[-\int \frac{a_{n-1}(x)}{a_n(x)}\dd{x}\right]=W_{\Y}(a)\cdot\exp\left[-\int_a^x \frac{a_{n-1}(t)}{a_n(t)}\dd{t}\right]$$
+  \begin{proof}
+    By the product rule, 
+    \begin{align*}
+      W_{\Y}'(x)&=\cancel{\begin{vmatrix}
+        y_1'&y_2'&\cdots&y_n'\\
+        y_1'&y_2'&\cdots&y_n'\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-1]{y}_1&\der[n-1]{y}_2&\cdots&\der[n-1]{y}_n
+      \end{vmatrix}}+\cancel{\begin{vmatrix}
+        y_1&y_2&\cdots&y_n\\
+        y_1''&y_2''&\cdots&y_n''\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-1]{y}_1&\der[n-1]{y}_2&\cdots&\der[n-1]{y}_n
+      \end{vmatrix}}+\\
+      &\cdots+\cancel{\begin{vmatrix}
+        y_1&y_2&\cdots&y_n\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-1]{y}_1&\der[n-1]{y}_2&\cdots&\der[n-1]{y}_n\\
+        \der[n-1]{y}_1&\der[n-1]{y}_2&\cdots&\der[n-1]{y}_n
+      \end{vmatrix}}+\begin{vmatrix}
+        y_1&y_2&\cdots&y_n\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-2]{y}_1&\der[n-2]{y}_2&\cdots&\der[n-2]{y}_n\\
+        \der{y}_1&\der{y}_2&\cdots&\der{y}_n
+      \end{vmatrix}\\
+      &=\begin{vmatrix}
+        y_1&y_2&\cdots&y_n\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-2]{y}_1&\der[n-2]{y}_2&\cdots&\der[n-2]{y}_n\\
+        -\sum_{k=0}^{n-1} \frac{a_k(x)}{a_n(x)}\cdot\der[k]{y}_1&-\sum_{k=0}^{n-1} \frac{a_k(x)}{a_n(x)}\cdot\der[k]{y}_2&\cdots&-\sum_{k=0}^{n-1} \frac{a_k(x)}{a_n(x)}\cdot\der[k]{y}_n
+      \end{vmatrix}\\
+      &=\begin{vmatrix}
+        y_1&y_2&\cdots&y_n\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \der[n-2]{y}_1&\der[n-2]{y}_2&\cdots&\der[n-2]{y}_n\\
+        -\frac{a_{n-1}(x)}{a_n(x)}\cdot\der[n-1]{y}_1&-\frac{a_{n-1}(x)}{a_n(x)}\cdot\der[n-1]{y}_2&\cdots&-\frac{a_{n-1}(x)}{a_n(x)}\cdot\der[n-1]{y}_n
+      \end{vmatrix}\\
+      &=-\frac{a_{n-1}(x)}{a_n(x)}\cdot W_{\Y}(x)
+    \end{align*}
+    The result follows by \ref{mu_linear}.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{non_zero_wronsk}
+  For solutions of a homogeneous ODE, the Wronskian is either zero everywhere or non-zero everywhere. Hence, for a fundamental set $\Y$, $\Forall{x\in\I}W_{\Y}(x)\neq 0$.
+\end{corollary}
+
+\begin{theorem}
+  \label{spanning_fundamental}
+  For a fundamental set $\Y$ of the homogeneous ODE $L[y]\equiv 0$ , then $$\ker(L)=\operatorname{Span}(\Y)$$
+  \begin{proof}
+    By existence and uniqueness theorem, we need to prove that every initial condition can be achieved by a linear combination of $y_1,y_2,\cdots,y_n$. Let $\sum_{k=1}^n \alpha_k\cdot y_k(x)=y(x)$, by differentiating and checking the initial conditions:
+    $$\begin{bmatrix}
+      y_1(x_0)&y_2(x_0)&\cdots&y_n(x_0)\\
+      y_1'(x_0)&y_2'(x_0)&\cdots&y_n'(x_0)\\
+      \vdots&\vdots&\ddots&\vdots\\
+      \der[n-1]{y}_1(x_0)&\der[n-1]{y}_2(x_0)&\cdots&\der[n-1]{y}_n(x_0)
+    \end{bmatrix}\,\begin{bmatrix}
+      \alpha_1\\\alpha_2\\\vdots\\\alpha_n
+    \end{bmatrix}=\begin{bmatrix}
+      y(x_0)\\y'(x_0)\\\vdots\\\der[n-1]{y}(x_0)
+    \end{bmatrix}$$ the matrix is invertible since $W_{\Y}(x_0)\neq 0$ (due to \ref{non_zero_wronsk})
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{initial_value}
+  The solution to the ODE $L[y]\equiv 0$ with an initial values at $x_0$ is given by:
+  $$y_h(x)=\begin{bmatrix}
+    y_1(x) \\ y_2(x) \\\vdots\\ y_n(x)
+  \end{bmatrix}^t\;M^{-1}_{\Y}(x_0)\begin{bmatrix}
+    y(x_0)\\y'(x_0)\\\vdots\\\der[n-1]{y}(x_0)
+  \end{bmatrix}$$
+  where $\Y=(y_1,y_2,\cdots,y_n)$ is a fundamental set.
+\end{corollary}
+
+\pagebreak
+
+\subsection{Variation of Parameters}
+
+\begin{theorem}
+  \label{particular_solution}
+  A particular solution to $L[y](x)=\sum_{k=0}^n a_k(x)\cdot\der[k]{y}=b(x)$ is given by: $$y_p(x)=\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot y_k(x)\right]b(t)\dd{t}=\sum_{k=1}^n \left[\int_a^x \omega_k(t)\cdot b(t)\dd{t}\right]\cdot y_k(x)$$
+  where $\Y=(y_1,\cdots,y_{n-1},y_n)$ is a fundamental set and $\omega_k$ are given by: $$\begin{bmatrix}
+    \omega_1(x) \\\vdots\\ \omega_{n-1}(x) \\ \omega_n(x)
+  \end{bmatrix}=\frac{1}{a_n(x)}\;M^{-1}_{\Y}(x)\,\vec{e}_n$$
+  \begin{proof}
+    We differentiate the formula for $y_p(x)$:
+    \begin{align*}
+      y_p'(x)&=b(x)\cdot\sum_{k=1}^n \omega_k(x)\cdot y_k(x)+\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot y_k'(x)\right]b(t)\dd{t}\\
+      &=\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot y_k'(x)\right]b(t)\dd{t}\\
+      \der[j]{y}_p(x)&=\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot \der[j]{y}_k(x)\right]b(t)\dd{t}\text{ for }0\leq j\leq n-1\\
+      \der{y}_p(x)&=b(x)\cdot\sum_{k=1}^n \omega_k(x)\cdot\der[n-1]{y}_k(x)+\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot\der{y}_k(x)\right]b(t)\dd{t}\\
+      &=\frac{b(x)}{a_n(x)}+\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot\der{y}_k(x)\right]b(t)\dd{t}
+    \end{align*}
+    Finally, we have: $$\sum_{j=0}^n a_j(x)\cdot \der[j]{y}_p(x)=b(x)+\int_a^x\left[\sum_{k=1}^n \omega_k(t)\cdot\left(\sum_{j=0}^n a_j(x)\cdot\der[j]{y}_k(x)\right)\right]b(t)\dd{t}=b(x)$$ hence, it is a solution. Further, it is the unique solution for the initial condition $\der[j]{y}(a)=0\text{ for }0\leq j\leq n-1$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  The solution to the ODE $L[y](x)=b(x)$ with the initial values at $x_0$ is given by: $y(x)=y_p(x)+y_h(x)$ (cf. \ref{initial_value},\ref{particular_solution}).
+\end{corollary}
+
+\begin{theorem}
+  Let $y_0(x)$ be a solution to $L[y]\equiv 0$. Then, $$y(x)=y_0(x)\cdot\int \gamma(x)\dd{x}=y_0(x)\cdot\left(\gamma_0+\int_a^x \gamma(t)\dd{t}\right)$$ where $\gamma(x)$ is a solution a $(n-1)$-th degree linear ODE.
+  \begin{proof}
+    Let $y(x)=Y(x)\cdot y_0(x)$. Leibnitz: $\der[k]{y}=\sum_{j=0}^k\binom{k}{j}\,\der[j]{Y}(x)\cdot \der[k-j]{y}_0(x)$ 
+    \begin{align*}
+      0\equiv\sum_{k=0}^n a_k(x)\cdot\der[k]{y}=\sum_{k=0}^n \sum_{j=0}^k\binom{k}{j}\,a_k(x)\cdot\der[j]{Y}(x)\cdot \der[k-j]{y}_0(x)\\
+      =Y(x)\cdot \sum_{k=0}^n a_k(x)\cdot \der[k]{y}_0(x)+\sum_{k=1}^n \sum_{j=1}^k\binom{k}{j}\,a_k(x)\cdot\der[j]{Y}(x)\cdot \der[k-j]{y}_0(x)\\
+      =\sum_{j=1}^n \left[\sum_{k=j}^n\binom{k}{j}\,a_k(x)\cdot\der[k-j]{y}_0(x)\right]\der[j]{Y}(x)\equiv 0
+    \end{align*}
+    Hence, let $\displaystyle Y(x)=\gamma_0+\int_a^x \gamma(t)\dd{t}$. We get the ODE: $\displaystyle\sum_{k=0}^{n-1}b_k(x)\cdot\der[k]{\gamma}(x)\equiv 0$ defined by $\displaystyle b_j(x)=\sum_{k=j+1}^n\binom{k}{j+1}\,a_k(x)\cdot\der[k-j-1]{y}_0(x)$. Further, $b_{n-1}(x)=a_n(x)\not\equiv 0$, hence the order is $n-1$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  A $n$-th order linear ODE has a fundamental set of size $n$.
+\end{corollary}
+
+\pagebreak
+
+\subsection{Constant Coefficients}
+
+\begin{definition}[Characteristic Polynomial]
+  For the homogeneous linear ODE $\sum_{k=0}^n a_k\cdot\der[k]{y}(x)\equiv 0$ with $a_k\in\R$, define the polynomial: $$\chi(s)=\sum_{k=0}^n a_k\cdot s^k$$ We may rewrite it as $L=\sum_{k=0}^n a_k\cdot \D^k=\chi(\D)$ where $\D$ is the differentiating operator.
+\end{definition}
+
+\begin{lemma}[Factoring]
+  Let $\chi$ be the characteristic polynomial of $L$, then, if $\chi$ can be factored into: $$\chi(s)=a_n\,\prod_{i=1}^N(s-\lambda_i)^{\mu_i}\Rightarrow L=a_n\,\prod_{i=1}^N(\D-\lambda_i\cdot\id)^{\mu_i}$$ where $\prod$ in $L$ means composition.
+  \begin{proof}
+    First, we show $\D-\lambda_i\cdot\id$ and $\D-\lambda_j\cdot\id$ commute: 
+    \begin{align*}
+      &(\D-\lambda_i\cdot\id)\circ(\D-\lambda_j\cdot\id)[\varphi]=(\D-\lambda_i\cdot\id)[\varphi'-\lambda_j\cdot\varphi]\\
+      &=\varphi''-(\lambda_i+\lambda_j)\cdot\varphi'+\lambda_i\lambda_j\cdot\varphi=\varphi''-(\lambda_j+\lambda_i)\cdot\varphi'+\lambda_j\lambda_i\cdot\varphi\\
+      &=\cdots=(\D-\lambda_j\cdot\id)\circ(\D-\lambda_i\cdot\id)[\varphi]
+    \end{align*}
+    The rest follows from $L=\chi(\D)$.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  By Fundamental Theorem of Algebra, every polynomial can be factored as such.
+\end{remark}
+
+\begin{lemma}[Exponential Solutions]
+  Let $\gamma(x)\in\ker(\D-\lambda\cdot\id)^\mu$, iff $e^{-\lambda\,x}\,\gamma(x)\in\ker(\D^\mu)=\R_{\mu-1}[x]$. That is $$\ker(\D-\lambda\cdot\id)^\mu=\set{\wp(x)\cdot e^{\lambda x}}{\wp\in\R_{\mu-1}[x]}$$
+  \begin{proof}
+    $\D\big[e^{-\lambda\,x}\,\gamma(x)\big]=e^{-\lambda x}\cdot(\D-\lambda\cdot\id)\big[\gamma(x)\big]$ and, by induction, we get: $\D^\mu\big[e^{-\lambda\,x}\,\gamma(x)\big]=e^{-\lambda x}\cdot(\D-\lambda\cdot\id)^\mu\big[\gamma(x)\big]$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}
+  \label{characteristic_solutions}
+  For $\chi(s)=a_n\,\prod_{i=1}^N(s-\lambda_i)^{\mu_i}$, then $$\Y=\set{x^k\,e^{\lambda_i\,x}}{0\leq k\leq \mu_i-1\;,\;1\leq i\leq N}$$ is a fundamental set of $\sum_{k=0}^n a_k\cdot\der[k]{y}(x)\equiv 0$
+  \begin{proof}
+    We will show $W_{\Y}(0)\neq 0$ (cf. \ref{non_zero_wronsk}). It can be shown that $W_{\Y}(0)=\prod_{i<j}(\lambda_i-\lambda_j)^{\mu_i\,\mu_j}$, which is clearly non-zero, but we'll stick with showing the determinant is non-zero.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  We allowed our solution to be $y:\R\to\mathbb{C}$. However, we can express the solution set as purely real function, which are useful since, if the initial conditions and the coefficients are real, then the solutions are real (cf. \ref{spanning_fundamental})
+\end{remark}
+
+\begin{lemma}[Complex Roots]
+  For a complex root $s=\alpha+\beta\,i$, there is another root $s=\alpha-\beta\,i$ and the solutions $\{e^{\alpha x}\,\cos(\beta x),e^{\alpha x}\,\sin(\beta x)\}$ substitute for $\{e^{(\alpha+\beta\,i)x},e^{(\alpha-\beta\,i)x}\}$ on \ref{characteristic_solutions}.
+  \begin{proof}
+    Since $\chi\in\R[s]$, taking the conjugate of $\chi(s)=0$ shows $s\in\mathbb{C}$ is a root iff $\bar{s}\in\mathbb{C}$. Further, Euler's Formula shows: 
+    \begin{align*}
+      y(x)&=f(x)\,e^{(\alpha+\beta\,i)x}+g(x)\,e^{(\alpha-\beta\,i)x}\\
+      &=e^{\alpha x}\,\Big[(f(x)+g(x))\,\cos(\beta x)+i(f(x)-g(x))\,\sin(\beta x)\Big]\\
+      &=\tilde{f}(x)\,e^{\alpha x}\,\cos(\beta x)+\tilde{g}(x)\,e^{\alpha x}\,\sin(\beta x)
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\section{Linear Systems}
+
+\subsection{General Analysis}
+
+\begin{definition}[First Order System]
+  Given a function $\tuple{F}:U\subset\R^{1+n}\to\R^n$, an (explicit) first-order system is a vector equation of the following form: $$\tuple{y}'=\tuple{F}(x,\tuple{y})$$ for a function $\tuple{y}:\I\subseteq\R\to\R^n$ differentiable. The system is linear, if there are $\A:\R\to M_n(\R)$ (cf. Linear Algebra) and $\tuple{b}:\R\to\R^n:\tuple{F}(x,\tuple{y})=\A(x)\,\tuple{y}+\tuple{b}(x)$, hence: $$\tuple{y}'=\A(x)\,\tuple{y}+\tuple{b}(x)$$
+\end{definition}
+
+\begin{lemma}[Phase Transformation]
+  \label{phase_transform}
+  Let $F:U\subseteq \R^{1+n}\to\R$, then, there is a function $\tuple{F}:U\subseteq \R^{1+n}\to\R^n$, so the ODE $\der{y}=F(x,y,\cdots,\der[n-1]{y})$ becomes $\tuple{y}'=\tuple{F}(x,\tuple{y})$ which is first order on $\tuple{y}=\begin{bmatrix}y\\\vdots\\\der[n-1]{y}\end{bmatrix}$.
+  \begin{proof}
+    Define: $\tuple{F}:U\subseteq \R^{1+n}\to\R^n$ s.t. $\tuple{F}\left(x,\begin{bmatrix}y_1\\\vdots\\y_n\end{bmatrix}\right)=\begin{bmatrix}y_2\\\vdots\\y_n\\F(x,y_1,\cdots,y_n)\end{bmatrix}$. Then, the ODE wil take the form: $$\tuple{F}(x,\tuple{y})=\tuple{F}\left(x,\begin{bmatrix}y\\\vdots\\\der[n-1]{y}\end{bmatrix}\right)=\begin{bmatrix}y'\\\vdots\\\der[n-1]{y}\\F(x,y,\cdots,\der[n-1]{y})\end{bmatrix}=\begin{bmatrix}y'\\\vdots\\\der[n-1]{y}\\\der{y}\end{bmatrix}=\tuple{y}'$$ which is what we were looking for.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  For the equation $\der{y}+\sum_{i=0}^{n-1} a_k(x)\cdot\der[k]{y}(x)=b(x)$, we get: $$\tuple{y}'=\begin{bmatrix}
+    0&1&0&\cdots&0\\
+    0&0&1&\cdots&0\\
+    \vdots&\vdots&\vdots&\ddots&\vdots\\
+    0&0&0&\cdots&1\\
+    -a_0(x)&-a_1(x)&-a_2(x)&\cdots&-a_{n-1}(x)
+  \end{bmatrix}\,\tuple{y}+b(x)\,\tuple{e}_n$$
+\end{corollary}
+
+\begin{definition}
+  \label{def_fundamental_system}
+  A set $\{\tuple{y}_1,\tuple{y}_2,\cdots,\tuple{y}_n\}\subset C^1(\I,\R^n)$ is linearly dependent if: $\Exist{(a_1,a_2,\cdots,a_n)\in\R^n\setminus\{\tuple{0}\}}\sum_{k=1}^n a_k\cdot \tuple{y}_k(x)\equiv\tuple{0}$. It is linear independent otherwise. For that set, $\Y=(\tuple{y}_1,\cdots,\tuple{y}_n)$ ordered as a sequence, we define the fundamental matrix: $$M_{\Y}(x)=\mcols{y}{n}$$ and the Wronskian: $W_{\Y}(x)=\det(M_{\Y}(x))$. This first with \ref{def_fundamental} due to \ref{phase_transform}.
+\end{definition}
+
+\begin{remark}
+  The ODE $\tuple{y}'=\A(x)\,\tuple{y}+\tuple{b}(x)$ can be expressed as $L[\tuple{y}](x)=\tuple{b}(x)$. We may rewrite it as: $L=\D-\A(x)$ where $\D$ is tuple differentiation.
+\end{remark}
+
+\begin{definition}
+  For a linear ODE $L[\tuple{y}](x)=\tuple{b}(x)$, a linear independent set of solutions for the homogeneous equation is called a fundamental set.
+\end{definition}
+
+\begin{theorem}[Liouville Formula]
+  Let $\Y=(\tuple{y}_1,\tuple{y}_2,\cdots \tuple{y}_n)$ be solutions to the homogeneous ODE $\tuple{y}'=\A(x)\,\tuple{y}$, then: $$W_{\Y}(x)=C\,\exp\left[\int\tr(\A(x))\dd{x}\right]=W_{\Y}(a)\cdot\exp\left[\int_a^x \tr(\A(t))\dd{t}\right]$$
+  \begin{proof}
+    By the product rule, 
+    \begin{align*}
+      W_{\Y}'(x)&=\begin{vmatrix}
+        y_{1,1}'&y_{2,1}'&\cdots&y_{n,1}'\\
+        y_{1,2}&y_{2,2}&\cdots&y_{n,2}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        y_{1,n}&y_{2,n}&\cdots&y_{n,n}
+      \end{vmatrix}+\cdots+\begin{vmatrix}
+        y_{1,1}&y_{2,1}&\cdots&y_{n,1}\\
+        y_{1,2}&y_{2,2}&\cdots&y_{n,2}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        y_{1,n}'&y_{2,n}'&\cdots&y_{n,n}'
+      \end{vmatrix}\\
+      &=\begin{vmatrix}
+        \sum_{k=1}^n a_{1,k}\cdot y_{1,k}&\sum_{k=1}^n a_{1,k}\cdot y_{2,k}&\cdots&\sum_{k=1}^n a_{1,k}\cdot y_{n,k}\\
+        y_{1,2}&y_{2,2}&\cdots&y_{n,2}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        y_{1,n}&y_{2,n}&\cdots&y_{n,n}
+      \end{vmatrix}+\\
+      &\cdots+\begin{vmatrix}
+        y_{1,1}&y_{2,1}&\cdots&y_{n,1}\\
+        y_{1,2}&y_{2,2}&\cdots&y_{n,2}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        \sum_{k=1}^n a_{n,k}\cdot y_{1,k}&\sum_{k=1}^n a_{n,k}\cdot y_{2,k}&\cdots&\sum_{k=1}^n a_{n,k}\cdot y_{n,k}
+      \end{vmatrix}\\
+      &=\begin{vmatrix}
+        a_{1,1}\cdot y_{1,1}&\cdots&a_{1,1}\cdot y_{n,1}\\
+        y_{1,2}&y_{2,2}&\cdots&y_{n,2}\\
+        \vdots&\ddots&\vdots\\
+        y_{1,n}&\cdots&y_{n,n}
+      \end{vmatrix}+\cdots+\begin{vmatrix}
+        y_{1,1}&\cdots&y_{n,1}\\
+        y_{1,2}&\cdots&y_{n,2}\\
+        \vdots&\ddots&\vdots\\
+        a_{n,n}\cdot y_{1,n}&\cdots&a_{n,n}\cdot y_{n,n}
+      \end{vmatrix}\\
+      &=(a_{1,1}+\cdots+ a_{n,n})\cdot W_{\Y}(x)=\tr(\A(x))\cdot W_{\Y}(x)
+    \end{align*}
+    The result follows by \ref{mu_linear}.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  For a linear system $\tuple{y}'=\A(x)\,\tuple{y}+\tuple{b}(x)$ and $\Y=(\tuple{y}_1,\tuple{y}_2,\cdots,\tuple{y}_n)$ be fundamental solutions ($L[\tuple{y}]\equiv\tuple{0}$) , then $\ker(L)=\operatorname{Span}(\Y)$.
+  \begin{proof}
+    Analogous to \ref{spanning_fundamental}.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  \label{initial_value}
+  The solution to the ODE $L[\tuple{y}]\equiv \tuple{0}$ with an initial values at $x_0$ is given by:
+  $$y_h(x)=M_{\Y}(x)\;M^{-1}_{\Y}(x_0)\;\tuple{y}(x_0)$$
+  where $\Y=(\tuple{y}_1,\tuple{y}_2,\cdots,\tuple{y}_n)$ is a fundamental set.
+\end{corollary}
+
+\begin{remark}
+  The fundamental matrix satisfies: $M_{\Y}'(x)=\A(x)\,M_{\Y}(x)$.
+\end{remark}
+
+\begin{lemma}[Variation of Parameters]
+  A particular solution to $L[\tuple{y}](x)=\tuple{y}'-\A(x)\,\tuple{y}=\tuple{b}(x)$ is given by: $$\tuple{y}_p(x)=M_{\Y}(x)\int_a^x M_{\Y}^{-1}(t)\;\tuple{b}(t)\dd{t}$$
+  where $\Y=(y_1,\cdots,y_{n-1},y_n)$ is a fundamental set.
+  \begin{proof}
+    By direct calculation (Leibnitz rules):
+    $$\tuple{y}_p'(x)=M_{\Y}'(x)\int_a^x M_{\Y}^{-1}(t)\;\tuple{b}(t)\dd{t}+M_{\Y}(x)\; M_{\Y}^{-1}(x)\;\tuple{b}(x)=\A(x)\,\tuple{y}_p(x)+\tuple{b}(x)$$
+    since $M_{\Y}'(x)=\A(x)\,M_{\Y}(x)$.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Jordanization of Exponential Matrix}
+
+\begin{definition}[Matrix Exponential]
+  For $A\in M_n(\C)$, define: $$\exp(A\,x)=\sum_{k=0}^\infty \frac{1}{k!}\cdot (A\,x)^k=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot A^k$$ (considering $A^n=\overbrace{A\times\cdots\times A}^{n\text{ times}}$ and $A^0=I$) which converges entrywise to the matrix $\exp(A\,x)\in\operatorname{GL}_n(\C)$ (cf. Linear Algebra) for every $A\in M_n(\C)$ and $x\in\C$.
+\end{definition}
+
+\begin{theorem}
+  \label{exp_sol}
+  For the ODE $\tuple{y}'=A\,\tuple{y}$, the solution is $\tuple{y}=\exp(A\,x)\,\tuple{y}(0)$. Moreover, $\ker(L)=\operatorname{cols}(\exp(A\,x))$ for $L[\tuple{y}]=\tuple{y}'-A\,\tuple{y}$.
+  \begin{proof}
+    Calculating: $\tuple{y}(x)=\exp(A\,x)\,\tuple{y}(\vec{0})=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot A^k\,\tuple{y}(0)$
+    \begin{align*}
+      \tuple{y}'(x)&=\sum_{k=0}^\infty \frac{k\cdot x^{k-1}}{k!}\cdot A^k\,\tuple{y}(0)=\sum_{k=1}^\infty \frac{x^{k-1}}{(k-1)!}\cdot A^k\,\tuple{y}(0)\\
+      &=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot A^{k+1}\,\tuple{y}(0)=A\,\exp(A\,x)\,\tuple{y}(0)=A\,\tuple{y}(x)
+    \end{align*}
+    Further, it can be rewritten as: $\tuple{y}(x)=\exp[A\,(x-x_0)]\,\tuple{y}(x_0)$, which is the unique solution for any given $\tuple{y}(x_0)$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  A fundamental set $\Y$ for $\tuple{y}'=A\tuple{y}$ is: $M_{\Y}(x)=\exp(A\,x)$.
+\end{corollary}
+
+\begin{lemma}
+  For $A,B\in M_n(\C)$, if $A\sim B$ (cf. Linear Algebra), that is, $\Exist{P\in\operatorname{GL}_n(\C)}A=P\,B\,P^{-1}$, then: $\Forall{x\in\C}\exp(A\,x)=P\,\exp(B\,x)\,P^{-1}$, and so, $\exp(A\,x)\sim\exp(B\,x)$.
+  \begin{proof}
+    Calculating: $\exp(A\,x)=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot A^k=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot (P\,B\,P^{-1})^k=\sum_{k=0}^\infty \frac{x^k}{k!}\cdot P\,B^k\,P^{-1}=P\,\left[\sum_{k=0}^\infty \frac{x^k}{k!}\cdot B^k\right]\,P^{-1}=P\,\exp(B\,x)\,P^{-1}$
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  If $A$ is diagonalizable (cf. Linear Algebra), then the exponential is: $\exp(A\,x)=P\,\exp(\Lambda\, x)\,P^{-1}$, for $\Lambda=\operatorname{diag}(\lambda_1,\cdots,\lambda_k)$ and $\exp(\Lambda x)=\operatorname{diag}(e^{\lambda_1 x},\cdots,e^{\lambda_k x})$. Moreover, $$\operatorname{cols}(\exp(A\,x))=\operatorname{Span}(\tuple{v}_1\,e^{\lambda_1 x},\cdots,\tuple{v}_k\,e^{\lambda_k x})$$ where $\tuple{v}_i$ are eigenvectors with eigenvalue $\lambda_i$.
+\end{corollary}
+
+% \begin{definition}
+%   The Jordan block of $\lambda\in\C$ is $J_k(\lambda)\in M_k(\C)$:
+%   $$J_k(\lambda)=
+%     \begin{bmatrix}
+%       \lambda&1&0&0&\cdots&0\\
+%       0&\lambda&1&0&\cdots&0\\
+%       0&0&\lambda&1&\cdots&0\\
+%       \vdots&\vdots&\vdots&\vdots&\ddots&\vdots\\
+%       0&0&0&0&\lambda&1\\
+%       0&0&0&0&0&\lambda\\
+%     \end{bmatrix}\quad;\text{ that is,}\quad
+%     \big(J_k(\lambda)\big)_{i\,,\,j}=
+%     \begin{cases}
+%       \lambda&\text{ if }i=j\\
+%       1&\text{ if }i+1=j\\
+%       0&\text{ otherwise}
+%     \end{cases}$$
+%   The matrix $J\in M_n(\C)$ is in Jordan Canonical Form (JCF) if it is a block diagonal matrix of Jordan blocks:
+%   $$J=\begin{bmatrix}
+%     J_{k_1}(\lambda_1)&0&\cdots&0\\
+%     0&J_{k_2}(\lambda_2)&\cdots&0\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     0&0&\cdots&J_{k_n}(\lambda_n)
+%   \end{bmatrix}=\operatorname{diag}\Big(J_{k_1}(\lambda_1),J_{k_2}(\lambda_2),\cdots,J_{k_n}(\lambda_n)\Big)$$
+% \end{definition}
+
+% \begin{lemma}
+%   $$\exp(J_k(\lambda)\,x)=
+%     \begin{bmatrix}
+%       e^{\lambda x}&x\,e^{\lambda x}&\frac{1}{2!}x^2\,e^{\lambda x}&\cdots&\frac{1}{(k-1)!}x^{k-1}\,e^{\lambda x}\\
+%       0&e^{\lambda x}&x\,e^{\lambda x}&\cdots&\frac{1}{(k-2)!}x^{k-2}\,e^{\lambda x}\\
+%       \vdots&\vdots&\vdots&\ddots&\vdots\\
+%       0&0&0&e^{\lambda x}&x\,e^{\lambda x}\\
+%       0&0&0&0&e^{\lambda x}\\
+%     \end{bmatrix}$$
+%     $$\text{ that is,}\quad
+%     \big(\exp(J_k(\lambda)\,x)\big)_{i\,,\,j}=
+%     \begin{cases}
+%       \dfrac{x^{j-i}}{(j-i)!}\,e^{\lambda x}&\text{ if }j\geq i\\
+%       0&\text{ otherwise}
+%     \end{cases}$$
+%     Further, $\exp(J\,x)=\operatorname{diag}\Big(\exp(J_{k_1}(\lambda_1)\,x),\exp(J_{k_2}(\lambda_2)\,x),\cdots,\exp(J_{k_n}(\lambda_n)\,x)\Big)$.
+%     \begin{proof}
+%       By induction, it is easy to show $\big(J_k(\lambda)^n\big)_{i\,,\,j}=
+%       \begin{cases}
+%         \binom{n}{j-i}\lambda^{n-j+i}&\text{if }j\geq i\\
+%         0&\text{otherwise}
+%       \end{cases}$ and $\displaystyle\sum_{n=0}^\infty \dfrac{x^n}{n!}\,\binom{n}{j-i}\lambda^{n-j+i}=\frac{1}{(j-i)!}\,\dv[j-i]{}{\lambda}\Big[e^{\lambda x}\Big]=\dfrac{x^{j-i}}{(j-i)!}\,e^{\lambda x}$. The rest follows by block diagonal arithmetics.
+%     \end{proof}
+% \end{lemma}
+
+\begin{lemma}
+  For $A,B\in M_n(\R)$, if $AB=BA$, then $\exp(A\,x)\,\exp(B\,x)=\exp((A+B)\,x)$.
+  \begin{proof}
+    If follows from the same arithmetics that shows $e^{ax}\cdot e^{bx}=e^{(a+b)x}$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}
+  A chain of generalized eigenvectors, also called a Jordan chain, of $A\in M_n(\C)$ with eigenvalue $\lambda$ is sequence $\mathcal{C}_m(\lambda)=(\tuple{v}_1,\tuple{v}_2,\cdots,\tuple{v}_m)\in( \C^n\setminus\{\tuple{0}\})^m$ such that:
+  $$A\,\tuple{v}_1=\lambda\cdot \tuple{v}_1\;\text{ and }\; A\,\tuple{v}_k=\lambda\cdot \tuple{v}_k+\tuple{v}_{k-1}\;\text{ for }2\leq k\leq m$$
+\end{definition}
+
+\begin{lemma}
+  A Jordan chain of $A$, $\mathcal{C}_m(\lambda)$, is a linear independent sequence in $\operatorname{sols}(A-\lambda I)^m$ (cf. Linear Algebra).
+  \begin{proof}
+    Notice $\Forall{1\leq k\leq m}$ $(A-\lambda I)^k\,\tuple{v}_k=\tuple{0}$ and $(A-\lambda I)^{k-1}\tuple{v}_k=\tuple{v}_{k-1}\neq\tuple{0}$. Hence, they are in $\operatorname{sols}(A-\lambda I)^m$. To prove linear independence, let $\sum_{k=1}^m \alpha_k\cdot\tuple{v}_k=\tuple{0}$. Applying $(A-\lambda I)^{m-1}$ to both sides gives $\alpha_m\cdot\tuple{v}_{m-1}=\tuple{0}\RA \alpha_m=0$. By induction on applying $(A-\lambda I)^k$ and getting $\alpha_k=0$, we get, $\Forall{1\leq k\leq m}\alpha_k=0$. Therefore, the chain is linearly independent.
+  \end{proof}
+\end{lemma}
+
+% \begin{lemma}
+%   Let $P=[\mathcal{C}_m(\lambda)]$, then $A\,P=P\,J_m(\lambda)$
+%   \begin{proof}
+%       \begin{align*}
+%         A\,P&=A\,\mcols{v}{n}
+%         =\mcols[A(][)]{v}{n}\\
+%         &=\begin{bmatrix}
+%           | &| &\,&|\\
+%           \lambda\cdot\tuple{v}_{\,1}&\lambda\cdot\tuple{v}_{\,2}+\tuple{v}_{\,1}&\cdots&\lambda\cdot\tuple{v}_{\,n}+\tuple{v}_{\,n-1}\\
+%           | &| &\,&|
+%         \end{bmatrix}\\
+%         &=\mcols{v}{n}\,\begin{bmatrix}
+%           \lambda&1&0&0&\cdots&0\\
+%           0&\lambda&1&0&\cdots&0\\
+%           0&0&\lambda&1&\cdots&0\\
+%           \vdots&\vdots&\vdots&\vdots&\ddots&\vdots\\
+%           0&0&0&0&\lambda&1\\
+%           0&0&0&0&0&\lambda\\
+%         \end{bmatrix}=P\,J_m(\lambda)
+%       \end{align*}
+%   \end{proof}
+% \end{lemma}
+
+\begin{theorem}
+  For any $A\in M_n(\R)$ there is a set of Jordan chains of $A$ whose union is a basis of $\R^n$.
+  \begin{proof}
+    By induction on $n$:
+    \begin{compactitem}
+      \item Base Case: $A$ is a multiplication operator, so it has a unique eigenvector and eigenvalue.
+      \item Take an eigenvalue $\lambda$ of $A$, $\dim\operatorname{cols}(A-\lambda\,I)=n-\dim\operatorname{sols}(A-\lambda\,I)\leq n-1$. By induction, there is a set of Jordan chains of $A$ whose union is a basis of $\operatorname{cols}(A-\lambda\,I)$. \begin{compactitem}
+        \item If $\operatorname{cols}(A-\lambda\,I)\cap\operatorname{sols}(A-\lambda\,I)=\{\tuple{0}\}$, then there are $\operatorname{am}(\lambda)=\operatorname{sols}(A-\lambda\,I)$ linearly independent eigenvectors.
+        \item Then, there is a chain of $\lambda$ in $\operatorname{cols}(A-\lambda\,I)$. Take one of those chains $\mathcal{C}_{m-1}(\lambda)=(\tuple{v}_1,\cdots,\tuple{v}_{m-1})$. Since $\tuple{v}_{m-1}\in\operatorname{cols}(A-\lambda\,I)$, $\Exist{\tuple{v}_m\in\R^n}(A-\lambda\,I)\,\tuple{v}_m=\tuple{v}_{m-1}$. Hence, the chain increases by $1$: $\mathcal{C}_m(\lambda)=(\tuple{v}_1,\cdots,\tuple{v}_m)$. So, every eigenvector is in a chain, which may include just itself $\mathcal{C}_1(\lambda)=(\tuple{u}_1)$. 
+      \end{compactitem}
+      Hence, we added $\dim\operatorname{sols}(A-\lambda\,I)$ vectors to the chains. Therefore, we have a set of Jordan chains of $A$ whose union is a basis of $\R^n$, since we have $n$ linearly independent vectors.
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  For each eigenvalue, there is a set of Jordan chains of $A$, each with same eigenvalue $\lambda$, with $\operatorname{am}(\lambda)$ (cf. Linear Algebra) vectors in the union.
+\end{corollary}
+
+\begin{theorem}
+  Let $\mathcal{C}_m(\lambda)=(\tuple{v}_1,\cdots,\tuple{v}_m)$ be a Jordan chain of $A$. Then, the following are linearly independent solutions to $\tuple{y}'=A\,\tuple{y}$, for $1\leq k\leq m$: $$\tuple{y}_k(x)=e^{\lambda x}\sum_{j=0}^{k-1}\frac{x^j}{j!}\cdot\tuple{v}_{k-j}$$
+  \begin{proof}
+    Sufficient to notice $\tuple{y}_k(x)=\exp(A\,x)\,\tuple{v}_k=e^{\lambda\,x}\exp((A-\lambda\,I)\,x)\,\tuple{v}=e^{\lambda x}\sum_{j=0}^{k-1}\dfrac{x^j}{j!}\cdot\tuple{v}_{k-j}$, since $(A-\lambda\,I)^j\,\tuple{v}_k=\tuple{v}_{k-j}$, for $j<k$, and $(A-\lambda\,I)^k\,\tuple{v}_k=\tuple{0}$, which is a solution due to \ref{exp_sol}.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\section{Integral and Series Methods}
+
+\subsection{Power Series}
+
+\begin{definition}[Classification of points]
+  For $y''+p(x)\cdot y'+q(x)\cdot y=0$, a point $x_0$ is called an ordinary point of the ODE if $p(x)$ and $q(x)$ are analytic functions at $x_0$, otherwise, it is a singular point. Moreover, a point $x_0$ is called a regular singular point if $x\cdot p(x)$ and $x^2\cdot q(x)$ are analytic functions at $x_0$.
+\end{definition}
+
+\begin{remark}
+  The radius of convergence of $y(x)=\sum_{n\geq 0}a_n\,(x-x_0)^n$ is $\dfrac{1}{R_{x_0}(y)}=\limsup\sqrt[n]{|a_n|}$ (cf. Calculus I).
+\end{remark}
+
+\begin{lemma}[Cauchy product]
+  $$\left[\sum_{n\geq 0}a_n\,(x-x_0)^n\right]\cdot \left[\sum_{n\geq 0}b_n\,(x-x_0)^n\right]=\sum_{n\geq 0}\left[\sum_{k=0}^n a_{n-k}\cdot b_k\right]\,(x-x_0)^n$$
+  \begin{proof}
+    Direct calculation: $c_n=\sum_{i+j=n}a_i\cdot b_j$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}
+  If $x_0$ is an ordinary point of $y''+p(x)\cdot y'+q(x)\cdot y=0$, then there is a solution $y$ that is analytic at $x_0$. Furthermore, $R_{x_0}(y)\geq\min\{R_{x_0}(p),R_{x_0}(q)\}$
+  \begin{proof}
+    Take $y(x)=\sum_{n\geq 0}a_n\,(x-x_0)^n$. We get:
+    \begin{align*}
+      0&=y''+p(x)\cdot y'+q(x)\cdot y=y''+y'\cdot\sum_{n\geq 0}p_n(x-x_0)^n+y\cdot\sum_{n\geq 0}q_n(x-x_0)^n\\
+      &=\sum_{n\geq 0} \left[(n+2)(n+1)\,a_{n+2}+\sum_{k=0}^n\Big(p_{n-k}\cdot (k+1)a_{k+1}+q_{n-k}\cdot a_k\Big)\right]\,(x-x_0)^n\\
+      &\Leftrightarrow a_{n+2}=-\frac{1}{(n+2)(n+1)}\sum_{k=0}^n\Big(p_{n-k}\cdot (k+1)a_{k+1}+q_{n-k}\cdot a_k\Big)
+    \end{align*}
+    Hence we get all the coefficients by induction, so $y$ (uniquely) defined, given $a_0$ and $a_1$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Indicial Polynomial]
+  For $(x-x_0)^2\cdot y''+(x-x_0)\cdot p(x)\cdot y'+q(x)\cdot y=0$ where $p$ and $q$ are analytic at $x_0$, hence $x_0$ is a regular singular point. Define $\iota(s)=s(s-1)+p(x_0)\cdot s+q(x_0)$.
+\end{definition}
+
+\begin{theorem}[Frobenius Method]
+  Let $x_0$ be a regular singular point for the ODE: $(x-x_0)^2\cdot y''+(x-x_0)\cdot p(x)\cdot y'+q(x)\cdot y=0$ and $\lambda$ be a root of the indicial polynomial. Then, there is a solution $y(x)=(x-x_0)^\lambda\cdot z(x)$, where $z$ is analytic at $x_0$.
+  \begin{proof}
+    Take $y(x)=\sum_{n\geq 0}a_n\,(x-x_0)^{n+\lambda}$. We get:
+    \begin{align*}
+      0&=(x-x_0)^2y''+p(x)\cdot (x-x_0)y'+q(x)\cdot y\\
+      &=\sum_{n\geq 0} \left[(n+\lambda)(n+\lambda-1)\,a_n+\sum_{k=0}^n\Big(p_{n-k}\,(n+\lambda)+q_{n-k}\Big)a_k\right]\,(x-x_0)^{n+\lambda}\\
+      &\Leftrightarrow a_n=-\frac{1}{n(n+2\lambda-1+p_0)}\sum_{k=0}^{n-1}\Big(p_{n-k}\,(n+\lambda)+q_{n-k}\Big)a_k
+    \end{align*}
+    Hence we get all the coefficients by induction, so $y$ (uniquely) defined, given $a_0$ and $a_1$. Observe there is some difficulty when $2\lambda-1+p_0=\iota'(\lambda)$ is a negative integer.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Laplace Transform}
+
+\begin{definition}[Exponential Type]
+  A function $f:[0\infty)\to\R$ is of exponential type if: $\Exist{K>0,a\in\R}\Forall{t>0}|f(t)|\leq K\,e^{at}$.
+\end{definition}
+
+\begin{definition}[Laplace Transform]
+  Given a function $f:[0,\infty)\to\R$ of exponential type, we define the Laplace transform: $F:\I\subseteq\R\to\R$ as:
+  $$F(s)=\Lapl{f(t)}=\int_0^\infty f(t)\,e^{-st}\dd{t}$$ Obviously, this operation is linear.
+\end{definition}
+
+\begin{theorem}[Formulae]
+  For $F(s)=\Lapl{f(t)}$:
+  \begin{compactenum}[(i)]
+    \item $\Lapl{f(t)\cdot e^{at}}=F(s-a)$
+    \item $\Lapl{f(at)}=\dfrac{1}{a}\,F\left(\dfrac{s}{a}\right)$ for $a>0$.
+    \item $\Lapl{\der{f}(t)}=s^n F(s)-\displaystyle\sum_{k=1}^n s^{n-k}\cdot\der[k-1]{f}(0^+)$
+    \item $\Lapl{f(t)\cdot t^n}=(-1)^n\cdot \der{F}(s)$
+  \end{compactenum}
+  \begin{proof}
+    We prove each one:
+    \begin{compactenum}[(i)]
+      \item $\displaystyle\Lapl{f(t)\cdot e^{at}}=\int_0^\infty f(t)\,e^{at}\,e^{-st}\dd{t}=\int_0^\infty f(t)\,e^{-(s-a)t}\dd{t}=F(s-a)$ by definition.
+      \item $\displaystyle\Lapl{f(at)}=\int_0^\infty f(at)\,e^{-st}\dd{t}=\int_0^\infty f(\tau)\,e^{-\frac{s}{a}\,\tau}\,\frac{1}{a}\dd{\tau}=\dfrac{1}{a}\,F\left(\dfrac{s}{a}\right)$
+      \item By integration by parts, and applying induction:
+      \begin{align*}
+        \Lapl{f'(t)}&=\int_0^\infty f'(t)\,e^{-st}\dd{t}=\Big[f(t)\,e^{-st}\Big]_0^\infty+s\int_0^\infty f(t)\,e^{-st}\dd{t}\\
+        &=s\,F(s)-f(0^+)\\
+        \Rightarrow \Lapl{\der{f}(t)}&=s\Lapl{\der[n-1]{f}(t)}-\der[n-1]{f}(0)\\
+        &=s\cdot s^{n-1} F(s)-s\sum_{k=1}^{n-1} s^{n-1-k}\cdot\der[k-1]{f}(0^+)-\der[n-1]{f}(0^+)\\
+        &=s^n F(s)-\sum_{k=1}^n s^{n-k}\cdot\der[k-1]{f}(0^+)
+      \end{align*}
+      \item Using Leibnitz Rule for Integration (cf. Calculus I)
+      \begin{align*}
+        \Lapl{f(t)\cdot t^n}&=\int_0^\infty f(t)\,t^n\,e^{-st}\dd{t}=(-1)^n\int_0^\infty \pdv[n]{}{s}\,\left[f(t)\,e^{-st}\right]\dd{t}\\
+        &=(-1)^n\,\dv[n]{}{s}\,\int_0^\infty f(t)\,e^{-st}\dd{t}=(-1)^n\cdot \der{F}(s)
+      \end{align*}
+    \end{compactenum}
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  We defined $f(0^+)=\lim\limits_{t\to 0^+}f(t)$. If $f$ is $C^n$, we can ignore it on formula (iii) and instead take $f(0)$.
+\end{remark}
+
+\begin{corollary}
+  Calculating: $\displaystyle\Lapl{1}=\int_0^\infty e^{-st}\dd{t}=\dfrac{1}{s}$ for $s>0$. Hence,
+  \begin{enumerate}[(i)]
+    \item $\Lapl{e^{at}}=\dfrac{1}{s-a}$ for $s>a$
+    \item $\Lapl{t^n}=\dfrac{n!}{s^{n+1}}$ for $s>0$
+    \item $\Lapl{t^n\,e^{at}}=\dfrac{n!}{(s-a)^{n+1}}$ for $s>a$
+  \end{enumerate}
+\end{corollary}
+
+\begin{corollary}
+  Taking real and imaginary parts, evaluating the integral as usual:
+  \begin{enumerate}[(i)]
+    \item $\Lapl{\cos(at)}=\dfrac{s}{s^2+a^2}$
+    \item $\Lapl{\sin(at)}=\dfrac{a}{s^2+a^2}$
+  \end{enumerate}
+\end{corollary}
+
+\begin{lemma}
+  Let $u(t)=\begin{cases}1&\text{if }t\geq 0\\0&\text{otherwise}\end{cases}$ be the Heaviside step function. Then: $\Lapl{f(t-\tau)\cdot u(t-\tau)}=e^{-\tau s}\,F(s)$.
+  \begin{proof}
+    Calculate: $\displaystyle\Lapl{f(t-\tau)\cdot u(t-\tau)}=\int_0^\infty f(t-\tau)\cdot u(t-\tau)\,e^{-st}\dd{t}=\int_{\tau}^\infty f(t-\tau)\,e^{-st}\dd{t}=\int_0^\infty f(t)\,e^{-s(t+\tau)}\dd{t}=e^{-\tau s}\,F(s)$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Convolution]
+  Given $f,g:[0,\infty)\to\R$ be functions of exponential type. Define $(f*g):[0,\infty)\to\R$ s.t.: $$(f*g)(t)=\int_0^t f(\tau)\cdot g(t-\tau)\dd{\tau}$$ which is a commutative and associative operation, called the convolution. Then, $\Lapl{f*g}=F(s)\cdot G(s)$.
+  \begin{proof}
+    By changing the boundaries of integration and using the previous result:
+    \begin{align*}
+      \Lapl{f*g}=\int_0^\infty (f*g)(t)\,e^{-st}\dd{t}&=\int_0^\infty \int_0^t f(\tau)\cdot g(t-\tau)\,e^{-st}\dd{\tau}\dd{t}\\
+      =\int_0^\infty \int_t^\infty f(\tau)\cdot g(t-\tau)\,e^{-st}\dd{t}\dd{\tau}&=\int_0^\infty f(\tau)\cdot\Lapl{g(t-\tau)\,u(t-\tau)}\dd{\tau}\\
+      =\int_0^\infty f(\tau)\cdot e^{-\tau s}\,G(s)\dd{\tau}&=F(s)\cdot G(s)
+    \end{align*}
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Transfer Function]
+  For the linear ODE $\sum_{k=0}^n a_k\cdot\der[k]{y}(x)=f(x)$ with $a_k\in\R$, the particular solution is given by: $$y_p(x)=(f*K)(x)=\int_0^x f(t)\cdot K(x-t)\dd{t}$$ where $K(t)=\mathcal{L}^{-1}\left\{\dfrac{1}{\chi(s)}\right\}(t)$ is called the transfer function.
+  \begin{proof}
+    Since $y(0)=y'(0)=\cdots=\der[n-1]{y}(0)=0$, taking Laplace transform of both sides, we get: $$\sum_{k=0}^n a_k\,s^k\cdot Y(s)=\chi(s)\cdot Y(s)=F(s)\Rightarrow Y(s)=F(s)\cdot \frac{1}{\chi(s)}$$ it follows from the previous theorem.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  By partial fraction decomposition of $\dfrac{1}{\chi(s)}$, we get the solution of \ref{particular_solution} with fundemental set as in \ref{characteristic_solutions}.
+\end{corollary}
+
+\begin{theorem}[Initial and Final Value]
+  $$\lim_{t\to 0}f(t)=\lim_{s\to\infty} s\cdot F(s)\text{ and }\lim_{t\to \infty}f(t)=\lim_{s\to 0} s\cdot F(s)$$
+  \begin{proof}
+    By substitution, we get: $$s\cdot F(s)=\int_0^\infty f\left(\frac{t}{s}\right) e^{-t}\dd{t}$$ the results follow by dominated convergence theorem.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Sturm Liouville Theory}
+
+\begin{definition}[SL problem]
+  A Sturm-Liouville (boundary value) problem is a triple:
+  \begin{compactenum}[(i)]
+    \item $\Big(p(x)\cdot y'(x)\Big)'-q(x)\cdot y(x)+\lambda\cdot r(x)\cdot y(x)\equiv 0$
+    \item $\alpha_1\cdot y(a)+\alpha_2\cdot y'(a)=0$ where $(\alpha_1,\alpha_2)\neq (0,0)$.
+    \item $\beta_1\cdot y(b)+\beta_2\cdot y'(b)=0$ where $(\beta_1,\beta_2)\neq (0,0)$.
+  \end{compactenum}
+  Define the linear operator: $$L[y](x)=\dfrac{1}{r(x)}\left[-\Big(p(x)\cdot y'(x)\Big)'+q(x)\cdot y(x)\right]$$ and let $B_a[y]=\alpha_1\cdot y(a)+\alpha_2\cdot y'(a)$, $B_b[y]=\beta_1\cdot y(b)+\beta_2\cdot y'(b)$. Then the problem becomes: $L[y]=\lambda\cdot y$ and $B_a[y]=B_b[y]=0$.
+\end{definition}
+
+\begin{definition}[Inner Product on Continuous Functions]
+  Define the following inner products on continuous complex-valued functions on an interval $\I=[a,b]$. For function $r>0$:
+  $$\inner{f}{g}=\int_a^b f(x)\cdot\overline{g(x)}\cdot r(x)\dd{x}$$ which obeys every property of inner product (cf. Linear Algebra).
+\end{definition}
+
+\begin{theorem}[Lagrange's Identity]
+  $\inner{L[f]}{g}-\inner{f}{L[g]}=\eval{p(x)\cdot W_{(f,\overline{g})}(x)}_a^b$.
+  \begin{proof}
+    \begin{align*}
+      &\inner{L[f]}{g}=\int_a^b \left[-\Big(p(x)\cdot f'(x)\Big)'+q(x)\cdot f(x)\right]\cdot\overline{g(x)}\dd{x}\\
+      &=-\int_a^b \Big(p(x)\cdot f'(x)\Big)'\cdot \overline{g(x)}\dd{x}+\int_a^b q(x)\cdot f(x)\cdot\overline{g(x)}\dd{x}\\
+      &=-\eval{p(x)\cdot f'(x)\cdot\overline{g(x)}}_a^b+\int_a^b p(x)\cdot f'(x)\cdot \overline{g'(x)}\dd{x}+\int_a^b q(x)\cdot f(x)\cdot\overline{g(x)}\dd{x}\\
+      &=\eval{p(x)\cdot W_{(f,\overline{g})}(x)}_a^b-\int_a^b f(x)\cdot \overline{\Big(p(x)\cdot g'(x)\Big)'}\dd{x}+\int_a^b f(x)\cdot\overline{q(x)\cdot g(x)}\dd{x}\\
+      &=\eval{p(x)\cdot W_{(f,\overline{g})}(x)}_a^b+\inner{f}{L[g]}
+    \end{align*}
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  For two functions $f,g$: $B_a[f]=B_a[g]=0\LR W_{(f,g)}(a)=0$, the same for $b$.
+  \begin{proof}
+    $B_a[f]=B_a[g]=0$ are two homogeneous linear equations with non-trivial solution. Hence, the Wronskian is zero.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  \label{self_adjoint}
+  If $f$ and $g$ obey the boundary conditions: $\inner{L[f]}{g}=\inner{f}{L[g]}$, that is, $L$ is a self-adjoint operator on the set of piecewise continuous functions that obey the boundary conditions. It is \textbf{actually} self adjoint since the two domains match.
+\end{corollary}
+
+\begin{remark}
+  If we define $L[y](x)=-\Big(p(x)\cdot y'(x)\Big)'+q(x)\cdot y(x)$, then it is self adjoint of the inner product with $r\equiv 1$. We, however, shall use the other one since the weighted inner product appears much more often and the SL problem becomes exactly an eigenvalue problem.
+\end{remark}
+
+\begin{lemma}[Real Eigenvalues]
+  \label{real_eigen}
+  All eigenvalues of $L$ are real.
+  \begin{proof}
+    Let $L[y]=\lambda\cdot y$, then, by \ref{self_adjoint}: $\lambda\cdot\inner{y}{y}=\inner{L[y]}{y}=\inner{y}{L[y]}=\overline{\lambda}\cdot\inner{y}{y}\RA(\lambda-\overline{\lambda})\cdot\inner{y}{y}=0\RA\lambda=\overline{\lambda}\RA \lambda\in\R$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Sturm-Liouville]
+  Let $y_n$ and $y_m$ be eigenfunctions with distinct eigenvalues $\lambda_n$ and $\lambda_m$, respectively, that is, $\lambda_n\neq \lambda_m$. Then, they are orthogonal (with respect to the weighted inner product). Further, the multiplicity of each eigenvalue is one.
+  \begin{proof}
+    By \ref{self_adjoint} and \ref{real_eigen}, we get: $\lambda_n\cdot\inner{y_n}{y_m}=\inner{L[y_n]}{y_m}=\inner{y_n}{L[y_m]}=\lambda_m\cdot\inner{y_n}{y_m}\RA(\lambda_n-\lambda_m)\cdot\inner{y_n}{y_m}=0\RA\inner{y_n}{y_m}=0$. Suppose there are two linearly independent solutions $y_n$ and $\tilde{y}_n$. However, then by \ref{uniqueness_picard} every solution of the ODE obeys the boundary conditions, contraction.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Generalized Fourier Series]
+  For $f$ piecewise continuous in $[a,b]$, and $\{y_n\}_{n=0}^\infty$ be eigenfunction of a SL problem $(L,B_a,B_b)$, then $\Exist{\{a_n\in\R\}_{n=0}^\infty}\Forall{x\in[a,b]}$
+  $$\frac{f(x^+)+f(x^-)}{2}=\sum_{n=0}^\infty a_n\cdot y_n(x)$$
+  Where $f(x^{\pm})=\lim\limits_{x'\to x^{\pm}}f(x')$. Of course, if $f$ is continuous at $x$, then the LHS equals $f(x)$. In particular, $a_n=\dfrac{\inner{f}{y_n}}{\inner{y_n}{y_n}}$.
+  \begin{proof}
+    Pythagoras: $\left\|f-\sum_{n=0}^N a_n\cdot y_n\right\|^2=\|f\|^2-\sum_{n=0}^N |a_n|^2\cdot \|y_n\|^2\Rightarrow \|f\|^2\geq \sum_{n=0}^N |a_n|^2\cdot \|y_n\|^2$ (Bessel), hence it converges uniformly by Weierstrass (M-test and Boundedness).
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Rayleigh Quotient]
+  \label{rayleigh}
+  For each pair $(\lambda_n,y_n)$: $\lambda_n=\dfrac{\inner{L[y_n]}{y_n}}{\inner{y_n}{y_n}}$, where $y_n$ is its respective eigenfunction.
+  \begin{proof}
+    The quotient follows by: $L[y_n]=\lambda_n\cdot y_n\RA\inner{L[y_n]}{y_n}=\lambda_n\cdot \inner{y_n}{y_n}$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Min-Max Theorem]
+  In view of \ref{real_eigen}, \ref{self_adjoint} and \ref{rayleigh}, the eigenvalues are ordered: $\lambda_0<\lambda_1<\lambda_2<\cdots<\lambda_n<\cdots$
+  \begin{proof}
+    Ommited here.
+  \end{proof}
+\end{theorem}
+
+\end{document}

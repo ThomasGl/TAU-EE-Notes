@@ -1,0 +1,1781 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{esint}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{paralist}
+\usepackage[italicdiff]{physics}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
+
+\title{%
+  Calculus II \\
+  \large Notes from TAU Course with Additional Information\\
+  Lecturer: Daniel Tsodikovich 
+}
+\author{Gabriel Domingues}
+\date{\today}
+
+\let\emptyset\varnothing
+\let\RA\Rightarrow
+\let\LA\Leftarrow
+\let\LR\Leftrightarrow
+\let\ee\epsilon
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\grad}{\nabla}
+\renewcommand{\div}{\nabla\vdot}
+\renewcommand{\curl}{\nabla\cross}
+\DeclareMathOperator{\Span}{Span}
+
+\newcommand{\set}[2]{\left\{{#1}\;\middle|\;{#2}\right\}}
+\newcommand{\Forall}[1]{\forall\,{#1}\,,\,}
+\newcommand{\Exist}[1]{\exists\,{#1}:}
+\newcommand{\NExist}[1]{\nexists\,{#1}:}
+\DeclareMathOperator{\R}{\mathbb{R}}
+\DeclareMathOperator{\N}{\mathbb{N}}
+\DeclareMathOperator{\I}{\mathcal{I}}
+\DeclareMathOperator{\D}{\mathfrak{D}}
+
+\DeclareMathOperator{\T}{\mathcal{T}}
+\DeclareMathOperator{\K}{\mathcal{K}}
+
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\vol}{vol}
+
+\newcommand{\seq}[2]{\{{#1}\}_{#2\in\N}}
+\newcommand{\der}[2][n]{{#2}^{(#1)}}
+\newcommand{\fsup}[1]{\left\|#1\right\|_\infty}
+\newcommand{\uto}[0]{\overset{\displaystyle u}{\longrightarrow}}
+
+\newcommand{\comp}[2][n]{\R^{#1}\setminus{#2}}
+\newcommand{\cl}[1]{\overline{#1}}
+
+\DeclareMathOperator{\arcsinh}{arcsinh}
+\DeclareMathOperator{\atan2}{atan2}
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\doclicenseThis
+
+\pagebreak
+
+\section{Functional Analysis}
+
+\subsection{Sequence of Functions}
+
+\begin{definition}[Supremum]
+  \label{def_supremum}
+  For a set $A\subset\R$, if $A$ is bounded from above, the supremum of $A$ is the lowest upper bound (denoted $\sup A$). Otherwise $\sup A=\infty$.
+  \noindent That is, $M=\sup(A)$ iff $\Forall{a\in A}a\leq M$.
+\end{definition}
+
+\begin{definition}[Sequence of Functions]
+  A sequence of function is a family $\seq{f_n}{n}$ where $\Forall{n\in\N}f_n:\I\subseteq\R\to\R$. Observe, the interval $\I$ is the same domain for all $f_n$ in the sequence.
+\end{definition}
+
+\begin{definition}[Pointwise Convergence]
+  \label{def_pc_fn}
+  For a sequence $\seq{f_n}{n}$, we say $f_n$ converges pointwise to $f$ (denoted $f_n\to f$) if, $\Forall{x_0\in\I}f_n(x_0)\to f(x_0)$. That is, if $f$ is defined explicitly $\Forall{x_0\in\I} f(x_0):=\lim\limits_{n\to\infty}f_n(x_0)$.
+\end{definition}
+
+\begin{remark}
+  \label{pw_limit}
+  The pointwise limit is unique, since $\lim\limits_{n\to\infty}f_n(x_0)$ is unique.
+\end{remark}
+
+\begin{remark}
+  That pointwise limit of continuous functions can be discontinuous. For illustration, take $f_n:[0,1]\to\R$ where $f_n(x)=x^n$. Then, $f_n(x)\to f(x)$ where: $$f(x)=\begin{cases}
+    0 &\text{ if }x<1\\
+    1 &\text{ if }x=1\\
+  \end{cases}$$
+  which is then discontinuous.
+\end{remark}
+
+\begin{definition}[Uniform Convergence]
+  \label{def_uc_fn}
+  For a sequence $\seq{f_n}{n}$, we say $f_n$ converges pointwise to $f$ (denoted $f_n\uto f$) if, $$\Forall{\ee>0}\Exist{N\in\N}\Forall{n\geq N}\Forall{x\in\I}|f(x)-f_n(x)|<\ee$$
+\end{definition}
+
+\begin{lemma}(UC $\RA$ PC)
+  \label{uc_implies_pc}
+  If $f_n\uto f$, then $f_n\to f$.
+  \begin{proof}
+    If $f_n\uto f$, then $\Forall{x\in\I} f(x)=\lim\limits_{n\to\infty}f_n(x)$, by definition.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Vector Space of Functions]
+  $\set{f}{f:\I\to\R}$ is a vector space over $\R$ with pointwise addition and scalar multiplication:
+  $(f+g)(x)=f(x)+g(x)\;$ and $\;(\alpha\cdot f)=\alpha\cdot f(x)$
+\end{definition}
+
+\begin{definition}[Uniform Norm]
+  We define the following norm for functions $f:\I\to\R$:
+  $$\fsup{f}= \sup\limits_{x\in\I}|f(x)|$$ which we can check is a norm. Also, $f$ is bounded iff $\fsup{f}<\infty$.
+\end{definition}
+
+\begin{remark}
+  \label{sup_exchange}
+  The idea of using $\fsup{\cdot}$ is to bound independent of $x$, since $\fsup{f-g}$ only depends on $f$ and $g$. We can substitute: $\fsup{f-g}\leq\ee\LR \Forall{x\in\I}|f(x)-g(x)|\leq\ee$ (cf. \ref{def_supremum}).
+\end{remark}
+
+\begin{remark}[Banach Algebra]
+  $\Forall{f,g:\I\to\R}\fsup{f\vdot g}\leq \fsup{f}\cdot \fsup{g}$, where $\vdot$ is pointwise multiplication.
+\end{remark}
+
+\begin{lemma}
+  \label{uc_normed}
+  $f_n\uto f$ iff $\fsup{f-f_n}\to 0$
+  \begin{proof}
+    We prove each direction:
+    \begin{compactitem}
+      \item[$(\RA)$] $\Forall{\ee>0}\Exist{N\in\N}\Forall{n\geq N}\Forall{x\in\I}|f(x)-f_n(x)|<\ee/2$ (cf. \ref{def_pc_fn}). Taking the supremum on $x\in\I$, $\Forall{n\geq N}\fsup{f-f_n}\leq \ee/2<\ee$. That is, $\fsup{f-f_n}\to 0$ by definition.
+      \item[$(\LA)$] $\fsup{f-f_n}\to 0\LR \Forall{\ee>0}\Exist{n\in\N}\Forall{n\geq N}\fsup{f-f_n}<\ee$. Then, $\Forall{n\geq N}\Forall{x\in\I}|f(x)-f_n(x)|<\ee$ (cf. \ref{def_supremum}, \ref{sup_exchange}).
+    \end{compactitem}
+    Hence, $\fsup{\cdot}$ is the norm that defines uniform continuity.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  \label{pc_limit_is_uc_limit}
+  If $f_n\to f$, then $\seq{f_n}{n}$ converges uniformly iff $f_n\uto f$.
+  \begin{proof}
+    We prove each direction:
+    \begin{compactitem}
+      \item[$(\RA)$] If $f_n\uto g$, by \ref{uc_implies_pc} $f_n\to g$ and by \ref{pw_limit}, $g=f$.
+      \item[$(\LA)$] If $f_n\uto f$, then $\seq{f_n}{n}$ converges uniformly.
+    \end{compactitem}
+    Hence, if $f_n\to f$, $\seq{f_n}{n}$ converges uniformly iff $\lim\limits_{n\to\infty}\fsup{f-f_n}=0$.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  If we change our domain, we way have UC. Going back to the example of $f_n(x)=x^n$, we get $\seq{f_n}{n}\uto f\equiv 0$ in $\I=[0,t]$ for $t<1$ since $\fsup{f-f_n}=\sup\limits_{x\in\I}|x|^n=t^n\to 0$.
+\end{remark}
+
+\begin{lemma}[Bounded Limit]
+  \label{uniform_bdd_limit}
+  If $f_n\uto f$ and $\Forall{n\in\N} f_n$ is bounded, then $f$ is bounded.
+  \begin{proof}
+    By definiton of uniform limit (cf. \ref{def_uc_fn}) $\Exist{N\in\N}\fsup{f-f_N}<1$. By the triangle inequality:
+    $\fsup{f}\leq\fsup{f-f_N}+\fsup{f_N}<1+\fsup{f_N}<\infty$
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Uniform Limit]
+  \label{uniform_cont_limit}
+  Every uniformly convergent sequence of continuous, the limit is continuous.
+  \begin{proof}
+    Let $f_n\uto f$. For any $\ee>0$, let $N\in\N$ s.t. $\fsup{f-f_N}<\ee/3$, that is, $\Forall{x\in \I} |f(x)-f_N(x)|<\ee/3$. Since $f_N$ is continuous, $\Forall{a\in \I}\Exist{\delta>0}\Forall{x\in (a-\delta,a+\delta)\subseteq\I}|f_N(x)-f_N(a)|<\ee/3$. Putting all the terms together, and using triangle inequality: $$|f(x)-f(a)|\leq |f(x)-f_N(x)|+|f_N(x)-f_N(a)|+|f_N(a)-f(a)|<\ee$$
+    Hence, $\Forall{a\in \I}f$ is continuous at $a$. Therefore, $f$ is a continuous on $\I$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  Defining the set of:
+  \begin{compactitem}
+    \item Bounded Functions on $\I$, $B(\I)$
+    \item Continuous Functions on $\I$, $C(\I)$
+  \end{compactitem}
+  Then, \ref{uniform_cont_limit} and \ref{uniform_bdd_limit} imply $B(\I)$ and $C(\I)$ are closed under limits.
+\end{remark}
+
+\begin{theorem}[$B(\I)$ and $C(\I)$ are complete]
+  \label{uniform_cauchy}
+  If $\seq{f_n}{n}$ is a Cauchy sequence in $\I$, that is, $$\Forall{\ee >0}\Exist{N\in\N}\Forall{m,n > N}\fsup{f_m-f_n}<\ee$$ then, $\Exist{f:\I\to\R}f_n\uto f$.
+  \begin{proof}
+    Let $\seq{f_n}{n}$ be a Cauchy sequence. As in \ref{sup_exchange},  $$\Forall{\ee >0}\Exist{N\in\N}\Forall{m,n > N}\Forall{x\in\I}|f_m(x)-f_n(x)|<\ee$$ Therefore, for each $x\in\I$, the sequence $\seq{f_n(x)}{n}$ is Cauchy in $\R$. Hence, since $\R$ is complete, each sequence converges to some $f(x)$. We define the pointwise limit $f(x):=\lim\limits_{n\to \infty}{f_n(x)}$, so it converges pointwise, which is necessary. Lastly, we need to prove $f_n\uto f$. By the continuity of absolute value, we have $|f(x)-f_n(x)|=\lim\limits_{m\to\infty}{|f_m(x)-f_n(x)|}$. Since $\Forall{\ee >0}\Exist{N \in \N}\Forall{m,n > N}\Forall{x\in\I} |f_m(x)-f_n(x)|<\ee/2$, we may take $m\to\infty$:
+    $$\Forall{\ee >0}\Exist{N \in \N}\Forall{n > N}\Forall{x\in\I} |f(x)-f_n(x)|\leq\ee/2$$
+    So that, $\fsup{f-f_n}\leq\ee/2<\ee $ (cf. \ref{def_supremum}, \ref{sup_exchange}), hence, it converges uniformly.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Convergence of Integral]
+  \label{uniform_integral}
+  Let $\seq{f_n}{n}$ be a sequence of continuous functions in $[a,b]$. Suppose $f_n\uto f$ in $[a,b]$. then $$\int_a^b f(x)\dd{x}=\lim_{n\to\infty}\int_a^b f_n(x)\dd{x}$$
+  which is defined, cf. \ref{uniform_cont_limit}.
+  \begin{proof}
+    Calculating: $\displaystyle \left|\int_a^b f(x)\dd{x}-\int_a^b f_n(x)\dd{x}\right|=\left|\int_a^b \Big[f(x)-f_n(x)\Big]\dd{x}\right| \leq \int_a^b \big|f(x)-f_n(x)\big|\dd{x}\leq \fsup{f-f_n}\cdot(b-a)\to 0$
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  Uniform limit in \ref{uniform_integral} is necessary. For example, take $f_n:[0,1]\to\R$ where: $f_n(x)=\begin{cases}
+    n &\text{ if }0<x<\dfrac{1}{n}\\
+    0 &\text{ otherwise}\\
+  \end{cases}$. We get: $f_n\to f\equiv 0$, but $\displaystyle\int_0^1 f_n(x)\dd{x}=1\not\to 0$.
+\end{remark}
+
+\begin{theorem}[UC of Derivative]
+  \label{uniform_derivative}
+  Let $\seq{f_n}{n}$ be a sequence of differentiable functions in $\I$. Suppose $f_n\to f$ (pointwise) and $f_n'\uto g$ in $\I$. then $f$ is differentiable and $f'=g$.
+  \begin{proof}
+    By FTC II (Newton-Leibnitz), $\displaystyle f_n(x)=f_n(a)+\int_a^x f'_n(t)\dd{t}$ for some $a\in\I$, taking limit of both sides, for a fixed $x\in\I$, we get: $$f(x)=\lim_{n\to\infty}f_n(x)=\lim_{n\to\infty}f_n(a)+\lim_{n\to\infty}\int_a^x f_n(t)\dd{t}=f(a)+\int_a^x g(t)\dd{t}$$ the last equality by \ref{uniform_integral}. Hence, by FTC I, $f'=g$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Series of Functions}
+
+\begin{definition}
+  \label{def_uc_series}
+  Let $f_n:\I\to\R$, we define: 
+  \begin{enumerate}
+    \item $\sum_{n=1}^\infty f_n$ converges pointwise iff $\seq{\sum_{k=1}^n f_k}{n}$ converges pointwise, i.e. $\Forall{x_0\in\I}\sum_{n=1}^\infty f_n(x_0)$ converges (cf. \ref{def_pc_fn}).
+    \item $\sum_{n=1}^\infty f_n$ converges uniformly iff $\seq{\sum_{k=1}^n f_k}{n}$ converges uniformly (cf. \ref{def_uc_fn}).
+  \end{enumerate}
+\end{definition}
+
+\begin{lemma}
+  A series $\sum_{n=1}^\infty f_n$ converges uniformly in $\I$ iff it converges pointwise and $\lim\limits_{n\to\infty}\sup\limits_{x\in\I}\left|\sum_{k=n}^\infty f_k(x)\right|=0$
+  \begin{proof}
+    Let $S_n=\sum_{k=1}^n f_k$, the partial sums. By definition (cf. \ref{def_uc_series}), $\sum_{n=1}^\infty f_n$ converges uniformly iff $\seq{S_n}{n}$ converges uniformly. It converges uniformly to $S$, if it converges pointwise to $S$ and $\fsup{S-S_n}\to 0$ (cf. \ref{uc_normed},\ref{uc_implies_pc}). Then, $S_n\to S:x\mapsto \sum_{k=1}^\infty f_k(x)$. It is N\&S $\fsup{S-S_n}\to 0$, that is, $\lim\limits_{n\to\infty}\fsup{S-S_n}=\lim\limits_{n\to\infty}\sup\limits_{x\in\I}\left|\sum_{k=n+1}^\infty f_k(x)\right|=0$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[AbsC $\RA$ UC of Series]
+  \label{absc_implies_uc}
+  If $\sum_{n=1}^\infty\fsup{f_n}$ converges (absolutely), then $\sum_{n=1}^\infty f_n$ converges uniformly.
+  \begin{proof}
+    Let $S_n=\sum_{k=1}^n f_k$. Let $\ee>0$. Since $\sum_{n=1}^\infty \fsup{f_n}$ converges, $\Exist{N\in\N}\Forall{m>n\geq N} \sum_{k=n+1}^m \fsup{f_k}<\ee$. Then, we get directly by triangle inequality: $\Forall{m>n\geq N}\Forall{x\in\I}$ $$|S_m(x)-S_n(x)|=\left|\sum_{k=n+1}^m f_k(x)\right|\leq \sum_{k=n+1}^m |f_k(x)|\leq \sum_{k=n+1}^m \fsup{f_k}<\ee$$ Hence, $\sum_{n=1}^\infty f_n$ converges uniformly by Cauchy (cf. \ref{uniform_cauchy}).
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Weierstrass M-test]
+  \label{mtest}
+  Let $f_n:\I\to\R$ be a sequence of functions. Suppose there is a (non-negative) sequence $\seq{M_n}{n}$ such that:
+  \begin{enumerate}
+    \item $\Forall{n\in\N}\Forall{x\in\I} |f_n(x)|\leq M_n$, that is, $\Forall{n\in\N}\fsup{f_n}\leq M_n$
+    \item $\sum_{n=1}^\infty M_n$ converges (absolutely).
+  \end{enumerate} 
+  Then $\sum_{n=1}^\infty f_n$ converges uniformly.
+  \begin{proof}
+    By comparision test of $\seq{M_n}{n}$ with $\seq{\fsup{f_n}}{n}$, if $\sum_{n=1}^\infty M_n$ converges, $\sum_{n=1}^\infty\fsup{f_n}$ converges. By \ref{absc_implies_uc}, $\sum_{n=1}^\infty f_n$ converges uniformly.
+  \end{proof}
+\end{corollary}
+
+\begin{lemma}
+  Let $\seq{f_n}{n}$ be a sequence of continuous functions in $[a,b]$. If $\sum_{n=1}^\infty f_n$ converges uniformly, then $$\int_a^b\sum_{n=1}^\infty f_n(x)\dd{x}=\sum_{n=1}^\infty\int_a^b f_n(x)\dd{x}$$
+  \begin{proof}
+    By linearity of the integral, $\int_a^b\sum_{k=1}^n f_k(x)\dd{x}=\sum_{k=1}^n\int_a^b f_k(x)\dd{x}$. Taking the limit of both sides, it follows from \ref{uniform_integral} and the definition (cf. \ref{def_uc_series}).
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  Let $\seq{f_n}{n}$ be a sequence of differentiable functions in $[a,b]$. If $\sum_{n=1}^\infty f_n$ converges pointwise and $\sum_{n=1}^\infty f_n'$ converges uniformly, then $$\left(\sum_{n=1}^\infty f_n\right)'=\sum_{n=1}^\infty f_n'$$
+  \begin{proof}
+    By linearity of the derivative, $\left(\sum_{k=1}^n f_k\right)'=\sum_{k=1}^n f_k'$. Taking the limit of both sides, it follows from \ref{uniform_derivative} and the definition (cf. \ref{def_uc_series}).
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Power Series}
+
+\begin{definition}[Power Series]
+  Given a sequence of real numbers $\seq{a_n}{n}$ and $a\in\R$, its power series is the series of functions $f_n(x)=a_n(x-a)^n$ for $n\in\N_0$. That is, the power series is: $$f(x)=\sum_{n=0}^\infty a_n(x-a)^n$$ where the left hand side converges uniformly on some interval $\I$. Of course, it converges pointwise at $x=a$.
+\end{definition}
+
+\begin{lemma}
+  \label{ps_bound}
+  If $\sum_{n=0}^\infty a_n(x-a)^n$ converges at $x=x_0$, then, it converges uniformly in $(a-r,a+r)$ for any $r<|x_0-a|$.
+  \begin{proof}
+    Let $\I=(a-r,a+r)$. We calculate: $\fsup{f_n}=\sup\limits_{x\in\I}|a_n(x-a)^n|=|a_n|r^n$. Since $\sum_{n=0}^\infty a_n(x_0-a)^n$ converges, $\seq{a_n(x_0-a)^n}{n}$ is bounded (by $M$). Hence, $\fsup{f_n}\leq M\big(\frac{r}{|x_0-a|}\big)^n$. Since $\frac{r}{|x_0-a|}<1$, it follows the series of $f_n$ converges uniformly by Weierstrass M-test (cf. \ref{mtest}).
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  If $\sum_{n=0}^\infty a_n(x-a)^n$ converges at $x_0$, the pointwise limit (which exists by \ref{ps_bound} and \ref{uc_implies_pc} taking $|x-a|<r<|x_0-a|$) is continuous at $(a-|x_0-a|,|x_0-a|)$.
+\end{corollary}
+
+\begin{definition}[Radius of Convergence]
+  \label{def_radc}
+  $R$ is a radius of convergence of $\sum_{n=0}^\infty a_n(x-a)^n$ iff, for any given $x\in\R$
+  \begin{compactitem}
+    \item[] $\Forall{x\in(a-R,a+R)}\sum_{n=0}^\infty a_n(x-a)^n$ converges
+    \item[] $\Forall{x\notin[a-R,a+R]}\sum_{n=0}^\infty a_n(x-a)^n$ diverges
+  \end{compactitem}
+\end{definition}
+
+\begin{lemma}[Cauchy Hadamard Formula]
+  \label{cauchy_hadamard}
+  Given a sequence of real numbers $\seq{a_n}{n}$, the radius of convergence (cf. \ref{def_radc}) satisfies: $$\frac{1}{R}=\limsup\sqrt[n]{|a_n|}$$
+  \begin{compactitem}
+    \item[] if $\limsup\sqrt[n]{|a_n|}=0$, then $R=\infty$
+    \item[] if $\limsup\sqrt[n]{|a_n|}=\infty$, then $R=0$
+  \end{compactitem}
+  \begin{proof}
+    It is a direct result of Cauchy's Criteria (Root Test), we get the formula: $|x-a|\cdot\dfrac{1}{R}<1$. The second proposition is the contrapositive of the divergence criteria.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  The radius of convergence only shows pointwise convergence. Moreover, we have to check the endpoints $x=a\pm R$ separately.
+\end{remark}
+
+\begin{corollary}
+  \label{ps_interval}
+  By \ref{ps_bound}, for any integral $\I\subsetneqq (a-R,a+R)$, the power series $\sum_{n=0}^\infty a_n(x-a)^n$ converges uniformly in $\I$.
+\end{corollary}
+
+\begin{remark}
+  In general, nothing can be said about uniform convergence on $(a-R,a+R)$.
+\end{remark}
+
+\begin{lemma}
+  Differentiation and Integration term-by-term (cf. \ref{uniform_integral} and \ref{uniform_derivative}) is valid for power series on the interval of convergence.
+  \begin{proof}
+    Since both are local properties, we can take an arbitrarly interval (cf. \ref{ps_bound}) to prove differentiability/continuity on every point in $(a-R,a+R)$ and integration on every interval in $(a-R,a+R)$ (cf. \ref{ps_interval}).
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[Taylor Series]
+  If $f(x)=\sum_{n=0}^\infty a_n(x-a)^n$ with a positive radius of convergence, then $f$ is infinetly differentiable in $(a-R,a+R)$ and $\Forall{n\in\N_0}a_n=\dfrac{f^{(n)}(a)}{n!}$
+\end{corollary}
+
+\begin{remark}[Analytic Functions]
+  Let $T_n$ be the $n$-th Taylor Polynomial of $f$. It is not necessarily true that $T_n\uto f$. If it is true, we say $f\in C^\omega$.
+\end{remark}
+
+\pagebreak
+
+\section{Multivariable Analysis}
+
+\subsection{Multivariable Geometry}
+
+\begin{definition}[Euclidean Space]
+  \label{Euclidean}
+  $\R^n=\set{(a_1,\cdots,a_n)}{a_1,\cdots,a_n\in\R}$. We have the following operations:
+  \begin{compactitem}
+    \item[] Addition: $(a_1,\cdots,a_n)+(b_1,\cdots,b_n)=(a_1+b_1,\cdots,a_n+b_n)$
+    \item[] Scalar multiplication: $\lambda\cdot(a_1,\cdots,a_n)=(\lambda\cdot a_1,\cdots,\lambda\cdot a_n)$
+    \item[] Norm: $\|(a_1,\cdots,a_n)\|=\sqrt{\sum_{i=1}^n a_i^2}$
+    \item[] Scalar product: $(a_1,\cdots,a_n)\vdot(b_1,\cdots,b_n)=\sum_{i=1}^n a_i\cdot b_i$
+    \item[] Basis $e_i=(0,\cdots,1,\cdots,0)$ at the $i$-th place.
+  \end{compactitem}
+  With those operations, $\R^n$ is an Euclidean Space (cf. Linear Algebra).
+\end{definition}
+
+\begin{lemma}
+  The angle between two vectors is $\arccos\left(\dfrac{\vec{a}\vdot \vec{b}}{\|\vec{a}\|\cdot\|\vec{b}\|}\right)$.
+\end{lemma}
+
+\begin{corollary}[Perpendicularity]
+  $\vec{a}\perp \vec{b}\LR \vec{a}\vdot \vec{b}=(0,0,0)$
+\end{corollary}
+
+\begin{definition}[Vector Product]
+  \label{def_cross}
+  In $\R^3$, we define the following operation $\cross:\R^3\times\R^3\to\R^3$ as: $$(a_1,a_2,a_3)\cross(b_1,b_2,b_3)=(a_2\cdot b_3-a_3\cdot b_2, a_3\cdot b_1-a_1\cdot b_3,a_1\cdot b_2-a_2\cdot b_1)$$
+  further, we can use the short hand using determinants, by formally expanding Laplace's formula (cf. Linear Algebra) on the first row: $$\vec{a}\cross\vec{b}=(a_1,a_2,a_3)\cross(b_1,b_2,b_3)=\begin{vmatrix}
+    \vec{e}_1 & \vec{e}_2 & \vec{e}_3 \\
+    a_1 & a_2 & a_3 \\
+    b_1 & b_2 & b_3
+  \end{vmatrix}$$ where $\vec{e}_1=(1,0,0)$, $\vec{e}_2=(0,1,0)$ and $\vec{e}_3=(0,0,1)$, the standard basis.
+\end{definition}
+
+\begin{lemma}
+  The cross product obeys:
+  \begin{compactitem}
+    \item[] Antisymmetry: $\Forall{\vec{a},\vec{b}\in\R^3} \vec{a}\cross \vec{b} = - \vec{b}\cross \vec{a}$
+    \item[] Linearity: $\Forall{\alpha,\beta\in\R}\Forall{\vec{a},\vec{b},\vec{c}\in\R^3}$ \begin{compactitem}
+      \item[] $(\alpha\cdot\vec{a}+\beta\cdot\vec{b})\cross\vec{c}=\alpha\cdot\vec{a}\cross \vec{c}+\beta\cdot\vec{b}\cross\vec{c}$ 
+      \item[] $\vec{c}\cross(\alpha\cdot\vec{a}+\beta\cdot\vec{b})=\alpha\cdot\vec{c}\cross\vec{a}+\beta\cdot\vec{c}\cross\vec{b}$
+    \end{compactitem}
+    \item[] Perpendicularity: $\vec{a}\cross\vec{b} \perp \vec{a},\vec{b}$. 
+  \end{compactitem}
+  \begin{proof}
+    Antisymmetry and linearity follow directly from the definition with determinants. For perpendicularity, we only need to check $\vec{a}\vdot (\vec{a}\cross\vec{b})= 0$ and $\vec{b}\vdot (\vec{a}\cross\vec{b})=0$, by explicit definition (cf. \ref{def_cross}).
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $\vec{a}\cross\vec{b}=(0,0,0)\LR \vec{a},\vec{b}$ are linearly dependent.
+\end{corollary}
+
+\begin{definition}[Right Handed]
+  A basis $(\vec{b}_1,\vec{b}_2,\vec{b}_3)$ of $\R^3$ is right handed iff $\vec{b}_1\cross \vec{b}_2=\vec{b}_3$. The standard basis $(\vec{e}_1,\vec{e}_2,\vec{e}_3)$ is right handed (direct calculatation with \ref{def_cross}).
+\end{definition}
+
+\begin{definition}[Lines and Planes]
+  We define the following geometrical objects: For $\vec{a},\vec{b},\vec{c}\in\R^3$
+  \begin{compactitem}
+    \item Line: $\set{\vec{a}+t\cdot\vec{ab}}{t\in\R}=\vec{a}+\Span(\vec{u})$
+    \item Segment: $[\vec{a},\vec{b}]=\set{\vec{a}+t\cdot\vec{ab}}{t\in[0,1]}$
+    \item Hyperplane: $\set{\vec{a}+t\cdot\vec{ab}+s\cdot\vec{ac}}{t,s\in\R}=\vec{a}+\Span(\vec{ab},\vec{ac})$
+  \end{compactitem}
+  where $\vec{ab}=\vec{b}-\vec{a}$ and $\vec{ac}=\vec{c}-\vec{a}$
+\end{definition}
+
+\begin{lemma}
+  For a plane equation $ax+by+cz=d$, we can convert into $\vec{a}+\Span(\vec{ab},\vec{ac})$.
+  \begin{compactitem}
+    \item If $a,b,c\neq 0$, then $\vec{a}=(d/a,0,0),\vec{b}=(0,d/b,0),\vec{c}=(0,0,d/c)$.
+    \item If any of those are zero, change the corresponding vector entry to $1$.
+  \end{compactitem}
+  To reverse, let $(a,b,c)=\vec{n}=\vec{ab}\cross\vec{ac}$, then $\vec{n}\vdot(\vec{x}-\vec{a})=0$ is the plane equation.
+\end{lemma}
+
+\begin{definition}[Affine Map]
+  \label{def_affine}
+  Let $A\in M_{n\times k}(\R)$ (cf. Linear Algebra) and $\vec{w}\in\R^n$. Then an affine map is: $$\begin{aligned}
+    \Phi:\R^k&\to\R^n\\
+    \vec{x}&\mapsto A\vec{x}+\vec{w}
+  \end{aligned}$$ That is, an affine map is a linear map composed with a translation. Moreover, $S$ is an affine transformation iff $T(\vec{x})=\Phi(\vec{x})-\Phi(\vec{0})$ is a linear transformation.
+\end{definition}
+
+\begin{lemma}
+  An affine map preserves lines and planes.
+  \begin{proof}
+    Let $\Phi(\vec{x})=T(\vec{x})+\vec{w}$, $T$ linear. In general, $$\Forall{S\in (\R^n)^k}\Phi(\vec{a}+\Span(S))=\Phi(\vec{a})+\Span(T(S))$$ Moreover, $T(\vec{ab})=\vec{a'b'}$ where $\vec{a'}=S(\vec{a})$ and $\vec{b'}=S(\vec{b})$
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Quadratic Curves]
+  A quadratic curve/conic section is a set defined by $Ax^2+Bxy+Cy^2+Dx+Ey+F=0$. Those are three categories:
+  \begin{itemize}
+    \item Ellipse: $\displaystyle \frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}=1$
+    \item Hiperbola: $\displaystyle \frac{(x-x_0)^2}{a^2}-\frac{(y-y_0)^2}{b^2}=\pm 1$
+    \item Parabola: $y=a(x-x_0)^2$ or $x=a(y-y_0)^2$
+  \end{itemize}
+  Under correct translation and rotation (cf. \ref{def_affine}), every quadratic curve is either one of these three or is degenerate (one or two lines, one point, or $\emptyset$).
+\end{definition}
+
+\begin{remark}
+  Those curves are given by the intersection of a plane with the double cone $z^2=x^2+y^2$.
+\end{remark}
+
+\pagebreak
+
+\subsection{Metric Topology}
+
+\begin{definition}[Open and Closed Sets]
+  \label{def_open}
+  Let $B_r(x)=\set{y\in\R^n}{\|x-y\|<r}$ and $K_r(x)=\set{y\in\R^n}{\|x-y\|\leq r}$ be, respectively, the open and closed balls in $\R^n$. A set $A\subseteq \R^n$ is:
+  \begin{itemize}
+    \item Open if $\Forall{x\in A}\Exist{\ee>0}B_\ee(x)\subseteq A$
+    \item Closed if $\comp{A}$ is open.
+  \end{itemize}
+\end{definition}
+
+\begin{lemma}
+  \label{open_balls}
+  The open ball is open and the closed ball is closed.
+  \begin{proof}
+    We prove each claim separately.
+    \begin{compactenum}[(i)]
+      \item For $x\in B_r(x_0)$, let $\ee=r-\|x-x_0\|>0$ and $\Forall{y\in B_\ee(x)}\|y-x_0\|\leq \|y-x\|+\|x-x_0\|<\ee+\|x-x_0\|=r$, by triangle inequality, $\RA y\in B_r(x_0)$. Therefore, $B_\ee(x)\subseteq B_r(x_0)$.
+      \item $\Forall{x\in \comp{K_r(x_0)}}$ let $\ee=\|x-x_0\|-r>0$ and $\Forall{y\in B_\ee(x)}\|y-x_0\|\geq \|x-x_0\|-\|y-x\|>\|x-x_0\|-\ee=r$, by reverse triangle inequality, $\RA y\in \comp{K_r(x_0)}$. Therefore, $B_\ee(x)\subseteq \comp{K_r(x_0)}$.
+    \end{compactenum}
+  \end{proof} 
+\end{lemma}
+
+\begin{definition}[Interior and Boundary]
+  \label{topological_defs}
+  For a subset $A\subseteq \R^n$, we define:
+  \begin{itemize}
+    \item Interior: $A^\circ=\set{x\in A}{\Exist{\ee>0}B_\ee(x)\subseteq A}$
+    \item Closure: $\cl{A}:=\set{x\in \R^n}{\Forall{r>0}B_r(x)\cap A\neq \emptyset}$
+    \item Boundary: $\partial A=\set{x\in \R^n}{\Forall{r>0}\Exist{y\in A,z\notin A}y,z\in B_r(x)}=\set{x\in \R^n}{\Forall{r>0}B_r(x)\cap A\neq \emptyset\text{ and }B_r(x)\cap (\comp{A})\neq \emptyset}$
+    \item Derived: $A'=\set{x\in \R^n}{\Forall{\ee>0}\Exist{y\in A}0<\|x-y\|<\ee}$
+    \item Isolated: $A^i=\set{x\in A}{\Exist{r>0}B_r(x)\cap A=\{x\}}$
+  \end{itemize}
+  We name $x\in A'$ a limit point, $x\in A^i$ an isolated point, $x\in \partial A$ a boundary point and $x\in A^\circ$ an interior point.
+\end{definition}
+
+\begin{remark}
+  $A$ is open iff $A^\circ = A$ (by definition).
+\end{remark}
+
+\begin{lemma}[Interior]
+  $A^\circ$ is open.
+  \begin{proof}
+    Let $x\in A^\circ$, then $\Exist{r>0}B_r(x)\subseteq A$. Let $y\in B_r(x)$, then $\Exist{s>0}B_s(y)\subseteq B_r(x)\subseteq A$ (cf. \ref{open_balls}) $\RA y\in A^\circ$. Hence $\Forall{x\in A^\circ}B_r(x)\subseteq A^\circ$ for some $r>0$. So, $A^\circ$ is open.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  \label{derived_set}
+  Notice $\big[B_r(x)\cap A\big]\setminus\{x\}=\set{y\in A}{0<\|x-y\|< r}$. Hence, $A'=\set{x\in\R^n}{\Forall{r>0}\big[B_r(x)\cap A\big]\setminus\{x\}\neq\emptyset}$. 
+\end{remark}
+
+\begin{theorem}[Closure]
+  \label{closure}
+  $\cl{A}=A^i\sqcup A'=A\cup \partial A=A\cup A'=\comp{(\comp{A})^\circ}$
+  \begin{proof}
+    Observe that $A'\subseteq \cl{A}$ and $A^i\cap A'=\emptyset$ (cf. \ref{topological_defs}). Therefore (cf. \ref{derived_set}): $\cl{A}\setminus A'=\set{x\in\R^n}{\Exist{r>0}B_r(x)\cap A\neq \emptyset\text{ and }\big[B_r(x)\cap A\big]\setminus\{x\}=\emptyset}$. Let $x\in\comp{A}$, if $\emptyset=\big[B_r(x)\cap A\big]\setminus\{x\}\RA B_r(x)\cap A\subseteq\{x\}$ $\RA B_r(x)\cap A=\emptyset$. Then, $x\notin\cl{A}\setminus A'$. Hence, $\cl{A}\setminus A'=\set{x\in A}{\Exist{r>0}B_r(x)\cap A=\{x\}}=A^i$.
+
+    \noindent We now prove each term is equal to $\comp{(\comp{A})^\circ}$.
+    \begin{compactitem}
+      \item[$(\cl{A})$] Notice $B_r(x)\subseteq \comp{A}\LR B_r(x)\cap A=\emptyset$. By definition: $\comp{\cl{A}}=\set{x\in \R^n}{\Exist{r>0}B_r(x)\cap A= \emptyset}$ and if $x\in A\RA B_r(x)\cap A=\{x\}$. Then, $\comp{\cl{A}}=\set{x\in \comp{A}}{\Exist{r>0}B_r(x)\subseteq \comp{A}}=(\comp{A})^\circ$.
+      \item[$(\partial A)$] Notice $B_r(x)\subseteq \comp{A}\LR B_r(x)\cap A=\emptyset$. Moreover, by definition: $\comp{\partial A}=\set{x\in \R^n}{\Exist{r>0}B_r(x)\cap A= \emptyset\text{ or }B_r(x)\cap (\comp{A})=\emptyset}$ and if $x\in\comp{A}\RA B_r(x)\cap (\comp{A})=\{x\}$. So, $(\comp{A})\cap(\comp{\partial A})=\set{x\in \R^n}{\Exist{r>0}B_r(x)\cap A=\emptyset}=(\comp{A})^\circ$.
+      \item[$(A')$] Observe $B_r(x)\subseteq \comp{A}\LR \Forall{y\in A}\|x-y\|\geq r$. By definition, $\comp{A'}=\set{x\in \R^n}{\Exist{r>0}\Forall{y\in A}x=y\text{ or }\|x-y\|\geq r}$. Hence, $(\comp{A})\cap(\comp{A'})=\set{x\in \comp{A}}{\Exist{r>0}B_r(x)\subseteq \comp{A}}=(\comp{A})^\circ$.
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  $\cl{A}$ is closed (due to $\comp{\cl{A}}=(\comp{A})^\circ$ open).
+\end{corollary}
+
+\begin{corollary}
+  $\partial A=\cl{A}\cap\cl{(\comp{A})}$
+\end{corollary}
+
+\begin{theorem}
+  \label{eq_closed}
+  The following are equivalent:
+  \begin{compactenum}[(a)]
+    \item $A$ is closed
+    \item $\partial A\subseteq A$
+    \item $A'\subseteq A$
+    \item $\cl{A}=A$
+  \end{compactenum}
+  \begin{proof}
+    We prove each one separately.
+    \begin{compactitem}
+      \item[$(a\LR b)$] $\comp{A}$ is open $\LR\comp{A}=(\comp{A})^\circ=(\comp{A})\cap(\comp{\partial A})\LR \comp{A}\subseteq\comp{\partial A}$ (cf. \ref{closure})
+      \item[$(a\LR c)$] $\comp{A}$ is open $\LR\comp{A}=(\comp{A})^\circ=(\comp{A})\,\cap\,(\comp{A'})\LR \comp{A}\subseteq\comp{A'}$ (cf. \ref{closure})
+      \item[$(b\RA d)$] $\partial A\subseteq A\RA A\subseteq  A\cup \partial A= \cl{A}\subseteq A \RA A=\cl{A}$ 
+      \item[$(d\RA b)$] $A=\cl{A}=A\cup \partial A\RA \partial A \subseteq A$ 
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  Maximality of the interior and minimality of the closure:
+  \begin{compactenum}[(a)]
+    \item $U$ open and $A^\circ \subseteq U\subseteq A\RA U=A^\circ$
+    \item $V$ closed and $A \subseteq V\subseteq \cl{A}\RA V=\cl{A}$
+  \end{compactenum}
+  \begin{proof}
+    We prove each one separately.
+    \begin{compactenum}[(a)]
+      \item $U$ is open, then let $x\in U$, so $\Exist{r>0}B_r(x)\subseteq U\subseteq A\RA x\in A^\circ$. Hence, $U\subseteq A^\circ$ and $A^\circ \subseteq U$ (given), therefore, $A^\circ =U$.
+      \item $(\comp{A})^\circ=\comp{\cl{A}}\subseteq \comp{V}\subseteq \comp{A}$ (cf. \ref{closure}), since $\comp{V}$ is open, by (a), $\RA (\comp{A})^\circ=\comp{V}\RA V=\cl{A}$.
+    \end{compactenum}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Topology]
+  \label{def_topology}
+  An (open) topology $\T\subseteq\mathcal{P}(\R^n)$ is the set of all open sets. It obeys the following requirements:
+  \begin{compactenum}[(T1)]
+    \item $\emptyset,\R^n\in\T$
+    \item Finite Intersection: $U,V\in\T\RA U\cap V\in\T$
+    \item Arbitrary Union: $\mathcal{C}\subseteq\T\RA \displaystyle\bigcup_{U\in\mathcal{C}}U\in\T$
+  \end{compactenum}
+  
+  \noindent A closed topology $\K\subseteq\mathcal{P}(\R^n)$ is the set of all closed sets. It obeys the following requirements:
+  \begin{compactenum}[(K1)]
+    \item $\emptyset,\R^n\in\K$
+    \item Finite Union: $U,V\in\K\RA U\cup V\in\K$
+    \item Arbitrary Intersection: $\mathcal{C}\subseteq\K\RA \displaystyle\bigcap_{U\in\mathcal{C}}U\in\K$
+  \end{compactenum}
+\end{definition}
+
+\begin{theorem}
+  \label{rn_top}
+  The definition of open (cf. \ref{def_open}) obeys the open topology (cf. \ref{def_topology}), denoted $\T^n$.
+  \begin{proof}
+    We trivially obey (T1). For (T2), we need to find $r>0$ such that $B_r(x)\subseteq U\cap V$. We pick $r=min\{\alpha,\beta\}$ where $B_\alpha(x)\subseteq U$ and $B_\beta(x)\subseteq V$, with the observation that $B_\alpha(x)\cap B_\beta(x)=B_{\min\{\alpha,\beta\}}(x)$. For (T3), we note that any open set $U$ can be written as: $U=\bigcup_{x\in U}B_{r(x)}(x)$. Since the open balls are open (cf. \ref{open_balls}), every union of open sets can be rewritten as another union of open ball neighbourhoods.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  The closed topology follows by taking the complement of the previous relations and using deMorgan's Law.
+\end{corollary}
+
+\begin{lemma}
+  \label{subset_top}
+  Let $A\in\R^n$, define $\T_A=\set{U\cap A}{U\in\T^n}$. Then, $\T_A$ is a topology on $A$.
+  \begin{proof}
+    For all statements (T1-3), intersection is distributive.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Limits}
+
+\begin{definition}[Limit of Sequences]
+  \label{seq_limit}
+  A sequence $\seq{a_n\in\R^k}{n}$ converges to $L\in\R^k$ iff: $$\Forall{\ee>0}\Exist{N\in\N}\Forall{n\geq N}\|a_n-L\|<\ee$$ equivalently, for $a_n=(a_{1,n},a_{2,n},\cdots,a_{k,n})$ and $L=(L_1,L_2,\cdots,L_k)$ then $a_n\to L$ iff: $$\Forall{m\in\{1,2\cdots,k\}}a_{m,n}\to L_m$$
+\end{definition}
+
+\begin{remark}
+  \label{seq_lemmas}
+  By using convergence on $\R$, it is immediate to see $\R^n$ is complete. That is, every Cauchy sequence is convergent. Further, those lemmas are immediately valid:
+  \begin{compactenum}[(a)]
+    \item If a sequence $\seq{a_n\in \R^k}{n}$ has a limit $L$, then it is unique.
+    \item $\lim\limits_{n\to\infty} a_n = L \LR \lim\limits_{n\to\infty} \|a_n-L\|=0$
+    \item Every convergent sequence is bounded.
+    \item $\lim\limits_{n\to\infty} \lambda=\lambda$
+    \item $\lim\limits_{n\to\infty} (\lambda\cdot a_n)=\lambda\cdot (\lim\limits_{n\to\infty} a_n)$
+    \item $\lim\limits_{n\to\infty} (a_n\pm b_n)=(\lim\limits_{n\to\infty} a_n)\pm (\lim\limits_{n\to\infty} b_n)$ 
+    \item $\seq{b_n\in\R^k}{n}$ be bounded and $\lim\limits_{n\to\infty} a_n =0$, then: $\lim\limits_{n\to\infty}(a_n\vdot b_n)=0$
+    \item $\lim\limits_{n\to\infty} (a_n\vdot b_n)=(\lim\limits_{n\to\infty} a_n)\vdot (\lim\limits_{n\to\infty} b_n)$
+  \end{compactenum}
+\end{remark}
+
+\begin{lemma}
+  \label{limit_point}
+  $x\in A'$ iff $\Exist{\seq{x_n\in A\setminus\{x\}}{n}}x_n\to x$.
+  \begin{proof}
+    We prove each direction.
+    \begin{compactitem}
+      \item[$(\RA)$] Then, $\Forall{n\in\N}\Exist{y\in A}0<\|x-y\|<2^{-n}$. By Axiom of Countable Choice, we may choose $\seq{x_n}{n}$ such that $\|x-x_n\|<2^{-n}\to 0$. Therefore, $x_n\to x$.
+      \item[$(\LA)$] By contrapositive, $x\notin A':\LR\Exist{\ee>0}\Forall{y\in A}x=y\text{ or }\|x-y\|\geq\ee$. For any sequence $\seq{x_n\in A\setminus\{x\}}{n}$, $\Exist{\ee>0}\Forall{n\in\N}\|x-x_n\|\geq \ee$. Hence $x_n\not\to x$.
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  \label{closed_limit}
+  $x\in\cl{A}$ iff $\Exist{\seq{x_n\in A}{n}}x_n\to x$.
+  \begin{proof}
+    This follows from \ref{limit_point} and \ref{closure} ($\cl{A}=A'\sqcup A^i$) by taking the constant sequence $x_n=x$ for $x\in A^i$.
+  \end{proof}
+\end{corollary}
+
+\begin{definition}
+  \label{fn_limit}
+  A function $f:A\subseteq \R^n\to \R^k$ for $a\in\cl{A}$ , then, $L\in\R^n$ is called the limit of $f$ at $a$ if:
+  \begin{itemize}
+    \item[](Heine) $\Forall{\seq{x_n\in A}{n}} x_n\to a \RA f(x_n)\to L$
+    \item[](Cauchy) $\Forall{\ee>0}\Exist{\delta>0}\Forall{x\in A}\|x-a\|<\delta\RA \|f(x)-L\|<\ee$
+  \end{itemize}
+\end{definition}
+
+\begin{lemma}[H\&C]
+  The Heine definition and the Cauchy definition of the limit are equivalent.
+  \begin{proof}
+    We prove each direction:
+    \begin{compactitem}
+      \item[$(\RA)$] By contrapositive, suppose $\Exist{\ee>0}\Forall{\delta>0}\Exist{x\in A}0<\|x-a\|<\delta\RA \|f(x)-L\|\geq \ee$. By Axiom of Countable Choice, define a sequence $\seq{x_n\in A}{n}$ such that $\|x_n-a\|<2^{-n}$ and $\|f(x_n)-L\|\geq \ee$. Hence $x_n\to a$. Therefore $f(x_n)\not\to L$, by definition, so Heine does not hold.
+      \item[$(\LA)$] By contrapositive, suppose $\Exist{\seq{x_n\in A}{n}}x_n\to a$ (cf. \ref{closed_limit}), but $f(x_n)\not\to L$. By definition of the limits:
+      \begin{align*}
+        &\Forall{\delta>0}\Exist{N\in\N}\Forall{n\geq N}\|x_n-a\|<\delta\\
+        &\Exist{\ee>0}\Forall{N\in\N}\Exist{n\geq N}\|f(x_n)-L\|\geq \ee
+      \end{align*}
+      Hence $\Exist{\ee>0}\Forall{\delta>0}\|x_n-a\|<\delta\not\RA\|f(x_n)-L\|<\ee$, so Cauchy does not hold.
+    \end{compactitem}
+    Hence, both definitons can be used interchangebly.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Calculating Limits]
+  For some $\ee,\delta>0$, let $g:(-\ee,\ee)\to\R$ be a function such that $\Forall{x\in B_\delta(a)\cap A}\|f(x)-L\|\leq g(\|x-a\|)$. Then $f(x)\to L$ as $x\to a$ iff $\lim\limits_{r\to 0}g(r)=0$.
+  \begin{proof}
+    Follows directly from Heine (cf. \ref{fn_limit}).
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Continuity}
+
+\begin{definition}[Continuity]
+  \label{def_cont}
+  Let $f$ be defined on $A\ni a$. We say that $f$ is continuous at point $a$ if: $\lim\limits_{x\to a}f(x)=f(a)$. If $\Forall{a\in A} f$ is continuous at $a$, then $f$ is continuous in $A$.
+\end{definition}
+
+\begin{example}
+  \label{cont_norm}
+  The norm is continuous.
+\end{example}
+
+\begin{definition}[Image and Preimage]
+  \label{image_preimage}
+  For $f:A\to B$, we write:
+  \begin{compactitem}
+    \item For $S\subseteq A$, $f(S)=\set{f(a)\in B}{a\in S}$
+    \item For $R\subseteq B$, $f^{-1}(R)=\set{a\in A}{f(a)\in R}$
+  \end{compactitem}
+\end{definition}
+
+\begin{remark}
+  \label{cont_ball}
+  Cauchy can be rephrased as follows: Given $f:A\subseteq \R^n\to\R^k$, then $f(x)\to L$ as $x\to a$ iff: $$\Forall{\ee>0}\Exist{\delta>0}\Forall{x\in A}x\in B_\delta(a)\RA f(x)\in B_\ee(L)$$
+  $$\Forall{\ee>0}\Exist{\delta>0}f(B_\delta(a)\cap A)\subseteq B_\ee(L)$$
+\end{remark}
+
+\begin{theorem}
+  A function $f:A\subseteq \R^n\to \R^k$ is continuous iff $$\Forall{U\in\T^k}f^{-1}(U)\in \T_A$$ cf. \ref{rn_top}, \ref{subset_top}.
+  \begin{proof}
+    We prove both directions:
+    \begin{compactitem}
+      \item[$(\RA)$] Let $U\in\T^k$ and $f(a)\in U$. By definition, $\Exist{\ee>0}B_\ee(f(a))\subseteq U$. Then (cf. \ref{cont_ball}) $\Exist{\delta>0}f(B_\delta(a)\cap A)\subseteq B_\ee(f(a))\subseteq U$. Hence, $\Forall{a\in f^{-1}(U)}\Exist{\ee>0}\Exist{\delta>0} B_\delta(a)\cap A\subseteq f^{-1}(U)$. Therefore, $f^{-1}(U)\in\T_A$.
+      \item[$(\LA)$] Take $B_\ee(f(a))\in\T^k$, then $f^{-1}(B_\ee(f(a)))=A\cap U$ for $U\in\T^n$. By definition, $\Exist{\delta>0}B_\delta(a)\cap A\subseteq f^{-1}(B_\ee(f(a)))$. Hence (cf. \ref{cont_ball}), $\Forall{a\in A}\Forall{\ee>0}\Exist{\delta>0}f(B_\delta(a)\cap A)\subseteq B_\ee(f(a))$.
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  A function $f:A\subseteq \R^n\to \R^k$ is continuous iff $$\Forall{V\in\K^k}f^{-1}(V)\in \K_A$$
+  where $\K_A=\set{V\cap A}{V\in\K^n}$.
+\end{corollary}
+
+\begin{definition}[Level Set]
+  \label{def_level_set}
+  For $f:A\subseteq \R^n\to\R$. Define the level set $$N(\alpha)=f^{-1}(\{\alpha\})=\set{a\in A}{f(a)=\alpha}$$ Moreover, if $f$ is continuous, $N(\alpha)$ is closed.
+\end{definition}
+
+\begin{lemma}
+  A function $f:A\subseteq \R^n\to \R^k$ is continuous on $A^i$.
+  \begin{proof}
+    For $a\in A^i$, let $\delta>0$ such that $B_\delta(a)\cap A=\{a\}$ (cf. \ref{topological_defs}). Then, $\Forall{\ee>0}f(B_\delta(a)\cap A)=\{f(a)\}\subseteq B_\ee(f(a))$. Hence, by \ref{cont_ball}, $f$ is continuous at $a$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Lipschitz]
+  A function $f:A\subseteq\R^n\to\R^k$ is Lipschitz continuous if: $$\Exist{K>0}\Forall{x,y\in A}\|f(x)-f(y)\|\leq K\cdot\|x-y\|$$
+\end{definition}
+
+\begin{remark}
+  A Lipschitz continuous function $f:A\subseteq\R^n\to\R^k$ is continuous on $A$ since $\|f(x)-f(x_n)\|\leq K\cdot\|x-x_n\|\to 0$, for $x_n\to x$.
+\end{remark}
+
+\begin{example}
+  \label{cont_affine}
+  An affine map (cf. \ref{def_affine}) is Lipschitz continuous. Let $\Phi(x)=A\,x+w$ and the rows of $A$ denoted $r_i$. $\displaystyle\|\Phi(x)-\Phi(y)\|=\|A\,(x-y)\|=\sqrt{\sum_{i=1}^k \|r_i\vdot(x-y)\|^2}\leq\sqrt{\sum_{i=1}^k\sum_{j=1}^n |a_{i,j}|^2}\cdot \|x-y\|=\sqrt{\operatorname{tr}(A\,A^t)}\cdot \|x-y\|$. We write $\|A\|=\sqrt{\operatorname{tr}(A\,A^t)}$.
+\end{example}
+
+\begin{theorem}
+  \label{composition}
+  If $f:A\subseteq \R^n\to \R^k$ and $g: B\subseteq \R^k\to\R^m$, such that $f(A)\subseteq B$, then $g\circ f:A\to\R^m$ is continuous.
+  \begin{proof}
+    By Heine (cf. \ref{fn_limit}), let $x_n\to x$ for $\seq{x_n\in A}{n}$. Since $f$ is continuous, $f(x_n)\to f(x)$. Observe $\seq{f(x_n)\in B}{n}$. Since $g$ is continuous, $g(f(x_n))\to g(f(x))$. Therefore, $g\circ f$ is continuous.
+  \end{proof}
+\end{theorem}
+
+
+\pagebreak
+
+\subsection{Compactness}
+
+\begin{definition}[Boundedness]
+  \label{def_bounded}
+  A set $A\subseteq \R^n$ is called a bounded set iff $\Exist{x\in \R^n,r>0}A\subseteq B_r(x)$. Equivalently if  $A\subseteq K_r(x)$.
+\end{definition}
+
+\begin{definition}
+  \label{seq_bdd}
+  A sequence $\seq{x_n\in \R^k}{n}$ is bounded if $\set{x_n}{n\in\N}$ is bounded (cf. \ref{def_bounded}). Equivalently, if $\Exist{M>0}\Forall{n\in\N}\|x_n\|\leq M$.
+\end{definition}
+
+\begin{theorem}[Bolzano-Weierstrass]
+  \label{bolzano_weierstrass}
+  Any bounded sequence $\seq{a_n\in\R^m}{n}$ (cf. \ref{seq_bdd}), there exists a convergent subsequence. That is, exist a sequence $\seq{b_k\in \R^m}{k}$ is such that: $b_k=a_{n_k}$
+  where $\seq{n_k}{k}$ is a stricly increasing sequence of natural numbers.
+  \begin{proof}
+    We'll work with induction on $m$. Base case is Bolzano-Weierstrass on $\R$ (cf. Calculus I). Let $a_n=(a_{1,n},\cdots, a_{m,n})$ and $b_n=(a_{1,n},\cdots, a_{m-1,n})$. By induction hypothesis, there is a convergent subsequence $\seq{b_{n_k}}{k}$. Further, $\seq{a_{m,n_k}}{k}$ has a converging subsequence $\seq{a_{m,n_{k_j}}}{j}$. Then $\seq{a_{n_{k_j}}}{j}$ is a converging subsequence of $a_n$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Compactness in $\R^n$]
+  \label{def_compact}
+  A set $A\subseteq \R^n$ is compact iff it closed and bounded (cf. \ref{def_bounded}).
+\end{definition}
+
+\begin{remark}
+  There is a broader definition of (topological) compactness, but the Heine-Borel theorem guarantees \ref{def_compact} is necessary and sufficient in $\R^n$. Also, due to \ref{bolzano_weierstrass}, there is a definition of sequentially compact, that is, for any bounded sequence $\seq{a_n\in K}{n}$, there exists a convergent subsequence in $K$.
+\end{remark}
+
+\begin{remark}
+  $K_r(x)$ is compact (cf. \ref{open_balls}).
+\end{remark}
+
+\begin{theorem}[Weierstrass Theorem]
+  \label{weierstrass_thm}
+  Let $f:K\to \R^k$ be a continuous function, where $K$ is compact (cf. \ref{def_compact}), then $f(K)$ is compact (cf. \ref{image_preimage}).
+  \begin{proof}
+    We prove $f(K)$ is bounded and closed (cf. \ref{def_compact}).
+    \begin{compactitem}
+      \item By contrary, suppose $f(K)$ is not bounded. Then, $\Forall{n\in\N}\Exist{x_n\in K}\|f(x_n)\|>n$. By Axiom of Countable Choice, this defines a sequence $\seq{x_n}{n}$. Because $K$ is bounded, by  \ref{bolzano_weierstrass}, there is a subsequence $\seq{x_{n_k}}{k}$ converging to $x_0\in K$ (cf. \ref{closed_limit}). Since $f$ is continuous, $f(x_{n_k})\to f(x_0)$. But $\Forall{k\in\N}\|f(x_{n_k})\|>n_{k}\geq k$ which implies that $\|f(x_{n_k})\|\to \infty$, contradiction since $\|f(x_{n_k})\|\to \|f(x_0)\|$ (cf. \ref{cont_norm}). Therefore, $f(K)$ is bounded.
+      \item Take a sequence $\seq{f(x_n)\in f(K)}{n}$ converging to $y_0$. Then $\seq{x_n\in K}{n}$ is bounded. Hence, by \ref{bolzano_weierstrass}, there is a subsequence $\seq{x_{n_k}}{k}$ converging to $x_0\in K$. Since $f$ is continuous, $f(x_{n_k})\to f(x_0)=y_0$ (cf. \ref{fn_limit} Heine). Hence, $f(K)$ is closed (cf. \ref{closed_limit}, \ref{eq_closed}).
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Let $f:K\subseteq \R^n\to \R$ be a continuous function, where $K$ is compact (cf. \ref{def_compact}), then $f$ attains it's maximum and minimum.
+\end{corollary}
+
+\begin{definition}
+  A function $f:A\subseteq \R^n\to \R^k$ is uniformly continuous if: $$\Forall{\ee>0}\Exist{\delta>0}\Forall{x,y\in A}\|x-y\|<\delta\RA \|f(x)-f(y)\|<\ee$$
+\end{definition}
+
+\begin{theorem}[Heine-Cantor]
+  Let $f:K\to \R^k$ be a continuous function, where $K$ is compact (cf. \ref{def_compact}), then $f$ is uniformly continuous.
+  \begin{proof}
+    The proof is simply to the real line (cf. Calculus I). By contrary, suppose $$\Exist{\ee>0}\Forall{\delta>0}\Exist{x,y\in K}\|x-y\|<\delta\RA \|f(x)-f(y)\|\geq\ee$$
+    Define (by Axiom of Countable Choice) $\seq{x_n}{n}$ and $\seq{y_n}{n}$ such that $\Forall{n\in\N}\|x_n-y_n\|<2^{-n}$ and $\|f(x_n)-f(y_n)\|\geq\ee$. Since $x_n$ is bounded, by \ref{bolzano_weierstrass}, there is a subsequence $\seq{x_{n_k}}{k}$ converging to $x_0\in K$. By Triangle Inequality, $\|y_{n_k}-x_0\|\leq \|x_{n_k}-x_0\|+\|x_{n_k}-y_{n_k}\|\leq \|x_{n_k}-x_0\|+2^{-n_k}$ hence $y_{n_k}\to x_0$. Since $f$ is continuous, $\lim\limits_{k\to\infty}f(x_{n_k})=f(x_0)=\lim\limits_{k\to\infty}f(y_{n_k})$. But $\Forall{k\in\N}\|f(x_{n_k})-f(y_{n_k})\|\geq \ee>0$. By taking $k\to\infty$, there is a contradiction.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Connected Sets}
+
+\begin{definition}[Path/Curve]
+  \label{def_path}
+  A path/curve in $A\subseteq \R^n$ is a continuous function (cf. \ref{def_cont}) $\gamma:[a,b]\to A$. Further, $\gamma(a)$ and $\gamma(b)$ are called the endpoints. Let $\gamma(t)=(\gamma_1(t),\gamma_2(t),\cdots,\gamma_n(t))$. Then, it is much simpler to check continuity, $\gamma$ is continuous iff $\Forall{i\in\{1,2,\cdots,n\}}\gamma_i:[a,b]\to \R$ is continuous.
+\end{definition}
+
+\begin{remark}
+  If we have $\delta:[a,b]\to A$, we may write $\gamma(x)=\delta\left(\frac{x-a}{b-a}\right)$ so that $\gamma:[0,1]\to A$ and $\gamma([0,1])=\delta([a,b])$, also matching the endpoints.
+\end{remark}
+
+\begin{remark}
+  By \ref{weierstrass_thm}, $\Gamma=\gamma([a,b])$ is compact. Further, we may refer to $\Gamma$ as the curve and $\gamma$ as the parametrization.
+\end{remark}
+
+\begin{lemma}[Path in Limits]
+  A function $f:A\subseteq \R^n\to \R^k$ for $a\in\cl{A}$ , then, $L\in\R^n$ is called the limit of $f$ at $a$ iff: $$\Forall{\text{path }\gamma:[0,1]\to A\text{ with }\gamma(0)=a}\lim_{t\to 0}f(\gamma(t))=L$$
+  \begin{proof}
+    \begin{compactitem}
+      \item[$(\RA)$] By definition,\begin{compactitem}
+        \item[] $\Forall{\ee>0}\Exist{\delta>0}\Forall{x\in A}\|x-a\|<\delta\RA\|f(x)-L\|<\ee$
+        \item[] $\Forall{\delta>0}\Exist{\theta>0}\Forall{t\in [0,1]}0<t<\theta\RA\|\gamma(t)-a\|<\delta$
+        \item[$\RA$]: $\Forall{\ee>0}\Exist{\theta>0}\Forall{t\in [0,1]}0<t<\theta\RA \|f(\gamma(t))-L\|<\ee$ 
+      \end{compactitem}
+      \item[$(\LA)$] By contrary, suppose \begin{compactitem}
+        \item[] $\Exist{\ee>0}\Forall{\delta>0}\Exist{x\in A}\|x-a\|<\delta\RA\|f(x)-L\|\geq \ee$
+        \item[] $\Exist{\ee>0}\Forall{n\in\N}\Exist{x_n\in A}\|x_n-a\|<2^{-n}\RA\|f(x)-L\|\geq \ee$
+        \item[] For each $n\in\N$, by Axiom of Countable Choice, take a curve $\gamma$ connecting $x_n$ linearly (clearly continuous).
+        \item[] $\Forall{\delta>0}\Exist{\theta>0}\Forall{t\in [0,1]}0<t<\theta\RA\|\gamma(t)-a\|<\delta$
+        \item[] $\Forall{n\in\N}\Exist{\theta>0}\Forall{t\in [0,1]}0<t<\theta\RA\|\gamma(t)-a\|< 2^{-n}$
+        \item[$\RA$]: $\Exist{\ee>0}\Forall{\theta>0}\Exist{t\in [0,1]}0<t<\theta\RA \|f(\gamma(t))-L\|\geq\ee$ 
+      \end{compactitem}
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Joining Paths]
+  \label{join_paths}
+  Let $\gamma:[a,b]\to A$ and $\delta:[b,c]\to A$ and let $\gamma(b)=\delta(b)$. Then $\beta:[a,c]\to A$ where $$\beta(t)=(\gamma\#\delta)(t)=\begin{cases}
+    \gamma(t)&\text{ if }t\in [a,b]\\
+    \delta(t)&\text{ if }t\in (b,c]
+  \end{cases}$$ is path from $\gamma(a)$ to $\delta(c)$. Further, observe: $\beta([a,c])=\gamma([a,b])\cup\delta([c,d])$
+  \begin{proof}
+    The only we need to prove is that $\beta$ is continuous, which follows directly from $\gamma(b)=\beta(b)=\delta(b)=\lim\limits_{t\to b^{+}}\delta(t)$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Path-Connected Sets]
+  \label{path_connected}
+  A subset $A\subset\R^n$ is path connected iff $\Forall{x,y\in A}\exists\,$ path from $x$ to $y$ (cf. \ref{def_path}).
+\end{definition}
+
+\begin{definition}[Connected Set]
+  \label{def_connected}
+  A subset $A\subseteq \R^n$ is (topologically) connected iff $\NExist{R,S\in \T_A\setminus\{\emptyset\}}R\sqcup S= A$, that is, $R\cup S=A$ and $R\cap S=\emptyset$.
+\end{definition}
+
+\begin{lemma}[Clopen]
+  \label{clopen}
+  A subset $A\subseteq \R^n$ is a connected subset (cf. \ref{def_connected}) iff $\T_A\cap\K_A=\{A,\emptyset\}$.
+  \begin{proof}
+    $\T_A\cap\K_A\supseteq\{A,\emptyset\}$ is trivially given. We prove both directions:
+    \begin{compactitem}
+      \item[$(\RA)$] By contrary, suppose $\T_A\cap\K_A\supsetneq\{A,\emptyset\}$ and let $R=A\cap U=A\cap V$ be in the difference with $U\in\T^n$ and $V\in\K^n$. Let $S=A\cap(\comp{V})\in\T_A$. Observe $R\cup S=A\cap(V\cup(\comp{V}))=A$ and $R\cap S=A\cap(V\cap(\comp{V}))=\emptyset$. Hence, $A$ is not connected.
+      \item[$(\LA)$] By contrary, suppose $\Exist{R,S\in \T_A\setminus\{\emptyset\}}R\cup S=A$ and $R\cap S=\emptyset$. Observe $R,S\neq A$. Since $R=A\setminus S=A\cap(\comp{V})$, where $S=A\cap U$ and $U\in\T^n$ (cf. \ref{subset_top}), then $R$ is closed in $A$. Hence, $R\in \T_A\cap\K_A\setminus\{A,\emptyset\}$.
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Interval]
+  \label{def_interval}
+  An interval is a subset $\I\subseteq \R$ on the real line, iff $\Forall{a<b\in\I}a<c<b\RA c\in\I$.
+\end{definition}
+
+\begin{lemma}
+  \label{interval_connected}
+  A subset $A\subseteq \R$ is connected iff it is either a singleton $\{x\}$ or an interval (cf. \ref{def_interval}).
+  \begin{proof}
+    We prove that every connected subset must be either a singleton or an interval. Then, we prove those are connected.
+    \begin{compactitem}
+      \item[$(\RA)$] By contrary, if $A$ is not an interval and has more than one point, by definition (cf. \ref{def_interval}), $\Exist{a<b\in A}\Exist{c\notin A}a<c<b$. Then, let $R=A\cap(-\infty,c)$ and $S=A\cap(c,\infty)$, which are in $\T_A\setminus\{\emptyset\}$ (cf. \ref{open_balls},\ref{subset_top}), would satisfy \ref{def_connected}.
+      \item[$(\LA)$] Cleary $\{x\}$ is connected since if both $R$ and $S$ are non-empty, $R\sqcup S$ shall have at least two elements. Now, by contrary, suppose an interval $\I$ is not connected and $\I=R\sqcup S$. Then, $\Exist{a\in R,b\in S}a<b$ or $b<a$, wlog, $a<b$. Let $c=\sup\set{x\in\R}{[a,x)\subseteq R}$. Hence, $c\leq b\RA c\in\I$ (cf. \ref{def_interval}). Since $R$ is closed in $\I$ (cf. \ref{clopen}), $c\in R$. Further, $R=\I\cap U$ for $U\in\T^n$, then $\Exist{\delta>0}(c-\delta,c+\delta)\cap\I\subseteq R$ which contradicts the maximality of $c$. Contradiction.
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}
+  \label{eq_connect}
+  A subset $A\subseteq\R^n$ is path-connected then it is connected. Conversly, if $A$ is connected and open, then it is path-connected.
+  \begin{proof}
+    We prove both directions:
+    \begin{compactitem}
+      \item[$(\RA)$] Suppose $\Exist{R,S\in \T_A}R\sqcup S=A$, take $r\in R$ and $s\in S$. Since $A$ is path-connected, there is a path $\gamma$ from $r$ to $s$. Since $\gamma$ is continuous, $\gamma^{-1}(R)$ and $\gamma^{-1}(S)$ are open in $\T_{[0,1]}$, and also non-empty ($r\in\gamma^{-1}(R)$ and $s\in\gamma^{-1}(S)$). Therefore, $[0,1]=\gamma^{-1}(A)=\gamma^{-1}(R\sqcup S)=\gamma^{-1}(R)\sqcup \gamma^{-1}(S)$. However, by \ref{interval_connected}, $[0,1]$ is connected. Contradiction.
+      \item[$(\LA)$] Given $a\in A$, let $P\subseteq A$ be the subset of points in $A$ which can be joined to $a$ by a path in $A$. For $x\in P$, $\Exist{\ee>0}B_\ee(x)\subseteq A$, since $A$ is open. For any $y\in B_\ee(x)$, there us a path from $x$ to $y$ by a straightline. Hence, by \ref{join_paths}, $y\in P$. Therefore, $B_\ee(x)\subseteq P$, so $P$ is open. For $x\in Q=A\setminus P$, $\Exist{\ee>0}B_\ee(x)\subseteq A$, since $A$ is open. If $B_\ee(x)\cap P\neq \emptyset$, then, by \ref{join_paths}, $x\in P$. Hence, $B_\ee(x)\subseteq Q$, so $Q$ is open. Moreover, $P\cap Q=\emptyset$ and $P\cup Q=A$. Since $A$ is connected, and $P$ is not empty ($a\in P$), then $P=A$ and $Q=\emptyset$. This is valid for any $a\in A$.
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The converse of \ref{eq_connect} is only valid on $\R^n$.
+\end{remark}
+
+\begin{theorem}[Intermediate Value Theorem]
+  Let $f:A\subseteq\R^n\to\R^k$ be a continuous function.
+  \begin{compactenum}
+    \item If $A$ is path-connected (cf. \ref{path_connected}), then so is $f(A)$
+    \item If $A$ is connected (cf. \ref{def_connected}), then so is $f(A)$
+  \end{compactenum}
+  \begin{proof}
+    We prove each one:
+    \begin{compactenum}
+      \item Let $x,y\in f(A)$. Then $\Exist{a,b\in A}f(a)=x$ and $f(b)=y$. Since $A$ is path-connected, there is a path $\gamma:[0,1]\to A$ from $a$ to $b$. Further, $f\circ \gamma:[0,1]\to f(A)$ is continuous (cf. \ref{composition}), it is a path from $x$ to $y$.
+      \item By contrary, suppose $f(A)$ is disconnected. Hence, $f(A)=R\sqcup S$ with $R,S\in\T_A$. Therefore, $A=f^{-1}(R)\sqcup f^{-1}(S)$. Then, $A$ is disconnected.
+    \end{compactenum}
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}
+  \label{diff_paths}
+  If $\D$ is an open connected domain, and $x,y\in\D$, then there is a differentiable curve connectiong $x$ and $y$.
+\end{lemma}
+
+\pagebreak
+
+\section{Differentiation}
+
+\subsection{Differentiability}
+
+\begin{definition}[Derivative]
+  A function $f:A\subseteq\R^n\to\R^k$ is differentiable at the point $a\in A^\circ$ if $\exists\,Df(a)\in \Hom(\R^n,\R^k)$ (cf. Linear Algebra), called the derivative at $a$, such that: $$\lim_{x\to a}\frac{\|f(x)-f(a)-Df(a)[x-a]\|}{\|x-a\|}=\lim_{h\to\vec{0}}\frac{\|f(a+h)-f(a)-Df(a)[h]\|}{\|h\|}=0$$ Equivalently, $\Exist{\ee_a: A\to \R^k}f(a+h)=f(a)+Df(a)[h]+\ee_a(h)\cdot \|h\|$ and $\lim\limits_{h\to\vec{0}}\|\ee_a(h)\|=0$. Moreover, the derivative can be expressed by its (standard) matrix representative $[Df(a)]$ and we define the derivative funcion $Df: A\to\Hom(\R^n,\R^k)$ at each differentiable point.
+\end{definition}
+
+\begin{lemma}
+  \label{unique_deriv}
+  If $f$ is differentiable at $a\in A^\circ$, then $Df(a)$ is uniquely determined by: $$\Forall{v\in\R^n}Df(a)[v]=\lim_{t\to 0}\frac{f(a+t\,v)-f(a)}{t}$$ Further, $D_v f(a):=Df(a)[v]$ is the \textbf{directional derivative} of $f$ in the $v$ direction.
+  \begin{proof}
+    We rewrite $h=t\,v$ and $f(a+t\,v)=f(a)+Df(a)[t\,v]+\ee_a(t\,v)\,|t|\,\|v\|$. Since $Df(a)$ is linear, we get: $\Forall{t\in\R}$ $$Df(a)[v]=\frac{f(a+t\,v)-f(a)}{t}-\|v\|\,\frac{|t|}{t}\cdot\ee_a(tv)$$
+    Since $\|v\|\,\dfrac{|t|}{t}$ is bounded and $\lim\limits_{h\to\vec{0}}\|\ee_a(h)\|=\lim\limits_{t\to 0}\|\ee_a(t\,v)\|=0$, by sandwich (cf \ref{seq_lemmas}), the result follows taking $t\to 0$.
+  \end{proof}
+\end{lemma}
+
+\begin{example}
+  An affine map $\Phi(x)=A\,x+w$ (cf. \ref{def_affine}) is differentiable in $\R^n$ and $\Forall{a\in\R^n}[Df(a)]=A$. We get: $\Phi(a+h)-\Phi(a)=A\,h$ so $\lim\limits_{h\to 0}\dfrac{\|(A-Df(a))[h]\|}{\|h\|}=0$
+\end{example}
+
+\begin{remark}
+  This shows that the derivative will calculate the best linear approximation of $f$ near $a$.
+\end{remark}
+
+\begin{theorem}
+  If $f$ is differentiable at $a$, then $f$ is continuous at $a$.
+  \begin{proof}
+    By Heine \ref{fn_limit}, let $a_n\to a$ and set $h=a_n-a$. Then, $f(a_n)=f(a+h)=f(a)+Df(a)[h]+\ee_a(h)\cdot\|h\|$. Taking $n\to \infty$, we get $h\to 0$. Since every linear function is continuous \ref{cont_affine} and $\lim\limits_{h\to\vec{0}}\|\ee_a(h)\|=0$, we get $f(a_n)\to f(a)$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Partial Derivative]
+  \label{partial_derivative}
+  A function $f:A\subseteq\R^n\to\R^k$, given $f(x)=(f_1(x),f_2(t),\cdots,f_k(x))$, for each $f_i$ and $a\in A^\circ$, define: $$\pdv{f_i}{x_j}\,(a)=\lim _{t\to 0}\frac{f_i(a+t\,e_j)-f_i(a)}{t}$$ where $e_i$ is a basis vector (cf. \ref{Euclidean}). If all the partial derivatives exist, then $f$ is partially differentiable (at $a$). Also write $$\pdv{f_i}{u}\,(a)=\lim _{t\to 0}\frac{f_i(a+t\,u)-f_i(a)}{t}$$ for the directional derivative.
+\end{definition}
+
+\begin{lemma}
+  \label{representing_matrix}
+  If $f$ is differentiable at $a\in A^\circ$, then $f$ is partially differentiable at $a$ and $$[Df(a)]=
+  \renewcommand\arraystretch{2.5}
+  \begin{bmatrix}
+    \displaystyle\pdv{f_1}{x_1}\,(a)&\displaystyle\pdv{f_1}{x_2}\,(a)&\cdots&\displaystyle\pdv{f_1}{x_n}\,(a)\\
+    \displaystyle\pdv{f_2}{x_1}\,(a)&\displaystyle\pdv{f_2}{x_2}\,(a)&\cdots&\displaystyle\pdv{f_2}{x_n}\,(a)\\
+    \vdots&\vdots&\ddots&\vdots\\
+    \displaystyle\pdv{f_k}{x_1}\,(a)&\displaystyle\pdv{f_k}{x_2}\,(a)&\cdots&\displaystyle\pdv{f_k}{x_n}\,(a)
+  \end{bmatrix}$$
+  That is, $\displaystyle [Df(a)]_{i,j}=\pdv{f_i}{x_j}\,(a)$.
+  \begin{proof}
+    First, by definition, $\displaystyle f(x)=\sum_{i=1}^n f_i(x)\,e_i$, and, by \ref{unique_deriv},  $\displaystyle Df(a)[e_j]=\lim_{t\to 0}\frac{f(a+t\,e_j)-f(a)}{t}=\sum_{i=1}^n\left(\lim_{t\to 0}\frac{f_i(a+t\,e_j)-f_i(a)}{t}\right)\,e_i=\sum_{i=1}^n\pdv{f_i}{x_j}\,(a)\,e_i$. Hence, by definition of $[Df(a)]_{i,j}$, it is as given on the standard basis.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Hadamard]
+  \label{hadamard_lemma}
+  $f:A\subseteq\R^n\to\R^k$ is differentiable at $a\in A^\circ$ iff there exists a map $\phi_a:A\to\Hom(\R^n,\R^k)$ continuous at $a$ such that: $$f(x)=f(a)+\phi_a(x)[x-a]$$
+  \begin{proof}
+    We prove both directions.
+    \begin{compactitem}
+      \item[$(\RA)$] Define: $$\phi_a(x)=\begin{cases}
+        Df(a)&\text{ if } x=a\\
+        Df(a)+\dfrac{1}{\|x-a\|}\cdot \ee_a(x-a)\cdot(x-a)^t&\text{ otherwise}
+      \end{cases}$$ and $\|\phi_a(x)-\phi_a(a)\|=\dfrac{1}{\|x-a\|}\cdot\|\ee_a(x-a)\|\cdot\|x-a\|=\|\ee_a(x-a)\|\to 0$, where the norm taken was in \ref{cont_affine}, so it is continuous at $a$.
+      \item[$(\LA)$] Calculating: \begin{align*}
+        \frac{\|f(x)-f(a)-\phi_a(a)[x-a]\|}{\|x-a\|}=\frac{\|[\phi_a(x)-\phi_a(a)]\,[x-a]\|}{\|x-a\|}\\
+        \leq\frac{\|\phi_a(x)-\phi_a(a)\|\cdot\|x-a\|}{\|x-a\|}=\|\phi_a(x)-\phi_a(a)\|\to 0
+      \end{align*}
+      (cf. \ref{cont_affine}). Hence, $\phi_a(a)=Df(a)$.
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Continuous Partials]
+  If $f:A\subseteq \R^n\to\R^k$ is partially differentiable on a neighbourhood of $a\in A^\circ$ and each partial derivative is continuous at $a$, then $f$ is differentiable at $a$.
+  \begin{proof}
+    Define $h^{(0)}=0$ and $h^{(j)}=h^{(j-1)}+h_j\,e_j$. For $1\leq i\leq k:$ $$f_i(a+h)-f_i(a)=\sum_{j=1}^n\bigg[f_i(a+h^{(j)})-f_i(a+h^{(j-1)})\bigg]=\sum_{j=1}^n\bigg[g_{i,j}(h_j)-g_{i,j}(0)\bigg]$$ where $g_{i,j}(t)=f_i(a+h^{(j-1)}+t\,e_j)$, then $\displaystyle g_{i,j}'(t)=\pdv{f_i}{x_j}\,(a+h^{(j-1)}+t\,e_j)$. By Mean Value Theorem (cf. Calculus I) $$\Exist{\xi_j\text{ between }0\text{ and }h_j}g_{i,j}(h_j)-g_{i,j}(0)=\pdv{f_i}{x_j}\,(a+h^{(j-1)}+\xi_j\,e_j)\cdot h_j$$ Then, let $\displaystyle[\phi_a(a+h)]_{i,j}=\pdv{f_i}{x_j}\,(a+h^{(j-1)}+\xi_j\,e_j)$, which is continuous on $a$, taking $h\to 0$. The rest follows from \ref{hadamard_lemma}.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}
+  A function $f:A\subseteq \R^n\to\R^k$ is called $C^1$ if it is partially differentiable on $A$ and each partial derivative is continuous in $A$. Further, we write $f\in C^1(A,\R^k)$
+\end{definition}
+
+\begin{corollary}
+  $f\in C^1(A,\R^k)\RA f$ is differentiable on $A$.
+\end{corollary}
+
+\begin{corollary}
+  $f\in C^1(A,\R^k)\RA Df:A\to\Hom(\R^n,\R^k)$ is continuous on $A$.
+\end{corollary}
+
+\begin{theorem}[Chain Rule]
+  \label{chain_rule}
+  Let $f:A\subseteq \R^n\to\R^k$ and $g:B\subseteq \R^k\to\R^m$ such that $f(a)\in B$. If $f$ is differentiable at $a$ and $g$ is differentiable at $f(a)$, then $g\circ f:A\subseteq \R^n\to\R^m$ is differentiable at $a$ and: $$D(g\circ f)(a)=Dg(f(a))\circ Df(a)\in\Hom(\R^n,\R^m)$$
+  \begin{proof}
+    By \ref{hadamard_lemma}, let: 
+    \begin{align*}
+      f(x)-f(a)&=\phi_a(x)\,[x-a]\\
+      g(y)-g(f(a))&=\psi_{f(a)}(y)\,[y-f(a)]\\
+      \text{------------------}&\text{------------------------------}\\
+      g(f(x))-g(f(a))&=\psi_{f(a)}(f(x))\,\Big[\phi_a(x)\,[x-a]\Big]\\
+      &=\varphi_a(x)\,[x-a]
+    \end{align*}
+    Hence, $\varphi_a(x)=\psi_{f(a)}(f(x))\circ\phi_a(x)$. Taking $x\to a$ and using $f,\phi,\psi$ are continuous: $D(g\circ f)(a)=\varphi_a(a)=\psi_{f(a)}(f(a))\circ\phi_a(a)=Dg(f(a))\circ Df(a)$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Gradient]
+  For $f:A\subseteq\R^n\to\R$ differentiable define the gradient as: $\grad f:A^\circ\subseteq\R^n\to\R^n$ so that $\Forall{x\in \R^n}Df(a)[x]=\big(\grad f(a)\big)\vdot x$
+\end{definition}
+
+\begin{remark}[Gradient Boost]
+  The gradient of $f$ at a point is in the direction of greatest increast for $f$ at that point.
+\end{remark}
+
+\begin{corollary}
+  \label{gradient_formula}
+  Let $f:A\subseteq\R^n\to\R$ differentiable and $\gamma:[0,1]\to A$ a differentiable curve. Then: $\displaystyle\dv{}{t}\,\big(f(\gamma(t))\big)=\grad f(\gamma(t))\vdot\gamma'(t)$
+\end{corollary}
+
+\begin{lemma}
+  \label{grad_zero}
+  If $\grad f\equiv 0$ on an open connected domain, then $f\equiv \text{const.}$
+  \begin{proof}
+    By \ref{diff_paths}, for $x,y\in\D$, there is a differentiable path $\gamma:[a,b]\to\D$ connecting the two. Then: $\dv{}{t}\,\big(f(\gamma(t))\big)=\grad f(\gamma(t))\vdot\gamma'(t)=0\RA f(\gamma(t))\equiv \text{const.}\RA f(x)=f(y)$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  \label{orthogonal_level}
+  Let $a\in N(\alpha)$ (cf. \ref{def_level_set}) then, $\grad f(a)$ is perpendicular to $N(\alpha)$. That is, it is perpendicular to the tangent line/plane/hyperplane.
+  \begin{proof}
+    Let $\gamma:[0,1]\to N(\alpha)$, hence, $\Forall{t\in[0,1]}f(\gamma(t))=\alpha\RA $ (by \ref{gradient_formula}) $\displaystyle\grad f(\gamma(t))\vdot\gamma'(t)=\dv{}{t}\,\big(f(\gamma(t))\big)=0$, hence $\grad f(\gamma(t))\perp\gamma'(t)$.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Higher Order Derivatives and Taylor}
+
+\begin{definition}[Higher Partial Derivatives]
+  \label{higher_partial}
+  A function $f:A\subseteq\R^n\to\R$, for $a\in A^\circ$, define: $$\pdv{f}{x_i}{x_j}=\pdv{}{x_i}\,\left(\pdv{f}{x_j} \right)\text{, in general, }\frac{\partial^n f}{\partial x_{i_1}\cdots\partial x_{i_n}}=\pdv{}{x_{i_1}}\,\left(\frac{\partial^{n-1} f}{\partial x_{i_2}\cdots\partial x_{i_n}} \right)$$
+  when the previous partial derivative exists in a neighbourhood of $a$.
+\end{definition}
+
+\begin{example}
+  $f(x,y)=x^2y$, then $f_x(x,y)=2xy$ and $f_y(x,y)=x^2$, and so: $f_{xx}(x,y)=2y\,,\;f_{yx}(x,y)=2x\,,\;f_{xy}(x,y)=2x\,,\;f_{yy}(x,y)=0$.
+\end{example}
+
+\begin{theorem}[Schwarz-Clairut]
+  \label{schwarz_thm}
+  If both $\displaystyle\partial_{x_i}\partial_{x_j} f$ and $\displaystyle\partial_{x_j}\partial_{x_i} f$ are continuous at $a\in A^\circ:$ $$\partial_{x_i}\partial_{x_j} f\,(a)=\partial_{x_j}\partial_{x_i} f\,(a)$$
+  \begin{proof}
+    By definition (cf. \ref{partial_derivative}):
+    \begin{align*}
+      \partial_{x_i}\partial_{x_j} f\,(a)&=\lim_{s\to 0}\frac{\partial_{x_j} f\,(a+s\,e_i)-\partial_{x_j} f\,(a)}{s}=\lim_{s\to 0}\lim_{t\to 0}g(s,t)\\
+      \partial_{x_j}\partial_{x_i} f\,(a)&=\lim_{t\to 0}\frac{\partial_{x_i} f\,(a+t\,e_j)-\partial_{x_i} f\,(a)}{t}=\lim_{t\to 0}\lim_{s\to 0}g(s,t)
+    \end{align*}
+    where $g(s,t)=\dfrac{f(a+s\,e_i+t\,e_j)-f(a+s\,e_i)-f(a+t\,e_j)+f(a)}{st}$. By Mean Value Theorem (cf. Calculus I): 
+    \begin{align*}
+      g(s,t)&=\frac{\partial_{x_j} f\,(a+s\,e_i+\tau_{1,t})-\partial_{x_j} f\,(a+\tau_{1,t})}{s}=\partial_{x_i}\partial_{x_j} f\,(a+\tau_{1,s}+\tau_{1,t})\\
+      &=\frac{\partial_{x_i} f\,(a+t\,e_j+\tau_{2,s})-\partial_{x_i} f\,(a+\tau_{2,s})}{t}=\partial_{x_j}\partial_{x_i} f\,(a+\tau_{2,s}+\tau_{2,t})
+    \end{align*}
+    where $\tau_{k,s}$ between $0,s$ and $\tau_{k,t}$ between $0,t$. Since $\displaystyle\partial_{x_i}\partial_{x_j} f$ and $\displaystyle\partial_{x_j}\partial_{x_i} f$ are continuous at $a$, the result follows taking $t\to 0,s\to 0$ and $s\to 0,t\to 0$.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}
+  A function $f:A\subseteq \R^n\to\R^k$ is called $C^r$ if it is partially differentiable on $A$ $r$ times and each partial derivative is continuous in $A$ (including at the $r$-th derivative). Further, we write $f\in C^r(A,\R^k)$
+\end{definition}
+
+\begin{corollary}
+  If $f\in C^2(A,\R^k)$ then, $$\Forall{a\in A}\Forall{i,j\in\{1,\cdots,n\}}\partial_{x_i}\partial_{x_j} f\,(a)=\partial_{x_j}\partial_{x_i} f\,(a)$$
+\end{corollary}
+  
+\begin{corollary}
+  If $f\in C^r(A,\R^k)$ then all mixed partial derivatives are equal at every point in $A$.
+\end{corollary}
+
+\begin{definition}[Multi-index Notation]
+  Let $\alpha=(\alpha_1,\alpha_2,\cdots,\alpha_k)\in\N_0^k$, we define: For $h\in\R^k$ and $f\in C^r(A,\R)$
+  \begin{compactenum}[(i)]
+    \item $|\alpha|=\alpha_1+\alpha\cdots+\alpha_k$
+    \item $h^\alpha=h_1^{\alpha_1}\cdot h_2^{\alpha_2}\cdots h_k^{\alpha_k}$
+    \item $\alpha!=\alpha_1!\cdot\alpha_2!\cdots\alpha_k!$
+    \item $\partial^\alpha f=\partial_{x_1}^{\alpha_1}\,\partial_{x_2}^{\alpha_2}\,\cdots\,\partial_{x_k}^{\alpha_k}f=\dfrac{\partial^{|\alpha|} f}{\partial x_1^{\alpha_1}\,\partial x_2^{\alpha_2}\,\cdots\,\partial x_n^{\alpha_n}}$ where $|\alpha|\leq r$
+  \end{compactenum}
+\end{definition}
+
+\begin{theorem}[Taylor]
+  \label{taylor}
+  Let $f\in C^{r+1}(A,\R)$, then $\Exist{R_r(a):\R^n\to\R}\Forall{h\in\R^n}$ for $c\in(0,1)$: $$f(a+h)=\sum_{|\alpha|\leq r}\frac{h^\alpha}{\alpha!}\,\partial^\alpha f(a)+R_r(a,h)\;\text{ and }R_r(a,h)=\sum_{|\alpha|=r+1}\dfrac{h^\alpha}{\alpha!}\,\partial^\alpha f(a+c\,h)$$
+  \begin{proof}
+    Let $g(t)=f(a+t\,h)$, by the multinomial theorem: $$\der[j]{g}(t)=\big(h_1\,\partial_{x_1}+\cdots+h_n\,\partial_{x_n}\big)^j f (a+t\,h)=\sum_{|\alpha|=j}\dfrac{j!}{\alpha!}\,h^\alpha\,\partial^\alpha f(a+th)$$ By Taylor's Theorem (cf. Calculus I): $$f(a+h)=g(1)=\sum_{j=0}^r \frac{\der[j]{g}(0)}{j!}+\frac{\der[r+1]{g}(c)}{(r+1)!}=\sum_{|\alpha|\leq r}\frac{h^\alpha}{\alpha!}\,\partial^\alpha f(a)+R_r(a,h)$$ as given in the formula, $R_r(a,h)=\dfrac{\der[r+1]{g}(c)}{(r+1)!}=\sum_{|\alpha|=r+1}\dfrac{h^\alpha}{\alpha!}\,\partial^\alpha f(a+c\,h)$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Optimization and Critical Points}
+
+\begin{definition}[Extremum Point]
+  We say that $f:A\subseteq\R^n\to\R$ has a local minimum (eq. maximum) at $a$ if exists an open ball $B_\epsilon(a)\subseteq A$ about $a$ such that: $$\Forall{x\in B_\epsilon(a)} f(x)\geq f(a)\;\Big(\text{eq. }f(x)\leq f(a)\Big)$$ The point $a$ which is either a local minimum or local maximum point is called a local extremum point.
+\end{definition}
+
+\begin{definition}[Critical Point]
+  We say that $a$ is a critical point of $f$ if either $\grad f(a)=0$ or $\nexists\,\grad f(a)$. Further, a critical point that is not an extremum is a saddle point.
+\end{definition}
+
+\begin{theorem}[Fermat]
+  \label{fermat}
+  Let $f:A\subseteq\R^n\to\R$ be partially differentiable at $a\in A^\circ$. If $f$ gets its maximal (or minimal) value at $a$, then: $\grad f(a)=\vec{0}$
+  \begin{proof}
+    Let $g_i(t)=f(a+t\,e_i)\RA g'(t)=\partial_{x_i} f(a+t\,e_i)\RA g'(0)=\partial_{x_i} f(a)$. By Fermat (cf. Calculus I), $t=0$ is an extremum iff $\partial_{x_i} f(a)=0$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[NC for Local Extremum]
+  $a$ is a local extremum $\RA a$ is a critical point.
+  \begin{proof}
+    If $f$ is differentiable at $a$, we use \ref{fermat}. Otherwise, $\nexists\,\grad f(a)$. Either way, $a$ is a critical point.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Hessian]
+  For $f:A\subseteq\R^n\to\R$ twice differentiable, let: 
+  $$Hf(a)=[D^2f(a)]=\begin{bmatrix}
+    \pdv{f}{x_1}{x_1}\,(a)&\pdv{f}{x_1}{x_2}\,(a)&\cdots&\pdv{f}{x_1}{x_n}\,(a)\\
+    \pdv{f}{x_2}{x_1}\,(a)&\pdv{f}{x_2}{x_2}\,(a)&\cdots&\pdv{f}{x_2}{x_n}\,(a)\\
+    \vdots&\vdots&\ddots&\vdots\\
+    \pdv{f}{x_n}{x_1}\,(a)&\pdv{f}{x_n}{x_2}\,(a)&\cdots&\pdv{f}{x_n}{x_n}\,(a)
+  \end{bmatrix}=[\partial_{x_i}\partial_{x_j} f(a)]_{i,j}$$
+  Further, if $f\in C^2$ at $a$, then $Hf(a)^t=Hf(a)$.
+\end{definition}
+
+\begin{lemma}
+  For $f:A\subseteq\R^n\to\R$, $C^2$ at $a$, $\Forall{h\in\R^n}$
+  $$\sum_{|\alpha|=2}\frac{h^\alpha}{\alpha!}\,\partial^\alpha f(a)=\frac{1}{2}\,h\vdot\Big(Hf(a)\,h\Big)$$
+  \begin{proof}
+    Follows from the definition of the Hessian and from \ref{schwarz_thm}.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  By \ref{taylor}, $\Forall{h\in\R^n}\Exist{c\in (0,1)}$ $$f(a+h)=f(a)+\big(\grad f(a)\big)\vdot h+\frac{1}{2}\,h\vdot\Big(Hf(a+c\,h)\,h\Big)$$
+\end{corollary}
+
+\begin{definition}[Definiteness]
+  A matrix $A\in \operatorname{Sym}_n(\R)$ (symmetric $n\times n$ matrix) is positive definite iff: $\Forall{x\in\R^n\setminus\{0\}}x\vdot(A\,x)>0$. Moreover, it is negative definite iff $-A$ is positive definite. Otherwise, it is indefinite.
+\end{definition}
+
+\begin{theorem}[Second Derivative Test]
+  For $f\in C^2(A,\R)$. Then, $a$ is a critical point and $Hf(a)$ is positive definite $\RA a$ is a local minimum of $f$.
+  \begin{proof}
+    Since $a$ is a critical point of $f$, then $\grad f(a)=\vec{0}$, we get, for $h\in B_\epsilon(\vec{0})$ $\Exist{c\in (0,1)}f(a+h)=f(a)+\frac{1}{2}\,h\vdot\Big(Hf(a+c\,h)\,h\Big)$. Since $f$ is $C^2$, $Hf(a+c\,h)$ is still positive definite for some $\|h\|=\epsilon>0$. Hence, $\Forall{h\in B_\epsilon(\vec{0})\setminus\{\vec{0}\}}f(a+h)-f(a)>0$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  For $f\in C^2(A,\R)$. Then, $a$ is a critical point and $Hf(a)$ is negative definite $\RA a$ is a local maximum of $f$.
+\end{corollary}
+
+\begin{lemma}[Saddle Point]
+  For $f\in C^2(A,\R)$, if $a$ is a critical point and $Hf(a)$ is indefinite $\RA a$ is a saddle point of $f$.
+  \begin{proof}
+    Then, $\Exist{u,v\in B_\epsilon(\vec{0})}u\vdot(Hf(a)\,u)>0 $ and $v\vdot(Hf(a)\,v)<0$. Since $f$ is $C^2$, $Hf(a+c\,h)$ is still positive or negative for some $\|h\|=\epsilon>0$. So, $f(a+u)-f(a)=\frac{1}{2}\,u\vdot\Big(Hf(a+c\,u)\,u\Big)>0$ and $f(a+v)-f(a)=\frac{1}{2}\,v\vdot\Big(Hf(a+c\,v)\,v\Big)<0$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  \label{definite_eigenvalues}
+  For $A\in \operatorname{Sym}_n(\R)$, $A$ is positive definite iff all eigenvalues of $A$ are positive.
+  \begin{proof}
+    We prove each one:
+    \begin{compactitem}
+      \item[$(\RA)$] Let $x\neq 0$ be an eigenvector with eigenvalue $\lambda$, then $A$ is positive definite $\RA x\vdot(A\,x)=\lambda\cdot\|x\|^2>0\RA \lambda>0$.
+      \item[$(\LA)$] By Spectral Theorem (cf. Linear Algebra) we get: $A=Q^t\,\Lambda\,Q$, for $Q$ orthogonal and $\Lambda=\operatorname{diag}\{\lambda_i\}$, the diagonal of eigenvalues. Since all eigenvalues are positive, $\Lambda=D^2$, where $D=\operatorname{diag}\{\sqrt{\lambda_i}\}$. Then, $x\vdot(A\,x)=x^t\,Q^t\,D^2\,Q\,x=\|D\,Q\,x\|^2>0$
+    \end{compactitem}
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Sylvester's Criterion]
+  For $A\in \operatorname{Sym}_n(\R)$, $A$ is positive definite iff every leading principal minors (the determinant obtained by removing the last $n-k$ rows and last $n-k$ columns, for $k\in\{1,\cdots,n\}$, which we denote $\Delta_k$) are positive.
+  \begin{proof}
+    We prove each one:
+    \begin{compactitem}
+      \item[$(\RA)$] Since all eigenvalues are positive (cf. \ref{definite_eigenvalues}), $\Delta_n$, which is the product of all eigenvalues (cf. Linear Algebra), is positive. Let $A^{(k)}$ be the leading principal matrix. Take $x$ with last $n-k$ values zero and $y$ the vector of first $k$ entries of $x$, then $x\vdot(A\,x)=y\vdot(A^{(k)}\,y)>0$. Then, $\Forall{k\in\{1,\cdots,n\}}A^{(k)}$ is positive definite. Hence, all $\Delta_k$ are positive.
+      \item[$(\LA)$] By induction on $n$:
+      \begin{compactitem}
+        \item Base Case: $A\in \operatorname{Sym}_1(\R)=\R$, then $\Delta_1=A>0$.
+        \item Inductive Step: By induction, $A^{(n-1)}$ is positive definite. First, we prove $A$ only has one negative eigenvalue. By contradiction, say there are two negative eigenvalues, hence two independent eigenvectors $u,v$ such that $u\vdot(A\,u)<0$ and $v\vdot(A\,v)<0$. Define $w=v_n\cdot u-u_n\cdot v$, so that $w_n=0$. Then, $w\vdot(A^{(n-1)}\,w)=w\vdot(A\,w)=v_n^2\cdot u\vdot(A\,u)+u_n^2\cdot v\vdot(A\,v)<0$, which is a contradiction since $A^{(n-1)}$ is positive definite. But $\Delta_n>0$, so there are no negative eigenvalues. Also, no zero eigenvalues.
+      \end{compactitem}
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Global Extremum]
+  We say that $f:A\subseteq\R^n\to\R$ has a global minimum (eq. maximum) at $a$ iff: $$\Forall{x\in A} f(x)\geq f(a)\;\Big(\text{eq. }f(x)\leq f(a)\Big)$$ The point $a$ which is either a global minimum or global maximum point is called a global extremum point.
+\end{definition}
+
+\begin{lemma}
+  A global extremum of $f:A\subseteq\R^n\to\R$ is either a local extremum or a boundary point of $A$.
+  \begin{proof}
+    By \ref{closure}, $a\in A\subseteq\cl{A}$ either $a\in A^\circ$ or $a\in\partial A$. If $a\in A^\circ$, then $\Exist{\ee>0}B_\ee(a)\subseteq A^\circ$, hence, if $a$ is a global extremum and interior, it is a local extremum.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Lagrange, Implicit and Inverse Theorems}
+
+\begin{theorem}[Inverse Function]
+  Let $f:A\subseteq\R^n\to\R^k$ be $C^1$ and $Df(a)\in\Aut(\R^n)$, i.e. is invertible, (cf. Linear Algebra). Then, $$\Exist{U\ni a\text{ open }\subseteq A}U,f(U)\text{ open and }f:U\to f(U)\text{ is a bijection}$$
+  \begin{proof}
+    Outside the scope.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  For a funcion $F:E\subseteq\R^{n+m}\to\R^k$, define $F^*:\pi_x(E)\to\R^k$ ($\pi_x$ is the projection of first $n$ components) such  that: $F^*(x)=F(x,y_0)$, we write $D_x F(x_0,y_0)=DF^*(x_0)$. Moreover, $$[D_xF(x_0,y_0)]=\bigg[\pdv{F_i}{x_j}\,(x_0,y_0)\bigg]_{1\leq i\leq k\,;\,1\leq j\leq n}$$
+\end{remark}
+
+\begin{theorem}[Implicit Function]
+  Let $F:E\subseteq\R^{n+m}\to\R^k$ be $C^1$ and $F(x_0,y_0)=0$ and $D_xF(x_0,y_0)\in\Aut(\R^n)$ for $(x_0,y_0)\in E\subseteq\R^n\times\R^m$. Then, $$\Exist{U\ni a\text{ open }\subseteq \pi_x(E)\text{ and }f\in C^1(U,\R^m)}F(x,y)=0\LR y=f(x)$$
+  \begin{proof}
+    Outside the scope.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Lagrangian Multiplier]
+  Let $a$ be a global extremum of $f\in C^1(A,\R)$ over the constraint $g(x)=0$, where $g\in C^1(B,\R)$. That is, it is a global extremum over the set $A\cap g^{-1}(0)$. Then, $$\Exist{\lambda\in\R}\grad f(a)=\lambda\cdot\grad g(a)$$
+  we call $\lambda$ the Lagragian multiplier.
+  \begin{proof}
+    Let $\gamma$ be a differentiable curve in $A\cap g^{-1}(0)$ starting at $a$, then, by chain rule, since $a$ is a global extremum: $\grad f(a)\vdot\gamma'(0)=0$, hence $\grad f(a)$ is perpendicular to $A\cap g^{-1}(0)$. Therefore $\Exist{\lambda\in\R}\grad f(a)=\lambda\cdot\grad g(a)$, due to \ref{orthogonal_level}. Important to remark if $A,B\subseteq\R^n$ a $g$ is not the constant zero (on some ball), then $g^{-1}(0)$ is at most $n-1$ dimensional.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Let the Lagragian be: $\mathcal{L}:\Big[A\cap g^{-1}(0)\Big]\times\R\to\R$ where $\mathcal{L}(x,\lambda)=f(x)-\lambda\cdot g(x)$, then the Lagragian condition is: $\grad_{x,\lambda}\mathcal{L}(a)=0$.
+\end{corollary}
+
+\begin{theorem}[Generalized Lagrangian Multiplier]
+  Let $a$ be a global extremum of $f\in C^1(A,\R)$ over the constraint $g(x)=\vec{0}$, where $g\in C^1(B,\R^m)$ such that $\grad g_i(a)$ are linearly independent ($[Dg(a)]$ has full rank). Then, $$\Exist{\vec{\lambda}\in\R^m}\grad f(a)=\sum_{i=1}^m\lambda_i\cdot\grad g_i(a)$$
+  \begin{proof}
+    Let $\gamma$ be a differentiable curve in $A\cap g_i^{-1}(0)$ starting at $a$, then, by chain rule, since $a$ is a global extremum: $\grad f(a)\vdot\gamma'(0)=0$, hence $\grad f(a)$ is perpendicular to $A\cap g_i^{-1}(0)$, so $\grad f(a)$ is perpendicular to $A\cap g^{-1}(\vec{0})$. Therefore $\Exist{\vec{\lambda}\in\R^m}\grad f(a)=\sum_{i=1}^m\lambda_i\cdot\grad g_i(a)$, due to \ref{orthogonal_level}.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  If we parametrize $\partial A$ piecewise by a curve $g$, we still need to analyze the discontinuous points.
+\end{remark}
+
+\pagebreak
+
+\section{Integration}
+
+\subsection{Riemann and Darboux}
+
+\begin{definition}[Hyperrectangle Partition]
+  For $H=\prod_{k=1}^n[a_k,b_k]\subseteq\R^n$ (a hyperrectangle) and $N\in\N$, we define a partition $T=\{H_i\}_{i=1}^{N^n}$ on $H$: 
+  \begin{align*}
+    T:\quad & a_1=x_{1,0}<x_{1,1}<\cdots<x_{1,i-1}<x_{1,i}<\cdots<x_{1,N}=b_1\\
+    & a_2=x_{2,0}<x_{2,1}<\cdots<x_{2,i-1}<x_{2,i}<\cdots<x_{2,N}=b_2\\
+    &\vdots\\
+    & a_k=x_{k,0}<x_{k,1}<\cdots<x_{k,i-1}<x_{k,i}<\cdots<x_{k,N}=b_k\\
+    & \vdots \\
+    & a_n=x_{n,0}<x_{n,1}<\cdots<x_{n,i-1}<x_{n,i}<\cdots<x_{n,N}=b_n
+  \end{align*}
+  so that $H_i=[x_{1,i-1},x_{1,i}]\times\cdots\times[x_{n,i-1},x_{n,i}]$. Denote the displacement $\Delta x_{k,i}=x_{k,i}-x_{k,i-1}$, hence $\vol(H_i)=\prod_{k=1}^n\Delta x_{k,i}$ and the norm of the partition: $$\|T\|=\max\set{|\Delta x_{k,i}|}{i=1,2,\cdots,N^n\,\text{ and }\,k=1,2,\cdots,n}$$
+\end{definition}
+
+\begin{definition}[Rectangle Integration]
+  Let $f:H\subseteq\R^n\to\R$ where $H$ is a hyperrectangle. For $N\in\N$, defined a partition $T=\{H_i\}_{i=1}^{N^n}$. Choose a point $x_i^*\in H_i$. Then, the sum $\displaystyle R(T,\{x_i^*\}_{i=1}^{N^n})=\sum_{i=1}^{N^n} f(x_i^*)\,\vol(H_i)$ is called the Riemann sum of $T$. A function $f$ is called Riemann integrable over $H$ if there exists the limit denoted $\displaystyle I=\int_H\,f(x)\dd^n{x}=\lim_{\|T\|\to 0}R(T,\{x_i^*\}_{i=1}^{N^n})$ and the limit is independent on the choice of $T$ and $\{x_i^*\}_{i=1}^{N^n}$, which is called the definite integral (or the Riemann integral).
+\end{definition}
+
+\begin{definition}[Darboux]
+  Let $f:H\subseteq\R^n\to\R$ where $H$ is a hyperrectangle. For $N\in\N$, defined a partition $T=\{H_i\}_{i=1}^{N^n}$, define $m_i=\inf\limits_{x\in H_i}f(x)$ and $M_i=\sup\limits_{x\in H_i}f(x)$
+  Then, the sums $L(T)=\sum_{i=1}^{N^n} m_i\,\vol(H_i)$ and $U(T)=\sum_{i=1}^{N^n} M_i\,\vol(H_i)$ are called the lower and upper Darboux sum of $T$, respectively. We define: $\sup\limits_T L(T)=L$ and $\inf\limits_T U(T)=U$ the lower and upper Darboux integral, denoted
+  $\displaystyle\underline{\int_H}f(x)\dd[n]{x}=L$ and $\displaystyle U=\overline{\int_H}f(x)\dd[n]{x}$. If $U=L$, the function is said to be Darboux integrable over $H$.
+\end{definition}
+
+\begin{lemma}[N\&SC for Darboux Integrability]
+  $f$ is Darboux integrable over $H$ iff $\Forall{\epsilon>0}\Exist{T}U(T)-L(T)<\epsilon$
+  \begin{proof}
+    That condition is equivalent to $\lim\limits_{\|T\|\to 0}\big(U(T)-L(T)\big)=0$
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[DI $\LR$ RI]
+  \label{darboux_cond}
+  $f$ is Darboux integrable over $H$ iff it is Riemann integrable over $H$.
+  \begin{proof}
+    Any Riemann sum $R(T,\{x_i^*\}_{i=1}^{N^n})$, is between the Darboux sums: $U(T)\geq R(T,\{x_i^*\}_{i=1}^{N^n})\geq L(T)$. If $\displaystyle\lim_{\|T\|\to 0}U(T)=\lim_{\|T\|\to 0}L(T)=I$, by Sandwich theorem, $\lim\limits_{\|T\|\to 0}R(T)=I\RA f$ is Riemann integrable over $H$. That is, $\displaystyle \overline{\int_H} f(x)\dd[n]{x}=\underline{\int_H} f(x)\dd[n]{x}=\int_H f(x)\dd[n]{x}$.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Fubini 2-dim]
+  \label{fubini_rect}
+  $f:[a,b]\times[c,d]=H\to\R$ bounded and integrable on $H$, we define $\displaystyle\varphi(x)=\int_c^d f(x,y)\dd{y}\,$ and $\displaystyle\,\psi(y)=\int_a^b f(x,y)\dd{x}$, then the double integral can be calculated as:
+  $$\iint_H f\dd{A}=\int_a^b \varphi(x)\dd{x}=\int_c^d\psi(y)\dd{y}$$
+  \begin{proof}
+    Observe: $\displaystyle\varphi(x)=\sum_{j=1}^N \int_{y_{j-1}}^{y_j}f(x,y)\dd{y}$. Define: $\phi_i=\inf\limits_{x\in[x_{i-1},x_i]}\varphi(x)$ and $\Phi_i=\sup\limits_{x\in[x_{i-1},x_i]}\varphi(x)$. We get: $\displaystyle\sum_{j=1}^N m_{i,j}\,\Delta y_j\leq \phi_i\leq\Phi_i\leq\sum_{j=1}^N M_{i,j}\,\Delta y_j$. Therefore $L_f(T)\leq L_\varphi(T_x)\leq U_\varphi(T_x)\leq U_f(T)$, where $T_x$ is the partition induced on $x$. Taking $\|T\|\to 0$ on both sides, we get the result, since $f$ is integrable on $H$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}
+  \label{def_domain_integration}
+  For $f:\D\subseteq\R^n\to\R$ where $\D$ is bounded, let $H\supseteq\D$ be a hyperrectangle, define $\tilde{f}:H\to\R$ s.t.: $\tilde{f}(x)=\begin{cases}f(x)&\text{ if }x\in\D\\0&\text{otherwise}\end{cases}$ and define $\displaystyle \int_{\D} f(x)\dd[n]{x}=\int_H \tilde{f}(x)\dd[n]{x}$
+\end{definition}
+
+\begin{definition}
+  A set $\D\subseteq\R^n$ is measurable if we can assign a volume $\vol(\D)\in[0,\infty]$. That is, iff the constant $1$ is integrable over $\D$.
+\end{definition}
+
+\begin{lemma}
+  For $\D\subseteq\R^n$ such that $\vol(\D)=0$ and $f:\D\to\R$ is bounded, then $\displaystyle\int_{\D}f(x)\dd[n]{x}=0$.
+  \begin{proof}
+    Let $M=\sup\limits_{x\in\D}f(x)$ and $m=\inf\limits_{x\in\D}f(x)$, then $\displaystyle m\cdot\vol(\D)\leq \int_{\D}f(x)\dd[n]{x}\leq M\cdot \vol(\D)$, by definition of integration.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Fubini]
+  For $f:\D\to\R$, let the domain be defined as
+  \begin{compactitem}
+    \item Type I: $\D_\textup{I}=\set{(y,x_n)\in\R^{n-1}\times\R}{y\in \mathfrak{E}\text{ and }\alpha(y)\leq x_n\leq \beta(y)}$
+    \item Type II: $\D_\textup{II}=\set{(y,x_n)\in\R^{n-1}\times\R}{y\in \mathfrak{E}(x_n)\text{ and }a\leq x_n\leq b}$
+    \item Type III: Type I and Type II
+  \end{compactitem}
+  then the integral is: $$\int_{\D} f(x)\dd[n]{x}=\int_{\mathfrak{E}}\left(\int_{\alpha(y)}^{\beta(y)}f(y,x_n)\dd{x_n}\right)\dd[n-1]{y}=\int_a^b\left(\int_{\mathfrak{E}(x_n)}f(y,x_n)\dd[n-1]{y}\right)\dd{x_n}$$ if $\D$ is type I or II, respectively.
+  \begin{proof}
+    Follows from \ref{fubini_rect} and \ref{def_domain_integration}.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Additivity]
+  If $\D=\D_1\cup\D_2$ and $\vol(\D_1\cap\D_2)=0$, for $f:\D\to\R$ integrable over $\D$, $$\int_{\D}f(x)\dd[n]{x}=\int_{\D_1}f(x)\dd[n]{x}+\int_{\D_2}f(x)\dd[n]{x}$$
+\end{lemma}
+
+\pagebreak
+
+\subsection{Change of Variables}
+
+\begin{lemma}[Affine Transformation]
+  \label{affine_jacobian}
+  Let $\Phi(x)=A\,x+w$ be a bijective affine map and $f:\D\subseteq\R^n\to\R$ integrable:
+  $$\int_{\D} f(x)\dd[n]{x}=\int_{\Phi^{-1}(\D)} f(\Phi(y))\cdot|\det(A)|\dd[n]{y}$$ which is the substitution $x=\Phi(y)$.
+  \begin{proof}
+    For $H_i=\Phi(G_i)\RA \vol(H_i)=|\det(A)|\cdot\vol(G_i)$, for $H_i,G_i$ hyperrectangles. Notice $m_i=\inf\limits_{x\in H_i}f(x)=\inf\limits_{y\in G_i}f(\Phi(y))$ and $M_i=\sup\limits_{x\in H_i}f(x)=\sup\limits_{y\in G_i}f(\Phi(y))$, hence: $\displaystyle L(T)=\sum_{i=1}^{N}\,m_i\,\vol(H_i)=\sum_{i=1}^{N}\,m_i\,|\det(A)|\,\vol(G_i)$ and $\displaystyle U(T)=\sum_{i=1}^{N}\,M_i\,|\det(A)|\,\vol(G_i)$. The result follows by definition of the Darboux integral.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Jacobian]
+  For $\Phi:\D\subseteq\R^n\to\R^n$ a differentiable map, define $J[\Phi](x)=\det([D\Phi(x)])$
+\end{definition}
+
+\begin{definition}[Coordinates]
+  A function $\Phi:\D_\Phi\to R_\Phi$ with $\D_\Phi,R_\Phi\subseteq \R^n$ is a homeomorphism if:
+  \begin{compactitem}
+    \item $\Phi$ is bijective;
+    \item Both $\Phi$ and $\Phi^{-1}$ are continuous.
+  \end{compactitem}
+  Further $\Phi$ is also called a coordinate map. If $\Phi$ is differentiable in $\D_\Phi$, and $\Forall{a\in\D_\Phi}D\Phi(a)\in\Aut(\R^n)$, it is called a diffeomorphism.
+\end{definition}
+
+\begin{theorem}[Change of Variables]
+  \label{change_of_vars}
+  Let $\Phi:\D_\Phi\to R_\Phi$ be a diffeomorphism and $f:\D\subseteq\R^n\to\R$ integrable (and $\D\subseteq R_\Phi$):
+  $$\int_{\D} f(x)\dd[n]{x}=\int_{\Phi^{-1}(\D)} f(\Phi(y))\cdot|J[\Phi](y)|\dd[n]{y}$$ which is the substitution $x=\Phi(y)$.
+  \begin{proof}
+    For $y_0\in H_i$, then $\Phi(y)=\Phi(y_0)+D\Phi(y_0)[y-y_0]+\ee(y-y_0)\cdot\|y-y_0\|$, hence $\Phi$ is approximated by an affine map on $H_i$. By definition of integration, we get the result by \ref{affine_jacobian}.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  If $\vol(\set{J[\Phi](a)=0}{a\in\D_\Phi})=0$, the formula is also valid.
+\end{corollary}
+
+\begin{remark}
+  If $\Phi$ is a diffeomorphism, $J[\Phi^{-1}](\Phi(x))=\dfrac{1}{J[\Phi](x)}$.
+\end{remark}
+
+\begin{definition}[Common Coordinate Systems]
+  \label{coords}
+  Define the following coordinate systems
+  \begin{itemize}
+    \item[Polar] $\Phi_\text{polar}:\R^2\setminus\{(0,0)\}\to (0,\infty)\times[0,2\pi)$ where $(\rho,\varphi)\mapsto (\rho\cos{\varphi},\rho\sin{\varphi})$. The inverse is given by: $(x,y)\mapsto(\sqrt{x^2+y^2},\atan2(y,x))$ where: $$\atan2(y,x)=\begin{cases}
+      \arccos\left(\frac{x}{\sqrt{x^2+y^2}}\right)&\text{ if }y\geq 0\\
+      2\pi-\arccos\left(\frac{x}{\sqrt{x^2+y^2}}\right)&\text{ if }y<0
+    \end{cases}$$
+    \item[Cylindrical] $\Phi_\text{cylindrical}:\R^3\setminus\Big(\{(0,0)\}\times\R\Big)\to (0,\infty)\times[0,2\pi)\times\R$ where the map is $(\rho,\varphi,z)\mapsto (\rho\cos{\varphi},\rho\sin{\varphi},z)$ and the inverse is given by: $(x,y,z)\mapsto(\sqrt{x^2+y^2},\atan2(y,x),z)$
+    \item[Spherical] $\Phi_\text{spherical}:\R^3\setminus\Big(\{(0,0)\}\times\R\Big)\to (0,\infty)\times[0,2\pi)\times[0,\pi]$ where the map is $(r,\varphi,\theta)\mapsto (r\sin{\theta}\cos{\varphi},r\sin{\theta}\sin{\varphi},r\cos{\theta})$ and the inverse is given by: $(x,y,z)\mapsto\left(\sqrt{x^2+y^2+z^2},\atan2(y,x),\arccos\Big(\frac{z}{\sqrt{x^2+y^2+z^2}}\Big)\right)$
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  The sets where these transformation at not defined have measure zero on their respective spaces, so they can be ignored on integration.
+\end{remark}
+
+\pagebreak
+
+\subsection{Path Integrals}
+
+\begin{definition}[Reparametrization]
+  Two curves $\gamma:[a,b]\to\R^n$ and $\delta:[c,d]\to\R^n$ are reparametrization if there is a homeomorphism $\varphi:[a,b]\to[c,d]$  such that $\gamma=\delta\circ\varphi$. Then, $\gamma([a,b])=\delta([c,d])=\Gamma$, so these are both parametrizations of the same curve in $A\subseteq\R^n$. If $\varphi$ is increasing, then the reparametrization is orientation-preserving, otherwise, it is orientation-reversing. Further, we denote $\neg\gamma:[a,b]\to\R^n$ the curve $\neg\gamma(t)=\gamma(a+b-t)$.
+\end{definition}
+
+\begin{definition}[Arc Integral]
+  For a function $f:\D\subseteq\R^n\to\R$ and a curve $\gamma:[a,b]\to\D$. We define the arc integral $\displaystyle\int_{\gamma}f\dd{\ell}$ by taking the Riemann sums $\displaystyle\sum_{i=1}^N f(\gamma(c_i))\cdot\|\gamma(t_i)-\gamma(t_{i-1})\|$ for a partition $T$ of $[a,b]$.
+\end{definition}
+
+\begin{lemma}[Additivity]
+  \label{line_additivity}
+  For $\gamma:[a,b]\to\D$ and $\delta:[b,c]\to\D$ such that $\gamma(b)=\delta(b)$, for any $f\in C^1(\D)$, $$\int_{\gamma\#\delta} f\dd{\ell}=\int_{\gamma}f\dd{\ell}+\int_{\delta} f\dd{\ell}$$
+  \begin{proof}
+    Let $\beta=\gamma\#\delta$ and $T$ a partition of $[a,c]$. Define $M$ s.t. $b\in[t_M,t_{M+1}]$. So, by definition: 
+    \begin{align*}
+      \int_{\beta} f\dd{\ell}&=\lim_{\|T\|\to 0}\sum_{i=1}^N f(\beta(c_i))\|\beta(t_i)-\beta(t_{i-1})\|\\
+      =\lim_{\|T\|\to 0}&\bigg\{\sum_{i=1}^{M} f(\gamma(c_i))\|\gamma(t_i)-\gamma(t_{i-1})\|+f(\beta(c_{M+1}))\|\delta(t_{M+1})-\gamma(t_M)\|\\
+      &+\sum_{i=M+2}^{N} f(\delta(c_i))\|\delta(t_i)-\delta(t_{i-1})\|\bigg\}=\int_{\gamma} f\dd{\ell}+0+\int_{\delta} f\dd{\ell}
+    \end{align*} since we defined induced partitions of $[a,b]$ and $[b,c]$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Rectifiable]
+  A curve is rectifiable if $$L_\gamma=\sup\set{\sum_{i=1}^N \|\gamma(t_i)-\gamma(t_{i-1})\|}{\text{partition }T\text{ of }[a,b]}<\infty$$ in that case, we say $L_\gamma$ is the length of the curve.
+\end{definition}
+
+\begin{remark}
+  $L_\gamma=\displaystyle\int_{\gamma}\dd{\ell}$, by triangle inequality on refinements of the partition.
+\end{remark}
+
+\begin{lemma}
+  If $\gamma:[a,b]\to\R^n$ is $C^1$, then $\gamma$ is rectifiable.
+  \begin{proof}
+    Let $M=\sup_{t\in[a,b]}\|\gamma'(t)\|$. Taking Lagrange's MVT (cf. Calculus I):
+    \begin{align*}
+      \sum_{i=1}^N \|\gamma(t_i)-\gamma(t_{i-1})\|&=\sum_{i=1}^N \sqrt{\sum_{j=1}^n(\gamma_j(t_i)-\gamma_j(t_{i-1}))^2}\\
+      =\sum_{i=1}^N (t_i-t_{i-1})\cdot\sqrt{\sum_{j=1}^n \gamma_j'(c_{i,j})^2}&\leq \sqrt{n}\,M\sum_{i=1}^N (t_i-t_{i-1})=\sqrt{n}\,M\,(b-a)
+    \end{align*}
+    Hence, $L_\gamma\leq \sqrt{n}\,M\,(b-a)$.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}
+  If $\gamma:[a,b]\to\R^n$ is $C^1$, then $$\int_{\gamma} f\dd{\ell}=\int_a^b f(\gamma(t))\cdot\|\gamma'(t)\|\dd{t}$$
+  \begin{proof}
+    By the previous calculation and taking a equipartition $\Delta t$ in the Riemann sum. The formula follows.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}
+  If $\delta:[c,d]\to\R^n$ is a reparametrization of $\gamma:[a,b]\to\R^n$, then $$\int_{\gamma} f\dd{\ell}=\int_{\delta} f\dd{\ell}$$
+  \begin{proof}
+    First, $\gamma=\delta\circ\varphi\RA \gamma'(t)=\delta'(\varphi(t))\cdot\varphi'(t)$. By \ref{change_of_vars} with $\varphi:[a,b]\to[c,d]$:
+    \begin{align*}
+      \int_{\delta} f\dd{\ell}&=\int_{[c,d]} f(\delta(s))\cdot\|\delta'(s)\|\dd{s}=\int_{[a,b]} f(\delta(\varphi(t)))\cdot\|\delta'(\varphi)\|\cdot|\varphi'(t)|\dd{t}\\
+      &=\int_{[a,b]}f(\gamma(t))\cdot\|\gamma'(t)\|\dd{t}=\int_{\gamma} f\dd{\ell}
+    \end{align*}
+    Further, it is valid regardless if $\varphi$ is orientation-preserving or reversing.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Line Integral]
+  For a function $F:\D\subseteq\R^n\to\R^n$ and a curve $\gamma:[a,b]\to\D$. We define the line integral $\displaystyle\int_{\gamma}F\vdot\dd{\vec{r}}$ by taking the Riemann sums $\displaystyle\sum_{i=1}^N F(\gamma(c_i))\vdot\Big[\gamma(t_i)-\gamma(t_{i-1})\Big]$ for a partition $T$ of $[a,b]$.
+\end{definition}
+
+\begin{theorem}
+  \label{line_integral}
+  If $\gamma:[a,b]\to\R^n$ is $C^1$, then $$\int_{\gamma} F\vdot\dd{\vec{r}}=\int_a^b F(\gamma(t))\vdot \gamma'(t)\dd{t}$$
+  \begin{proof}
+    By Lagrange's MVt, similar to previous calculatation, and taking a equipartition $\Delta t$ in the Riemann sum. The formula follows.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}
+  If $\delta:[c,d]\to\R^n$ is a reparametrization of $\gamma:[a,b]\to\R^n$, then:
+  \begin{enumerate} [(i)]
+    \item $\delta$ is orientation-preserving: $\displaystyle\int_{\gamma} F\vdot\dd{\vec{r}}=\int_{\delta} F\vdot\dd{\vec{r}}$
+    \item $\delta$ is orientation-reversing, $\displaystyle\int_{\gamma} F\vdot\dd{\vec{r}}=-\int_{\delta} F\vdot\dd{\vec{r}}$
+  \end{enumerate}
+  \begin{proof}
+    First, $\gamma=\delta\circ\varphi\RA \gamma'(t)=\delta'(\varphi(t))\cdot\varphi'(t)$. By \ref{change_of_vars} with $\varphi:[a,b]\to[c,d]$:
+    \begin{align*}
+      \int_{\delta} F\vdot\dd{\vec{r}}&=\int_{[c,d]} F(\delta(s))\vdot \delta'(s)\dd{s}=\int_{[a,b]} F(\delta(\varphi(t)))\vdot \delta'(\varphi) \cdot|\varphi'(t)|\dd{t}\\
+      &=\int_{[a,b]} F(\gamma(t))\vdot \gamma'(t)\,\operatorname{sgn}(\varphi(t))\dd{t}=\operatorname{sgn}(\varphi')\int_{\gamma} F\vdot\dd{\vec{r}}
+    \end{align*}
+    And $\operatorname{sgn}(\varphi')=\begin{cases}
+      1&\text{ if }\delta\text{ is orientation-preserving}\\
+      -1&\text{ if }\delta\text{ is orientation-reversing}
+    \end{cases}$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  $\displaystyle\int_{\neg\gamma}F\vdot\dd{\vec{r}}=-\int_{\gamma}F\vdot\dd{\vec{r}}$
+\end{corollary}
+
+\begin{lemma}[Additivity]
+  For $\gamma:[a,b]\to\D$ and $\delta:[b,c]\to\D$ such that $\gamma(b)=\delta(b)$, for any $F\in C^1(\D,\R^n)$, $$\int_{\gamma\#\delta} F\vdot\dd{\vec{r}}=\int_{\gamma}F\vdot\dd{\vec{r}}+\int_{\delta} F\vdot\dd{\vec{r}}$$
+  \begin{proof}
+    Follows same calculatation as \ref{line_additivity}.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Winding number]
+  For closed piecewise $C^1$ curve $\gamma:[a,b]\to\R^2$, for $(x_0,y_0)\notin\gamma$, define
+  $$w_\gamma(x_0,y_0)=\frac{1}{2\pi}\oint_\gamma\frac{-(y-y_0)\dd{x}+(x-x_0)\dd{y}}{(x-x_0)^2+(y-y_0)^2}$$
+\end{definition}
+
+\begin{lemma}
+  $w_\gamma(x_0,y_0)\in\mathbb{Z}$
+  \begin{proof}
+    For $\gamma(t)=\big(x_0+r(t)\,\cos{\theta(t)},y_0+r(t)\,\sin{\theta(t)}\big)$, and we require $\theta$ it continuous. Expanding: $\theta(t)=2\pi k(t)+\atan2(y(t)-y_0,x(t)-x_0)$, where $k(t)\in\mathbb{Z}$ is chosen so $\theta(t)$ is continuous. Then:
+    $$w_\gamma(x_0,y_0)=\frac{1}{2\pi}\int_a^b \dot{\theta}(t)\dd{t}=\frac{\theta(b)-\theta(a)}{2\pi}=k(b)-k(a)\in\mathbb{Z}$$ since $\gamma(b)=\gamma(a)$.
+  \end{proof}
+\end{lemma}
+
+\begin{definition}
+  A closed curve $\gamma:[a,b]\to\R^2$ is said to be a Jordan curve if $\gamma\big|_{[a,b)}$ is injective.
+\end{definition}
+
+\begin{lemma}
+  Let $\gamma:[a,b]\to\R^2$ be a piecewise $C^1$ Jordan curve, then $\Forall{(x_0,y_0)\in\R^2\setminus\gamma}w_\gamma(x_0,y_0)\in\{-1,0,1\}$.
+\end{lemma}
+
+\begin{theorem}[Jordan Curve Theorem]
+  For $\gamma:[a,b]\to\R^2$ a piecewise $C^1$ Jordan curve, then we can decompose $\R^2\setminus\gamma= \operatorname{Int}(\gamma)\sqcup\operatorname{Ext}(\gamma)$ where:
+  \begin{align*}
+    \operatorname{Int}(\gamma)&=\set{(x_0,y_0)\in\R^2}{|w_\gamma(x_0,y_0)|=1}\\
+    \operatorname{Ext}(\gamma)&=\set{(x_0,y_0)\in\R^2}{w_\gamma(x_0,y_0)=0}
+  \end{align*}
+  Moreover, $\operatorname{Int}(\gamma)$ is bounded and $\operatorname{Ext}(\gamma)$ is unbounded and both are connected.
+\end{theorem}
+
+\begin{definition}
+  A closed curve $\gamma:[a,b]\to\R^2$ is positively oriented if $\Forall{(x_0,y_0)\in\R^2\setminus\gamma}w_\gamma(x_0,y_0)\geq 0$, and negatively oriented if it is $\leq 0$.
+\end{definition}
+
+\pagebreak
+
+\subsection{Conservative Fields}
+
+\begin{definition}
+  Let $\D\subseteq\R^n$ be an open connected domain. A vector field $F:\D\to\R^n$ is called conservative iff $\Exist{U\in C^1(\D)}F=\grad U$. Then $U$ is called a potential of the vector field.
+\end{definition}
+
+\begin{lemma}
+  The potential is unique up to a constant.
+  \begin{proof}
+    Follows directly from linearity and \ref{grad_zero}.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Gradient]
+  Let $F:\D\to\R^n$ be $C^1$ conservative field and $U$ a potential function. Then, for any $C^1$ curve $\gamma:[a,b]\to\D$, $$\int_{\gamma} F\vdot\dd{\vec{r}}=U(\gamma(b))-U(\gamma(a))$$
+  \begin{proof}
+    Follows directly from \ref{gradient_formula}, \ref{line_integral} and FTC I (cf. Calculus I).
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Converse Gradient]
+  Let $F:\D\to\R^n$ be $C^1$, then the following are equivalent:
+  \begin{compactenum}[(i)]
+    \item $F$ is conservative;
+    \item For any closed $C^1$ curve $\gamma\subset\D$, $\displaystyle\oint_\gamma F\vdot\dd{\vec{r}}=0$
+    \item For any $C^1$ curve $\gamma\subset\D$, $\displaystyle\int_\gamma F\vdot\dd{\vec{r}}$ depends only on the endpoints of $\gamma$.
+  \end{compactenum}
+  \begin{proof}
+    The directions $(i)\RA(ii)$ and $(i)\RA (iii)$ follow from the previous theorem.
+    \begin{compactitem}
+      \item[$(ii)\RA(iii)$] Take two curves $\gamma_1,\gamma_2:[a,b]\to\D$ with same endpoints. Then: $\gamma_1\#(\neg\gamma_2)$ is a closed curve, hence: $$0=\oint_{\gamma_1\#(\neg\gamma_2)}F\vdot\dd{\vec{r}}=\int_{\gamma_1}F\vdot\dd{\vec{r}}-\int_{\gamma_2}F\vdot\dd{\vec{r}}$$
+      \item[$(iii)\RA(i)$] For a fixed $x_0\in\D$, let $\displaystyle U(x)=\int_{x_0\to x}F\vdot\dd{\vec{r}}$ where $x_0\to x$ is any differentiable curve in $\D$ connecting $x_0$ to $x$. We take a linear path:
+      \begin{align*}
+        \pdv{\phi}{x_i}(x)&=\lim_{\delta\to 0}\frac{1}{\delta}\left[\;\;\int_{x_0\to x+\delta\,e_i}F\vdot\dd{\vec{r}}\,-\int_{x_0\to x}F\vdot\dd{\vec{r}}\right]\\
+        &=\lim_{\delta\to 0}\frac{1}{\delta}\int_{x\to x+\delta\,e_i}F\vdot\dd{\vec{r}}=\lim_{\delta\to 0}\frac{1}{\delta}\int_0^\delta F(x+t\,e_i)\vdot e_i\dd{t}=F_i(x)
+      \end{align*} 
+    \end{compactitem}
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Irrotational $\LR$ Conservative]
+  For $F=(F_1,\cdots,F_n)\in C^1(\D,\R^n)$ where $\D=\prod_{i=1}^n[a_i,b_i]$ is a hyperrectangle, if $[DF(a)]$ is symmetric ($F$ is called irrotational), that is: $$\Forall{i,j\in\{1,\cdots,n\}}\pdv{F_i}{x_j}=\pdv{F_j}{x_i}$$ then, $F$ is conservative.
+  \begin{proof}
+    Let $\alpha_i$ be:
+    \begin{align*}
+      \alpha_1(t,x)&=(t,x_2,x_3,\cdots,x_{n-1},x_n)\\
+      \alpha_2(t,x)&=(a_1,t,x_3,\cdots,x_{n-1},x_n)\\
+      \vdots\quad&\qquad\vdots\\
+      \alpha_n(t,x)&=(a_1,a_2,a_3,\cdots,a_{n-1},t)
+    \end{align*}
+    Then, for $U(x)=\displaystyle\sum_{i=1}^n\int_{a_i}^{x_i}F_i(\alpha_i(t,x))\dd{t}$, we show $F=\grad U$. Notice the identity $\alpha_i(a_i,x)=\alpha_{i+1}(x_{i+1},x)$. Then, we calculate:
+    \begin{align*}
+      \pdv{U}{x_j}&=F_j(\alpha_j(x_j,x))+\sum_{i=1}^{j-1}\int_{a_i}^{x_i}\pdv{F_i}{x_j}\,(\alpha_i(t,x))\dd{t}\\
+      &=F_j(\alpha_j(x_j,x))+\sum_{i=1}^{j-1}\int_{a_i}^{x_i}\pdv{F_j}{x_i}\,(\alpha_i(t,x))\dd{t}\\
+      &=F_j(\alpha_j(x_j,x))+\sum_{i=1}^{j-1}\eval{F_j(\alpha_i(t,x))}_{a_i}^{x_i}\\
+      &=F_j(\alpha_j(x_j,x))+\sum_{i=1}^{j-1}\Big[F_j(\alpha_i(x_i,x))-F_j(\alpha_{i+1}(x_{i+1},x))\Big]\\
+      &=F_j(\alpha(x_1,x))=F_j(x)
+    \end{align*}
+    The result follows.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The converse is true by \ref{schwarz_thm}.
+\end{remark}
+
+\begin{remark}[Circle and Disk]
+  Define the following sets.
+  \begin{compactitem}
+    \item $S^1=\set{(x,y)\in\R^2}{x^2+y^2=1}$
+    \item $D^2=\set{(x,y)\in\R^2}{x^2+y^2\leq 1}$
+  \end{compactitem}
+  Notice $S^1\subset D^2$.
+\end{remark}
+
+\begin{definition}
+  We say $\gamma:[0,1]\to \D\subseteq \R^n$ is a loop if $\gamma(0)=\gamma(1)$. Then there is a function $\zeta:S^1\to\D$ defined $\gamma(x)=\zeta\big(\cos(2\pi x),\sin(2\pi x)\big)$ or $\zeta(x,y)=\gamma\left(\dfrac{1}{2\pi}\atan2(y,x)\right)$ (cf. \ref{coords}).
+\end{definition}
+
+\begin{definition}[Simply Connected Region]
+  A subset $A\subseteq\R^n$ is simply connected if it is path-connected (cf. \ref{path_connected}) and for any loop $f:S^1\to A$, there is a continuous extension $F:D^2\to A$.
+  That is, we can "shrink" any closed curve to a point.
+\end{definition}
+
+\begin{theorem}[Green]
+  Let $\D\subseteq\R^2$ be a simply connected domain and $\partial D=\gamma$ positively oriented. Then, for any $F=(P,Q)\in C^1(\D,\R^2)$: $$\oint_\gamma F\vdot\dd{\vec{r}}=\oint_\gamma P\dd{x}+Q\dd{y}=\iint_{\D}\left(Q_x-P_y\right)\dd{A}$$
+  \begin{proof}
+    We'll prove only for domains of the type III: 
+    \begin{align*}
+      \D&=\set{(x,y)\in\R^2}{a\leq x\leq b\text{ and }g_1(x)\leq y\leq g_2(x)}\\
+      &=\set{(x,y)\in\R^2}{f_1(y)\leq x\leq f_2(y)\text{ and }\alpha\leq y\leq \beta}
+    \end{align*}
+    We calculate $\displaystyle\oint_\gamma P\,\hat{x}\vdot\dd{\vec{r}}$. We split $\gamma$ into four curves: 
+    \begin{align*}
+      \gamma_1&=\set{(x,g_1(x))}{a\leq x\leq b}\RA \displaystyle\oint_{\gamma_1} P\,\hat{x}\vdot\dd{\vec{r}}=\int_a^b P(x,g_1(x))\vdot\dd{x}\\
+      \gamma_2&=\set{(a,y)}{g_1(a)\leq y\leq g_2(a)}\RA \displaystyle\oint_{\gamma_2} P\,\hat{x}\vdot\dd{\vec{r}}=0\\
+      \gamma_3&=\set{(x,g_2(x))}{a\leq x\leq b}\RA \displaystyle\oint_{\gamma_3} P\,\hat{x}\vdot\dd{\vec{r}}=-\int_a^b P(x,g_2(x))\vdot\dd{x}\\
+      \gamma_4&=\set{(b,y)}{g_1(b)\leq y\leq g_2(b)}\RA \displaystyle\oint_{\gamma_4} P\,\hat{x}\vdot\dd{\vec{r}}=0
+    \end{align*}
+    since the curves $\gamma_2$ and $\gamma_4$ are perpendicular to the $x$-axis. Hence: $$\displaystyle\oint_\gamma P\,\hat{x}\vdot\dd{\vec{r}}=\int_a^b \Big[P(x,g_1(x))-P(x,g_2(x))\Big]\dd{x}=-\int_{x=a}^b\int_{y=g_1(x)}^{g_2(x)}P_y\dd{y}\dd{x}$$ A similar calculation holds for $\displaystyle\oint_\gamma Q\,\hat{y}\vdot\dd{\vec{r}}=\int_{y=\alpha}^\beta\int_{x=f_1(y)}^{f_2(y)}Q_x\dd{x}\dd{y}$. The result follows from linearity. Further, for type I and type II, where $Q=0$ or $P=0$, respectively, it is analogous.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Joining Domains]
+  For two domains $\D_1,\D_2$ with $\vol(\D_1\cap\D_2)=0$, if Green's Theorem applies to both $\D_1$ and $\D_2$, then it applies for $\D_1\cup\D_2$.
+  \begin{proof}
+    Let $\gamma_1=\partial A\setminus\partial(A\cap B),\;\gamma_2=\partial B\setminus\partial(A\cap B),\;\gamma_3=\partial(A\cup B)$. Hence: $\gamma_3=\gamma_1\#\gamma_2$ and the result follows from additivity of both the line integral and the double integral.
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  A full proof for Green's Theorem for rectifiable Jordan curves $\gamma$ can be given by chopping up the domain into rectangles and taking the limit together with the previous lemma.
+\end{remark}
+
+\begin{corollary}
+  If $F\in C^1(\D,\R^n)$ is irrotational, where $\D$ is simply connected, then $F$ is conservative.
+\end{corollary}
+
+\pagebreak
+
+\subsection{Flux Integrals}
+
+\begin{definition}[Surface]
+  \label{def_surface}
+  A surface in $\R^3$ is a continuous function (cf. \ref{def_cont}) $\sigma:S\subseteq\R^2\to \R^3$, where $S$ is simply connected. We refer to $\sigma(S)=\Sigma$ as the surface and $\sigma$ as a parametrization.
+\end{definition}
+
+\begin{definition}[Surface Integral]
+  For a function $f:\Sigma\subseteq\R^3\to\R$ defined on the surface $\Sigma$ (parametrized by $\sigma$ which we ask to be $C^1$). We define the surface integral $$\iint_{\Sigma}f\dd{S}=\iint_S f(\sigma(s,t))\cdot\left\|\pdv{\sigma}{s}\cross\pdv{\sigma}{t}\right\|\dd{s}\dd{t}$$
+\end{definition}
+
+\begin{lemma}[Additivity]
+  \label{surf_additivity}
+  For two surfaces $\Sigma,\Pi$ with $\text{area}(\Sigma\cap\Pi)=0$, for any $f\in C^1(\Sigma\cup\Pi)$, $$\iint_{\Sigma\cup\Pi} f\dd{S}=\iint_{\Sigma}f\dd{S}+\iint_{\Pi} f\dd{S}$$
+  \begin{proof}
+    Follows from additivity of double integrals.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}
+  If $\pi:R\to\R^n$ is a reparametrization of $\sigma:S\to\R^n$ (that is, there is a homeomorphism $\varphi:S\to R$ such that $\sigma=\pi\circ\varphi$), then $$\iint_{\Sigma} f\dd{S}=\iint_{\Pi} f\dd{S}$$
+  \begin{proof}
+    First, $\sigma=\pi\circ\varphi\RA \sigma_s=\pi_\lambda\cdot \lambda_s+\pi_\mu\cdot\mu_s$ and $\sigma_t=\pi_\lambda\cdot \lambda_t+\pi_\mu\cdot\mu_t$ , where $(\lambda,\mu)=\varphi(s,t)$. By \ref{change_of_vars}:
+    \begin{align*}
+      \iint_{\Pi} f\dd{S}&=\iint_{R} f(\pi(s,t))\cdot\|\pi_\lambda(\lambda,\mu)\cross\pi_\mu(\lambda,\mu)\|\dd{\lambda}\dd{\mu}\\
+      &=\iint_{S} f(\pi(\varphi(s,t)))\cdot\|\pi_\lambda(\varphi(s,t))\cross\pi_\mu(\varphi(s,t))\|\cdot\begin{Vmatrix}
+        \lambda_s &\lambda_t\\ \mu_s &\mu_t
+      \end{Vmatrix}\dd{s}\dd{t}\\
+      &=\iint_{S}f(\gamma(t))\cdot\|\sigma_s(s,t)\cross\sigma_t(s,t)\|\dd{s}\dd{t}=\iint_{\Sigma} f\dd{S}
+    \end{align*}
+    where we calculated:
+    $$\sigma_s(s,t)\cross\sigma_t(s,t)=\pi_\lambda(\varphi(s,t))\cross\pi_\mu(\varphi(s,t))\cdot\begin{vmatrix}
+      \lambda_s &\lambda_t\\ \mu_s &\mu_t
+    \end{vmatrix}$$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Flux Integral]
+  For a function $F:\Sigma\to\R^3$ defined on the surface $\Sigma$ (parametrized by $\sigma$ which we ask to be $C^1$). We define the flux integral $$\iint_{\Sigma}F\vdot\dd{\vec{S}}=\iint_S F(\sigma(s,t))\vdot\left(\pdv{\sigma}{s}\cross\pdv{\sigma}{t}\right)\dd{s}\dd{t}$$
+  The normal to the surface is defined as: $\hat{n}=\dfrac{\sigma_s\cross\sigma_t}{\|\sigma_s\cross\sigma_t\|}$, hence we can define: $\displaystyle\iint_{\Sigma}F\vdot\dd{\vec{S}}=\iint_{\Sigma}F\vdot\hat{n}\dd{S}$.
+\end{definition}
+
+\begin{theorem}[Stoke's]
+  For a surface $\Sigma$, parametrized by $\sigma:S\to\Sigma$, let $\Gamma=\sigma(\partial S)$, which we'll call the boundary of the surface, then for any $F\in C^1(\Sigma,\R^3)$: $$\int_{\Gamma}F\vdot\dd{\vec{r}}=\iint_{\Sigma}\big(\curl F\big)\vdot\dd{\vec{S}}$$
+  \begin{proof}
+    We'll reduce it to Green's Theorem: Let $\sigma:S\to\Sigma$. Take $$G(s,t)=(P(s,t),Q(s,t))=(F(\sigma(s,t))\vdot\sigma_s,F(\sigma(s,t))\vdot\sigma_t)$$ Take the curve $\Delta=\partial S$, so that $\Gamma=\vec{\sigma}(\Delta)$, we get: $$\oint_\Gamma F\vdot\dd{\vec{r}}=\oint_\Delta G\vdot\dd{\vec{r}}=\iint_{S}\big[Q_s-P_t\big]\dd{s}\dd{t}$$
+    by Green's Theorem. By direct calculation, we have: $$Q_s-P_t=(\curl F)(\sigma(s,t))\vdot\big[\sigma_s\cross\sigma_t\big]$$
+    The result follows by the definition of the flux integral.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Gauß's]
+  For a solid $\Omega\subseteq\R^3$ with boundary $\partial\Omega=\Sigma$, for any $F\in C^1(\Omega,\R^3)$: $$\iint_{\Sigma}F\vdot\dd{\vec{S}}=\iiint_{\Omega}\big(\div F\big)\dd{V}$$
+  \begin{proof}
+    The proof goes analogous to Green's Theorem, by separation into rectangles and connecting the domains.
+  \end{proof}
+\end{theorem}
+
+\end{document}

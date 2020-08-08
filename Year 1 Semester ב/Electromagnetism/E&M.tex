@@ -1,0 +1,1428 @@
+\documentclass[12pt]{article}
+  
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{esint}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{bbm}
+\usepackage{float}
+\usepackage[italicdiff]{physics}
+\usepackage{paralist}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\input{insbox}
+\pgfplotsset{compat=1.17}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
+
+\title{%
+  Electromagnetism \\
+  \large Notes from TAU Course with Additional Information\\
+  Lecturer: Lev Vaidman
+}
+\author{Gabriel Domingues}
+\date{\today}
+
+\let\emptyset\varnothing
+\let\RA\Rightarrow
+\let\LA\Leftarrow
+\let\LR\Leftrightarrow
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\grad}{\vec{\nabla}}
+\renewcommand{\div}{\vec{\nabla}\vdot}
+\renewcommand{\curl}{\vec{\nabla}\cross}
+\newcommand*{\lapl}{\nabla^2}
+
+\newcommand{\set}[2]{\left\{{#1}\;\middle|\;{#2}\right\}}
+\newcommand{\Forall}[1]{\forall\,{#1}\,,\,}
+\newcommand{\Exist}[1]{\exists\,{#1}:}
+\newcommand{\NExist}[1]{\nexists\,{#1}:}
+\DeclareMathOperator{\R}{\mathbb{R}}
+
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\arcsinh}{arcsinh}
+
+\newcommand*{\rv}{\vec{r}}
+\newcommand*{\rhat}{\hat{r}}
+\newcommand*{\vF}{\vec{F}}
+\newcommand*{\gv}{\vec{\gamma}}
+\newcommand*{\ir}{\mathbbm{r}}
+\newcommand*{\irv}{\vec{\mathbbm{r}}}
+\newcommand*{\nhat}{\hat{\mathbbm{n}}}
+\newcommand*{\ind}{\mathbbm{1}}
+
+\newcommand*{\vE}{\vec{E}}
+\newcommand*{\vB}{\vec{B}}
+\newcommand*{\vJ}{\vec{J}}
+\newcommand*{\vA}{\vec{A}}
+\newcommand*{\ee}{\epsilon_0}
+\newcommand*{\mmu}{\mu_0}
+\newcommand*{\vol}{\mathcal{V}}
+\newcommand*{\mat}{\mathcal{M}}
+\newcommand*{\I}{\mathcal{I}}
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+
+\newenvironment{solution}{\paragraph{Solution:}}{\hfill}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\doclicenseThis
+
+\pagebreak
+
+\section{Mathematical Basics}
+
+\subsection{Vector Calculus}
+
+\begin{definition}[Scalar and Vector functions]
+  We call a function:
+  \begin{itemize}
+    \item $\gv:[a,b]\to\R^n$ (a parametrization of) a curve.
+    \item $\phi:\R^n\to\R$ a scalar function.
+    \item $\vF:\R^n\to\R^n$ a vector (-valued) function or vector field.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Differentials]
+  We define:\begin{itemize}
+    \item Derivative: $\displaystyle \gv'(\lambda)=\dv{\gv}{\lambda}=\lim_{\delta\to 0}\frac{\gv(\lambda+\delta)-\gv(\lambda)}{\delta}$
+    \item Partial Derivative: $\displaystyle \pdv{\phi}{x_i}=\lim_{\delta\to 0}\frac{\phi(\rv+\delta\,\hat{x}_i)-\phi(\rv)}{\delta}$
+    \item Gradient: $\displaystyle \grad\phi=\sum_{i=1}^n \hat{x}_i\,\pdv{\phi}{x_i}$
+    \item Divergence: $\displaystyle \div\vF=\sum_{i=1}^n \pdv{F_i}{x_i}$
+    \item Curl: $\displaystyle \curl\vF=\hat{x}\left(\pdv{F_z}{y}-\pdv{F_y}{z}\right)+\hat{y}\left(\pdv{F_x}{z}-\pdv{F_z}{x}\right)+\hat{z}\left(\pdv{F_y}{x}-\pdv{F_x}{y}\right)$
+    \item (Directional Derivative) $\displaystyle \pdv{\phi}{\vec{v}}(\rv)=\lim_{\delta\to 0}\frac{\phi(\rv+\delta\cdot\vec{v})-\phi(\rv)}{\delta}=\vec{v}\vdot \grad\phi(\rv)$
+  \end{itemize}
+\end{definition}
+
+\begin{lemma}
+  \label{vect_identities}
+  The following relations hold:
+  \begin{itemize}
+    \item $\div(\phi\cdot\vF)=(\grad\phi)\vdot\vF+\phi\cdot(\div\vF)$
+    \item $\curl(\phi\cdot\vF)=(\grad\phi)\cross\vF+\phi\cdot(\curl\vF)$
+    \item $\curl(\grad\phi)\equiv\vec{0}$
+    \item $\div(\curl\vec{A})=0$
+  \end{itemize}
+\end{lemma}
+
+\begin{remark}
+  $\displaystyle \dv{(\phi\circ\gv)}{\lambda}=\grad\phi\Big(\gv(\lambda)\Big)\vdot\gv'(\lambda)$
+\end{remark}
+
+\begin{definition}[Line Integral]
+  Let $\Gamma$ be a piecewise differentiable curve. Given a vector field $\vF$, we define the line integral (circulation) along $\Gamma$:
+  $$\int_\Gamma \vF(\irv)\vdot \dd{\irv}=\int_a^b \vF\Big(\gv(\lambda)\Big)\vdot\gv'(\lambda)\dd{\lambda}$$
+  for any parametrization $\gv:[a,b]\to \Gamma\subset\R^3$, where $\gamma$ is piecewise $\mathcal{C}^1$. That is, $\dd{\irv}$ is tangent to the curve.
+\end{definition}
+
+\begin{remark}
+  We denote using $\irv$ to make explicit the dummy variable in the integration.
+\end{remark}
+
+\begin{theorem}[Gradient]
+    $\displaystyle \int_{A\to B}\grad\phi(\irv)\vdot \dd{\irv}=\phi(B)-\phi(A)$
+  \begin{proof}
+    Let $\Gamma$ be a curve from $A$ to $B$ and $\gv:[a,b]\to\Gamma \subset\R^n$ with $\gv(a)=A$ and $\gv(b)=B$
+    By the chain rule: $\displaystyle \int_\Gamma \grad\phi(\irv)\vdot \dd{\irv}=\int_a^b \grad\phi\Big(\gv(\lambda)\Big)\vdot\gv'(\lambda)\dd{\lambda}=\eval{\phi\big(\gv(\lambda)\big)}_a^b=\phi(B)-\phi(A)$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Path Independence]
+  A vector field $\vF$ is path-independent if $\displaystyle \int_{A\to B} \vF(\irv)\vdot\dd{\irv}$ only depends on $A$ and $B$, that is, it is the same for any path $\Gamma$ from $A$ to $B$. Equivalently, for any closed curve $\Gamma$: $\displaystyle\oint_\Gamma \vF(\irv)\vdot\dd{\irv}=0$
+\end{definition}
+
+\begin{theorem}[Converse of Gradient]
+  \label{path_potential}
+  A vector field $\vF$ is path-independent iff $\Exist{\phi:\R^n\to\R}\vF=\grad\phi$
+  \begin{proof}
+    Take a fixed $\rv_0$, let: $\displaystyle \phi(\rv)=\int_{\rv_0\to\rv}\vF(\irv)\dd{\irv}$. Then, for any $v\in\R^n$: 
+    \begin{align*}
+      \vec{v}\vdot\grad\phi(\rv)&=\pdv{\phi}{\vec{v}}(\rv)=\lim_{\delta\to 0}\frac{1}{\delta}\left[\;\;\int\limits_{\rv_0\to\rv+\delta\cdot\vec{v}}\vF(\irv)\vdot\dd{\irv}\,-\int\limits_{\rv_0\to\rv}\vF(\irv)\vdot\dd{\irv}\right]\\
+      &=\lim_{\delta\to 0}\frac{1}{\delta}\int\limits_{\rv\to \rv+\delta\cdot\vec{v}}\vF(\irv)\vdot\dd{\irv}=\lim_{\delta\to 0}\frac{1}{\delta}\int_0^\delta \vF(\rv+\lambda\cdot\vec{v})\vdot\vec{v}\dd{\lambda}=\vF(\rv)\vdot\vec{v}
+    \end{align*}
+    We chose the linear parametrization of $\rv\to \rv+\delta\cdot\vec{v}$ since $\vF$ is path-independent. The last step is due to the Fundamental Theorem of Calculus. Hence, $\Forall{v\in\R^n}\vec{v}\vdot\grad\phi=\vec{v}\vdot\vF$, so $\vF=\grad\phi$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  The previous function $\phi$ is called the potential of $\vF$.
+\end{remark}
+
+\begin{definition}[Boundary]
+  We denote $\partial\Sigma$ the boundary (curve) of the (open) surface $\Sigma$. For a volume $\Omega$, $\partial\Omega$ is a (closed) surface.
+\end{definition}
+
+\begin{theorem}[Green]
+  Let $\Gamma$ be a positevely oriented (counterclockwise) curve in $\R^2$ and $\Sigma$ a bounded surface s.t. $\partial\Sigma=\Gamma$. Then, for any differentiable $\vF$: $$\oint\limits_\Gamma\vF(\irv)\vdot\dd{\irv}=\iint\limits_\Sigma\left(\pdv{F_y}{x}-\pdv{F_x}{y}\right)\dd[2]{\ir}$$
+  \begin{proof}
+    We'll prove only for domains of the form (type III): 
+    \begin{align*}
+      \Sigma&=\set{(x,y)\in\R^2}{a\leq x\leq b\text{ and }g_1(x)\leq y\leq g_2(x)}\\
+      &=\set{(x,y)\in\R^2}{f_1(y)\leq x\leq f_2(y)\text{ and }\alpha\leq y\leq \beta}
+    \end{align*}
+    We calculate $\displaystyle\oint_\Gamma F_x(\irv)\,\hat{x}\vdot\dd{\irv}$. We split $\Gamma$ into four curves: 
+    \begin{align*}
+      \Gamma_1&=\set{(x,g_1(x))}{a\leq x\leq b}\RA \displaystyle\oint_{\Gamma_1} F_x(\irv)\,\hat{x}\vdot\dd{\irv}=\int_a^b F_x(x,g_1(x))\vdot\dd{x}\\
+      \Gamma_2&=\set{(a,y)}{g_1(a)\leq y\leq g_2(a)}\RA \displaystyle\oint_{\Gamma_2} F_x(\irv)\,\hat{x}\vdot\dd{\irv}=0\\
+      \Gamma_3&=\set{(x,g_2(x))}{a\leq x\leq b}\RA \displaystyle\oint_{\Gamma_3} F_x(\irv)\,\hat{x}\vdot\dd{\irv}=-\int_a^b F_x(x,g_2(x))\vdot\dd{x}\\
+      \Gamma_4&=\set{(b,y)}{g_1(b)\leq y\leq g_2(b)}\RA \displaystyle\oint_{\Gamma_4} F_x(\irv)\,\hat{x}\vdot\dd{\irv}=0
+    \end{align*}
+    since the curves $\Gamma_2$ and $\Gamma_4$ are perpendicular to the $x$-axis. Hence: $$\displaystyle\oint\limits_\Gamma F_x(\irv)\,\hat{x}\vdot\dd{\irv}=\int\limits_a^b \Big[F_x(x,g_1(x))-F_x(x,g_2(x))\Big]\dd{x}=-\int\limits_{x=a}^b\int\limits_{y=g_1(x)}^{g_2(x)}\pdv{F_x}{y}\dd{y}\dd{x}$$ A similar calculation holds for $\displaystyle\oint\limits_\Gamma F_y(\irv)\,\hat{y}\vdot\dd{\irv}=\int\limits_{y=\alpha}^\beta\int\limits_{x=f_1(y)}^{f_2(y)}\pdv{F_y}{x}\dd{x}\dd{y}$. The result follows from linearity.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Flux Integral]
+  Let $\Sigma$ be a surface. Given a vector field $\vF$, we define the flux/surface integral of $\vF$ over $\Sigma$: $$\Phi[\Sigma]=\iint\limits_\Sigma\,\vF(\irv)\vdot\dd[2]{\irv}=\int\limits_{\lambda=a}^b\;\;\int\limits_{\mu=\alpha}^\beta\,\vF\Big(\vec{\sigma}(\lambda,\mu)\Big)\vdot\left[\pdv{\vec{\sigma}}{\lambda}\times\pdv{\vec{\sigma}}{\mu}\right]\dd{\lambda}\dd{\mu}$$ for any piecewise $C^1$ parametrization $\sigma:[a,b]\times[\alpha,\beta]\to\Sigma\subset\R^3$. Further, the orientation (i.e. the choice of the order of $\lambda,\mu$) is important. That is, $\dd[2]{\irv}$ is normal to the surface.
+\end{definition}
+
+\begin{theorem}[Stokes']
+  \label{stokes}
+  Let $\Gamma$ be a positively-oriented (counterclockwise) closed curve and $\Sigma$ a surface such that $\Gamma=\partial\Sigma$. Then, for any continuously differentiable $\vF$:
+  $$\oint\limits_\Gamma \vF(\irv)\vdot\dd{\irv}=\iint\limits_\Sigma (\curl\vF)\vdot\dd[2]{\irv}$$
+  \begin{proof}
+    Let $\sigma:[a,b]\times[\alpha,\beta]\to\Sigma$. Take $\displaystyle \vec{G}=\left(\vF\vdot\pdv{\vec{\sigma}}{\lambda},\vF\vdot\pdv{\vec{\sigma}}{\mu}\right)$. Take the curve $\Delta=\partial([a,b]\times[\alpha,\beta])$, so that $\Gamma=\vec{\sigma}(\Delta)$, we get: $$\oint\limits_\Gamma \vF(\irv)\vdot\dd{\irv}=\oint\limits_\Delta \vec{G}(\irv)\vdot\dd{\irv}=\iint\limits_{[a,b]\times[\alpha,\beta]}\left[\pdv{G_\mu}{\lambda}-\pdv{G_\lambda}{\mu}\right]\dd{\lambda}\dd{\mu}$$
+    by Green's Theorem. By direct calculation, we have: $$\pdv{G_\mu}{\lambda}-\pdv{G_\lambda}{\mu}=(\curl\vF)\vdot\left[\pdv{\vec{\sigma}}{\lambda}\times\pdv{\vec{\sigma}}{\mu}\right]$$
+    The result follows by the definition of the flux integral.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{curl_path}
+  $\vF$ is path-independent iff $\curl\vF\equiv\vec{0}$.
+\end{corollary}
+
+\begin{theorem}[Gauß/Ostrogradsky]
+  \label{gauss_thm}
+  Let $\Sigma$ be a positively-oriented (outwards) closed surface and $\Omega$ a solid such that $\Sigma=\partial\Omega$. Then, for any continuously differentiable $\vF$:
+  $$\oiint\limits_\Sigma \vF(\irv)\vdot\dd[2]{\irv}=\iiint\limits_\Omega (\div\vF)\dd[3]{\ir}$$
+  \begin{proof}
+    Analogous to Green's Theorem.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Green's Identities]
+  \label{green_ids}
+  For $\varphi,\psi$ twice continuously differentiable.
+  \begin{enumerate}
+    \item $\displaystyle \iiint_{\Omega}\left(\psi \cdot\lapl\varphi +\grad\psi \vdot \grad\varphi \right)\dd[3]{\ir}=\oiint_{\partial \Omega}\psi \cdot\grad\varphi\vdot\dd[2]{\irv}=\oiint_{\partial \Omega}\psi \cdot\pdv{\varphi}{\nhat}\dd[2]{\ir}$
+    \item $\displaystyle \iiint_{\Omega}\left(\psi \cdot\lapl\varphi -\varphi \cdot\lapl\psi \right)\dd[3]{\ir}=\oiint_{\partial \Omega}\left(\psi \cdot\grad\varphi -\varphi \cdot\grad\psi \right)\vdot\dd[2]{\irv}$ \\ $\displaystyle=\oiint_{\partial \Omega}\left(\psi \cdot\pdv{\varphi}{\nhat} -\varphi \cdot\pdv{\psi}{\nhat} \right)\dd[2]{\ir}$
+  \end{enumerate}
+  \begin{proof}
+    Follows directy from \ref{gauss_thm} and \ref{vect_identities}.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Kelvin-Helmholtz]
+  \label{kelvin_helmholtz}
+  \begin{align*}
+    \dv{}{t}\oint_{\Gamma(t)}\vF(\irv,t)\vdot\dd{\irv}&=\oint_{\Gamma(t)}\left[\pdv{\vF}{t}(\irv,t)-\dot{\irv}(t)\cross(\curl\vF(\irv,t))\right]\vdot\dd{\irv}
+  \end{align*}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Distributions and Integration}
+
+% \begin{definition}
+%   We define the following symbols:
+%   \begin{align*}
+%     \delta_{ij}&=\begin{cases}
+%       1 &\text{ if }i=j\\ 0 &\text{ otherwise}
+%     \end{cases}\\
+%     \epsilon_{ijk}&=\begin{cases}
+%       1 &\text{ if }(i,j,k)\text{ is an even permutation of }(1,2,3)\\-1 &\text{ if }(i,j,k)\text{ is an odd permutation of }(1,2,3)\\ 0 &\text{ otherwise}
+%     \end{cases}
+%   \end{align*}
+% \end{definition}
+
+\begin{definition}[Heaviside]
+  Let $H:\R\to\R$ s.t. $H(x)=
+  \begin{cases}
+    1 &\text{ if }x> 0\\
+    0 &\text{ if }x\leq 0\\
+  \end{cases}$
+\end{definition}
+
+\begin{definition}[Test Functions]
+  We define $\varphi\in C_0^\infty(\R^n)$ if $\varphi\in C^\infty(\R^n)$ and $\set{x\in\R^n}{\varphi(x)\neq 0}$ is bounded.
+\end{definition}
+
+\begin{definition}[Dirac Delta]
+  We define $\delta=H'$. This is made rigourous by integration by parts: $$\Forall{\varphi\in C_0^\infty(\R)}\Forall{R\in\R^+}\int_{-R}^R\varphi(x)\cdot\delta(x)\dd{x}=\varphi(0)$$
+  which, if made use of the definition $\delta=H'$ and appyling integration by parts, is a valid result. This concept is reffered to as a \textbf{weak derivative}. Further, we extend: $\displaystyle \delta^n(\rv-\vec{a})=\prod_{i=1}^n \delta(x_i-a_i)$
+\end{definition}
+
+\begin{lemma}
+  $\Forall{\varphi\in C_0^\infty(\R)}\Forall{R\in\R^+}$
+  $$\varphi(0)=\eval{H(x)\cdot\varphi(x)}_{-R}^R-\int_{-R}^R \varphi'(x)\cdot H(x)\dd{x}$$
+  \begin{proof}
+    $\displaystyle\int_{-R}^R \varphi'(x)\cdot H(x)\dd{x}=\int_0^R \varphi'(x)\dd{x}=\eval{\varphi(x)}_0^R=\varphi(R)-\varphi(0)$
+  \end{proof}
+\end{lemma}
+
+\begin{problem}
+  $$\div\left(\frac{\rhat}{r^2}\right)=\frac{\delta(r)}{r^2}=4\pi\,\delta^3(\rv)$$
+  \begin{solution}
+    The first relation is obtained by taking: $$\div\left(\frac{\rhat}{r^2}\right)=\div\left(\frac{H(r)\,\rhat}{r^2}\right)=\frac{1}{r^2}\pdv{}{r}\left(r^2\cdot\frac{H(r)}{r^2}\right)=\frac{H'(r)}{r^2}=\frac{\delta(r)}{r^2}$$
+    The second relation is taken by switching coordinates on a sphere of radius $R$: $\Forall{\varphi\in C_0^\infty(\R^3)}$ $$\iint\limits_\Omega\int\limits_{r=0}^R\varphi(\rv)\cdot\frac{\delta(r)}{r^2}\cdot \overbrace{r^2\dd{r}\dd{\Omega}}^{\dd[3]{\ir}}=4\pi\cdot\varphi(\vec{0})=\iiint\limits_{S^1(R)} \varphi(\rv)\cdot4\pi\cdot\delta^3(\rv)\dd[3]{r}$$
+  where $\Omega$ is the solid angle.
+  \end{solution}
+\end{problem}
+
+\begin{definition}[Distributions]
+  The set of all bounded linear functions of $C_0^\infty(\R^n)$ is denoted $D(\R^n)$. We identify every element with an improper function $f$ so that if $T$ is a bounded linear function corresponding to $f$, we get: $$\Forall{\varphi\in C_0^\infty(\R^n)}T(\varphi)=\int_{\R^n}\varphi(\irv)\cdot f(\irv)\dd[n]{\ir}$$
+\end{definition}
+
+\begin{remark}
+  The delta function $\delta^n(\rv)$ is the unique function so that $$\Forall{\varphi\in C_0^\infty(\R^n)}\int_{\R^n}\varphi(\irv)\cdot \delta^n(\irv)\dd[n]{\ir}=\varphi(\vec{0})$$
+\end{remark}
+
+\begin{definition}[Indicator Function]
+  For a set $A\subseteq\R^n$, we define the function $\ind_A:\R^n\to\R$ s.t.: 
+  $$\ind_A(\rv)=
+  \begin{cases}
+    1 &\text{ if }\rv\in A\\
+    0 &\text{ if }\rv\notin A\\
+  \end{cases}$$
+\end{definition}
+
+\begin{example}[Heaviside as Indicator]
+  $H=\ind_{(0,\infty)}$
+\end{example}
+
+\pagebreak
+
+\section{Electrostatics}
+
+\subsection{Electric Field}
+
+\begin{definition}[Electric Force]
+  The force acting on a particle with charge $q$ due to an electric field $\vE$ is $\vF(\rv)=q\,\vE(\rv)$. In that case, $q$ is called a test charge for the field $\vE$.
+\end{definition}
+
+\begin{lemma}[Superposition Principle]
+  If there are two distinct fields $\vE_1$ and $\vE_2$ for two distinct sources, the total electrical field is $\vE_1+\vE_2$.
+\end{lemma}
+
+\begin{lemma}[Electric Potential]
+  \label{faraday_potential}
+  For a static electric field (charges that induce the field are static), $$\curl\vE\equiv\vec{0}$$ hence $\Exist{\phi:\R^3\to\R}\vE=-\grad\phi$. Further, $\mathcal{E}[\partial\Sigma]=\displaystyle\oint_{\partial\Sigma}\vE(\irv)\vdot\dd{\irv}=0$ for any closed curve $\partial\Sigma$ (cf. \ref{curl_path}, \ref{path_potential}).
+\end{lemma}
+
+\begin{theorem}[Coulomb's Law]
+  The electric field due to a point charge $Q$ at the origin is: $$\vE(\rv)=\frac{Q}{4\pi\ee\,r^2}\,\rhat$$ more generally, for a charge at $\rv_0$, we get: $\vE(\rv)=\dfrac{Q}{4\pi\ee\,\|\rv-\rv_0\|^3}\,(\rv-\rv_0)$
+\end{theorem}
+
+% \begin{corollary}
+%   The Coulomb field obeys $\div\vE=\dfrac{Q}{\ee}\,\delta(\rv-\rv_0)$
+% \end{corollary}
+
+\begin{corollary}
+  The Coulomb electric potential is: $\phi(\rv)=\dfrac{Q}{4\pi\ee\,\|\rv-\rv_0\|}$
+\end{corollary}
+
+\begin{definition}[Charge Distribution]
+  We define the following quantity: $\rho\in D(\R^3)$ is the distribution of charge in a system. That is:
+  $$Q[\Omega]=\iiint_\Omega \rho(\rv)\dd[3]{r}$$
+\end{definition}
+
+\begin{example}
+  We have the following charge densities:
+  \begin{compactitem}
+    \item A point charge: $\rho(\rv)=Q\cdot\delta^3(\rv-\rv_0)$
+    \item A system of charges: $\rho(\rv)=\sum_{i=1}^N Q_i\cdot\delta^3(\rv-\rv_i)$
+    \item A uniformly charged spherical shell: $\rho(\rv)=\sigma\cdot\delta(r-R)=\dfrac{Q}{4\pi R^2}\cdot\delta(r-R)$
+    \item A uniformly charged sphere: $\rho(\rv)=\rho_0\cdot \ind_{[0,R]}=\dfrac{3Q}{4\pi R^3}\cdot \ind_{[0,R]}$
+  \end{compactitem}
+\end{example}
+
+\begin{remark}
+  We may have surface or linear charge density, denoted $\sigma$ or $\lambda$ respectively, where the charge is found only on a surface or a line. Moreover, $\rho$ would have $\delta$ functions to restric the integral to that surface or curve.
+\end{remark}
+
+\begin{theorem}[Extended Coulomb's Law]
+  \label{coulomb}
+  The electric field due to a charge distribution $\rho$ on a volume $\vol$ is: $$\vE(\rv)=\frac{1}{4\pi\ee}\iiint_{\vol}\frac{\rv-\irv}{\|\rv-\irv\|^3}\,\rho(\irv)\dd[3]{\ir}$$
+  \begin{proof}
+    This follows directly for the superposition of the infinitesimal charge $dQ=\rho(\irv)\dd[3]{\ir}$ in Coulomb field.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{potential_formula}
+  The Coulomb electric potential due to a charge distribution $\rho$ on a volume $\vol$ is: $$\phi(\rv)=\frac{1}{4\pi\ee}\iiint_{\vol}\frac{\rho(\irv)}{\|\rv-\irv\|}\dd[3]{\ir}$$
+  Usually, it is much simpler to calculate the potential an then get the electric field by $\vE=-\grad\phi$. Further the boundary conditions here are neglected (cf. \ref{poisson}).
+\end{corollary}
+
+\begin{remark}
+  If the charge is 2-dimensional or 1-dimensional, we can use $\lambda$ or $\sigma$, respectively, directly into a simple or double integral.
+\end{remark}
+
+\begin{remark}
+  The Coulomb potential given by the previous corollary was defined such that $\lim\limits_{\rv\to\infty}\phi(\rv)=0$
+\end{remark}
+
+\begin{lemma}
+  \label{potential_integral}
+  We have: $\displaystyle\phi(\rv)=\phi(\rv_0)-\int_{\rv_0\to\rv}\vE(\irv)\vdot\dd{\irv}$
+  \begin{proof}
+    Follows directly from the gradient theorem with $\vE=-\grad\phi$.
+  \end{proof}
+\end{lemma}
+
+\begin{problem}[Uniform Rod]
+  $\,$
+  \InsertBoxR{-2}{\begin{minipage}{0.4\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        view = {125}{25},
+        axis lines = middle,
+        ticks=none,
+        zmax = 20, zmin = -10,
+        xmax = 2, ymax=2,
+        xmin = -2, ymin=-2
+      ]
+      \addplot3 [
+        mesh, draw=blue,
+        opacity=0.9,
+        point meta=x,
+        samples=13,
+        samples y=11,
+        domain=0:360,
+        y domain=-10:15
+      ] ( {0.125*cos(x)},
+          {0.125*sin(x)},
+          {y});
+      \end{axis}
+    \end{tikzpicture}
+  \end{minipage}}[2]
+  \noindent Calculate the electric field and electric potential due to a rod of length $2c$ (endpoints at $(0,0,c)$ and $(0,0,-c)$) and uniform charge density $\lambda$.
+  \begin{solution}
+    By definition, since it is symmetric around $z$, we integrate using cylindrical coordinates:
+    \begin{align*}
+      \phi(\rho,z)&=\frac{1}{4\pi\ee}\int\limits_{z'=-c}^c\frac{\lambda}{\sqrt{\rho^2+(z-z')^2}}\dd{z'}=\frac{\lambda}{4\pi\ee}\eval{\arcsinh\left(\frac{z'-z}{\rho}\right)}_{z'=-c}^c\\
+      &=\frac{\lambda}{4\pi\ee}\left[\arcsinh\left(\frac{z+c}{\rho}\right)-\arcsinh\left(\frac{z-c}{\rho}\right)\right]\\
+      &=\frac{\lambda}{4\pi\ee}\,\ln\left[\frac{z+c+\sqrt{(z+c)^2+\rho^2}}{z-c+\sqrt{(z-c)^2+\rho^2}}\right]
+    \end{align*}
+    Notice, we require $(\rho,z)\notin\{0\}\times[-c,c]=\text{rod}$. For the electric field, we calculate:
+    $$\vE=-\grad\phi=\frac{\lambda}{4\pi\ee}\,\left[\frac{(z+c)\,\hat{\rho}-\rho\,\hat{z}}{\rho\sqrt{(z+c)^2+\rho^2}}+\frac{-(z-c)\,\hat{\rho}+\rho\,\hat{z}}{\rho\sqrt{(z-c)^2+\rho^2}}\right]$$
+    \textit{Observe:} We could've solved it geometrically by defining $\alpha=\angle OF_1P$ and $\beta=\angle OF_2P$, where $P=(x,y,z),O=(0,0,0),F_1=(0,0,c),F_2=(0,0,-c)$. We get: $\vE=\dfrac{\lambda}{4\pi\ee\,\rho}\,\Big[(\cos{\alpha}+\cos{\beta})\,\hat{\rho}+(\sin{\beta}-\sin{\alpha})\,\hat{z}\Big]$
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Infinite Line]
+  Calculate the electric field and electric potential due to an infinite line of charge with uniform charge density $\lambda$.
+  \begin{solution}
+    We can calculate $\vE$ directly:
+    \begin{align*}
+      \vE(\rho)&=\frac{1}{4\pi\ee}\int\limits_{z'=-\infty}^\infty\frac{\lambda\cdot\rho\,\hat{\rho}}{\Big(\rho^2+(z')^2\Big)^{\frac{3}{2}}}\dd{z'}=\frac{\lambda\cdot\rho\,\hat{\rho}}{4\pi\ee}\eval{\frac{z'}{\rho^2\sqrt{\rho^2+(z')^2}}}_{z'=-\infty}^\infty\\
+      &=\frac{\lambda\,\hat{\rho}}{4\pi\ee\,\rho}\lim_{R\to\infty}\eval{\frac{\sgn{z'}}{\sqrt{1+\left(\frac{\rho}{z'}\right)^2}}}_{z'=-R}^R=\frac{\lambda}{2\pi\ee\,\rho}\,\hat{\rho}
+    \end{align*}
+    For $\phi$, we apply:
+    $$\phi(\rho)=\phi(\rho_0)-\int_{\rho_0}^\rho \frac{\lambda}{2\pi\ee\,\rho'}\,\hat{\rho'}\vdot\hat{\rho'}\dd{\rho'}=\phi(\rho_0)+\frac{\lambda}{2\pi\ee}\Big[\ln{\rho_0}-\ln{\rho}\Big]$$
+    Set $\rho_0=1$ and $\phi(\rho_0)=0$, we get: $\displaystyle\phi(\rho)=-\frac{\lambda}{2\pi\ee}\,\ln{\rho}$
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Uniform Ring]
+  Calculate the electric potential due to a ring of charge (in the $xy$-plane) of radius $R$ with uniform charge density $\lambda$.
+
+  \begin{figure}[ht!]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        view = {30}{20},
+        axis lines = middle,
+        ticks=none,
+        zmax = 5, zmin = -3
+      ]
+      \addplot3 [
+        mesh, draw=blue,
+        point meta=x,
+        samples=47,
+        samples y=10,
+        domain=0:360,
+        y domain=0:360
+      ] ( {(3.5 + 0.25*cos(y))*cos(x)},
+          {(3.5 + 0.25*cos(y))*sin(x)},
+          {0.25*sin(y)});
+      \end{axis}
+    \end{tikzpicture}
+  \end{figure}
+  \begin{solution}
+    We first calculate the potential, since it is symmetric about rotations around $z$, we integrate using cylindrical coordinates: We have $\|\rv-\irv\|=\sqrt{(\rho-R\cos{\varphi})^2+(R\sin{\varphi})^2+z^2}$
+    \begin{align*}
+      \phi(\rho,z)&=\frac{\lambda\,R}{4\pi\ee}\int\limits_{\varphi=0}^{2\pi}\frac{\dd{\varphi}}{\sqrt{R^2-2\rho R\cos{\varphi}+\rho^2+z^2}}=\left\{\text{By parity }\right\}\\
+      &=\frac{\lambda\,R}{2\pi\ee}\int\limits_{\varphi=0}^{\pi}\frac{\dd{\varphi}}{\sqrt{R^2-2\rho R\cos{\varphi}+\rho^2+z^2}}=\left\{\begin{array}{lr}\theta=\dfrac{\pi-\varphi}{2}\\-2\,\dd{\theta}=\dd{\varphi}\end{array}\right\}\\
+      &=\frac{\lambda\,R}{\pi\ee}\int\limits_{\varphi=0}^{\frac{\pi}{2}}\frac{\dd{\theta}}{\sqrt{R^2-2\rho R\big(2\sin^2{\theta}-1\big)+\rho^2+z^2}}\\
+      &=\left\{\begin{array}{lr}\ell=\sqrt{(\rho+R)^2+z^2}\\k=\dfrac{\sqrt{4\rho R}}{\ell}\end{array}\right\}=\frac{\lambda\,R}{\pi\ee\,\ell}\int\limits_{\varphi=0}^{\frac{\pi}{2}}\frac{\dd{\theta}}{\sqrt{1-k^2\sin^2{\theta}}}
+    \end{align*}
+    $$\RA \phi(\rho,z)=\frac{\lambda\,R}{\pi\ee\,\sqrt{(\rho+R)^2+z^2}}\cdot K\left(\sqrt{\frac{4\rho R}{(\rho+R)^2+z^2}}\right)$$
+    where $K$ is the complete elliptic integral of first kind. We see, it is barely possible to find a closed formula for $\phi$, and even more so for $\vE$. We can, however, calculate the value for $\rho=0$, quite simply: $\phi(\rho=0,z)=\dfrac{\lambda\,R}{2\ee\,\sqrt{R^2+z^2}}$
+  \end{solution}
+\end{problem}
+
+\pagebreak
+
+\subsection{Gauß's Law}
+
+\begin{theorem}[Differential Form of Gauß's Law]
+  \label{gauss_diff}
+  The electric field due to a charge distribution $\rho$ obeys: $$\div\vE(\rv)=\frac{\rho(\rv)}{\ee}$$
+  \begin{proof}
+    A first observation is to notice the Coulomb electric field obeys the relation: $\div\vE_\text{Coulomb}(\rv)=\frac{Q}{\ee}\,\delta^3(\rv-\rv_0)$. For the general charge distribution, we calculate: 
+    \begin{align*}
+      \div\vE(\rv)&=\frac{1}{4\pi\ee}\iiint_{\vol}\div\left(\frac{\rv-\irv}{\|\rv-\irv\|^3}\right)\,\rho(\irv)\dd[3]{\ir}\\
+      &=\frac{1}{4\pi\ee}\iiint_{\vol}4\pi\,\delta^3(\rv-\irv)\rho(\irv)\dd[3]{\ir}=\frac{1}{\ee}\rho(\rv)
+    \end{align*}
+    by definition of delta.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Integral Form of Gauß's Law]
+  \label{gauss_law}
+  For any solid $\Omega$, the electric field due to a charge distribution $\rho$ obeys: $$\Phi_E[\partial\Omega]=\oiint\limits_{\partial\Omega}\vE(\irv)\vdot \dd[2]{\irv}=\frac{Q[\Omega]}{\ee}$$
+  \begin{proof}
+    By the differential form of Gauß's Law and Divergence Theorem: $$\oiint\limits_{\partial\Omega}\vE(\irv)\vdot \dd[2]{\irv}=\iiint\limits_\Omega\div\vE(\irv)\dd[3]{\ir}=\iiint\limits_\Omega\frac{1}{\ee}\rho(\irv)\dd[3]{\ir}=\frac{Q[\Omega]}{\ee}$$
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Equipotential Surface]
+  \label{equipotential}
+  $\mathcal{L}$ is an level curve of $\phi$ if $$\Exist{\phi_0\in\R}\mathcal{L}=\set{\rv\in\R^n}{\phi(\rv)=\phi_0}$$
+\end{definition}
+
+\begin{theorem}[Gradient Orthogonality]
+  \label{orthogonality_E}
+  $\Forall{\rv\in\mathcal{L}}\vE(\rv)$ is normal to $\mathcal{L}$.
+  \begin{proof}
+    Let $\Gamma$ be a curve in $\mathcal{L}$ and $\gamma$ a parametrization. Then, by definition, $$\grad\phi\Big(\gv(\lambda)\Big)\vdot\gv'(\lambda)=\dv{(\phi\circ\gv)}{\lambda}=0$$
+    Therefore, $\vE=-\grad\phi$ is perpendicular to any tangent vector, and hence the tangent plane, so, it is perpendicular to the surface.
+  \end{proof}
+\end{theorem}
+
+\begin{problem}[Spherical Shell]
+  Calculate the electric field of a spherical shell of radius $R$ with uniform surface charge density $\sigma$.
+  \begin{solution}
+    By symmetry and Gauß's with $\Omega$ a (solid) sphere of radius $r$:
+    \begin{enumerate}
+      \item $\displaystyle (r>R):E(r)\cdot 4\pi\,r^2=\frac{Q[\Omega]}{\ee}=\frac{\sigma\cdot\pi R^2}{\ee}\RA E(r)=\frac{Q}{4\pi\ee\,r^2}=\frac{\sigma}{\ee}\cdot\frac{R^2}{r^2}$
+      \item $\displaystyle (r<R):E(r)\cdot 4\pi\,r^2=0\RA E(r)=0$
+    \end{enumerate}
+    Hence: $\displaystyle \vE(\rv)=\begin{cases}
+      0 &\text{ if }\|\rv\|<R\\\dfrac{\sigma}{\ee}\cdot\dfrac{R^2}{\|\rv\|^2}\,\rhat&\text{ otherwise}
+    \end{cases}$
+
+    \noindent Since we picked an equipotential surface, the surface integral became a double integral. Further, due to symmetry, the electric field was constant in the equipotential surface.
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Solid Sphere]
+  Calculate the electric field of a solid sphere of radius $R$ with uniform charge density $\rho$.
+  \begin{solution}
+    By symmetry and Gauß's with $\Omega$ a (solid) sphere of radius $r$:
+    \begin{enumerate}
+      \item $\displaystyle (r>R):E(r)\cdot 4\pi\,r^2=\frac{Q[\Omega]}{\ee}=\frac{\rho\cdot 4\pi R^3/3}{\ee}\RA E(r)=\frac{\rho}{3\ee}\cdot\frac{R^3}{r^2}$
+      \item $\displaystyle (r<R):E(r)\cdot 4\pi\,r^2=\dfrac{4\pi r^3}{3}\,\rho\RA E(r)=\dfrac{\rho}{3\,\ee}\,r$
+    \end{enumerate}
+    Hence: $\displaystyle \vE(\rv)=\begin{cases}
+      \dfrac{\rho}{3\,\ee}\,\rv &\text{ if }\|\rv\|<R\\\dfrac{\rho}{3\ee}\cdot\dfrac{R^3}{\|\rv\|^3}\,\rv&\text{ otherwise}
+    \end{cases}$
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Infinite Cylindrical Shell]
+  Calculate the electric field of an infinite cylindrical shell with uniform surface charge density $\sigma$.
+  \begin{solution}
+    By symmetry and Gauß's with $\Omega$ a (solid) cylinder of radius $\rho$ and height $H$:
+    \begin{enumerate}
+      \item $\displaystyle (\rho>R):E(\rho)\cdot 2\pi\,\rho\cdot H=\frac{Q[\Omega]}{\ee}=\frac{\sigma\cdot 2\pi R\cdot H}{\ee}\RA E(\rho)=\frac{\sigma}{\ee}\cdot\frac{R}{\rho}$
+      \item $\displaystyle (\rho<R):E(\rho)\cdot 2\pi\rho\cdot H=0\RA E(\rho)=0$
+    \end{enumerate}
+    Hence: $\displaystyle \vE(\rv)=\begin{cases}
+      0 &\text{ if }\rho<R\\\dfrac{\sigma}{\ee}\cdot\dfrac{R}{\rho}\,\hat{\rho}&\text{ otherwise}
+    \end{cases}$ where $\rho=\|\rv-(\rv\vdot\hat{z})\,\hat{z}\|=\|\rv\cross\hat{z}\|$
+
+    \noindent Notice, by symmetry, the field is in the $\hat{\rho}$ direction. Therefore, the top and bottom circle of our cylinder $\partial\Omega$ don't contribute to the flux integral, since $\vE$ is parallel to those two surfaces.
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Infinite Plane]
+  Calculate the electric field of an infinite plane with uniform surface charge density $\sigma$.
+  \begin{solution}
+    By symmetry in the $xy$-plane and Gauß's with $\Omega$ a (solid) cylinder of radius $R$ and height $z$ centered at the plane: $\displaystyle E(z)\cdot 2\pi\,R^2=\frac{\sigma\cdot \pi R^2}{\ee}\RA E(z)=\frac{\sigma}{2\ee}\RA \vE(\rv)=\frac{\sigma}{2\ee}\cdot\sgn{z}\,\hat{z}$
+
+    \noindent Notice, by symmetry, the field is in the $\hat{z}$ direction. Therefore, only the top and bottom circle of our cylinder $\partial\Omega$ contribute to the flux integral, since $\vE$ is parallel to the lateral surface. Further, by changing $z\mapsto-z$, we should get $\vE\mapsto -\vE$, hence the $\sgn{z}$.
+  \end{solution}
+\end{problem}
+
+\pagebreak
+
+\subsection{Dielectric Materials and Dipoles}
+
+\begin{definition}[Dipole Moment]
+  The dipole moment $\vec{p}$ due to a charge distribution $\rho$ on a volume $\vol$ is defined as:  $$\vec{p}=\iiint_{\vol}\irv\cdot\rho(\irv)\dd[3]{\ir}$$
+\end{definition}
+
+\begin{theorem}[Multipole Expansion]
+  \label{multipole}
+  Let $\displaystyle P_n(x)=\frac{1}{2^n\,n!}\dv[n]{}{x}{}(x^2-1)^n$, the Legendre Polynomials, and $\cos{\theta}=\dfrac{\rv\vdot\irv}{\|\rv\|\,\|\irv\|}$. Then, $$\phi(\rv)=\frac{1}{4\pi\ee}\sum_{n=0}^\infty \frac{1}{\|\rv\|^{n+1}}\iiint_{\vol}\|\irv\|^n\cdot P_n(\cos{\theta})\,\rho(\irv)\dd[3]{\ir}$$
+  \begin{proof}
+    The Legendre Polynomials satisfy: $\displaystyle\frac{1}{\sqrt{1-2xt+t^2}}=\sum_{n=0}^\infty P_n(x)\,t^n$, where the right hand side converges for $x,t\in[-1,1]$. Using Coulomb's Potential (cf. \ref{potential_formula}) and supposing $\dfrac{\|\irv\|}{\|\rv\|}<1$
+    \begin{align*}
+      \phi(\rv)&=\frac{1}{4\pi\ee}\iiint_{\vol}\frac{\rho(\irv)}{\|\rv-\irv\|}\dd[3]{\ir}=\frac{1}{4\pi\ee}\iiint_{\vol}\frac{\rho(\irv)}{\sqrt{\|\rv\|^2-2\|\rv\|\|\irv\|\,\cos{\theta}+\|\irv\|^2}}\dd[3]{\ir}\\
+      &=\frac{1}{4\pi\ee\,\|\rv\|}\iiint_{\vol}\frac{\rho(\irv)}{\sqrt{1-2\cos{\theta}\,\frac{\|\irv\|}{\|\rv\|}+\left(\frac{\|\irv\|}{\|\rv\|}\right)^2}}\dd[3]{\ir}\\
+      &=\frac{1}{4\pi\ee\,\|\rv\|}\iiint_{\vol}\sum_{n=0}^\infty \left(\frac{\|\irv\|}{\|\rv\|}\right)^n\cdot P_n(\cos{\theta}) \cdot\rho(\irv)\dd[3]{\ir}
+    \end{align*}
+    Since the power series converges, we may exchange the series and integral.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Dipole Approximation]
+  $$\phi(\rv)=\frac{Q}{4\pi\ee\|\rv\|}+\frac{\vec{p}\vdot\rv}{4\pi\ee\|\rv\|^3}+\mathcal{O}\left(\dfrac{1}{\|\rv\|^3}\right)$$
+  \begin{proof}
+    Follows from \ref{multipole}, by using $P_0(x)\equiv 1$ and $P_1(x)=x$. Also, we calculate: $\displaystyle \vec{p}\vdot\rv=\iiint_{\vol}\irv\vdot\rv\cdot\rho(\irv)\dd[3]{\ir}=\|\rv\|\iiint_{\vol}\|\irv\|\,\cos{\theta}\cdot\rho(\irv)\dd[3]{\ir}$.
+  \end{proof}
+\end{corollary}
+
+\begin{lemma}[Electric Field of Dipole]
+  \label{dipole_formula}
+  $$\phi_\text{dipole}(\rv)=\frac{\vec{p}\vdot\rhat}{4\pi\ee\|\rv\|^2}\qquad\vE_\text{dipole}(\rv)=\frac{3(\vec{p}\vdot\rhat)\,\rhat-\vec{p}}{4\pi\ee\|\rv\|^3}
+  $$
+  \begin{proof}
+    \begin{align*}
+      \vE_\text{dipole}(\rv)&=-\grad\phi_\text{dipole}(\rv)=-\frac{1}{4\pi\ee}\grad\left(\dfrac{p_xx+p_yy+p_zz}{(x^2+y^2+z^2)^{3\over 2}}\right)\\
+      &=-\frac{1}{4\pi\ee}\sum_{i=1}^3\left(\dfrac{p_{x_i}}{(x^2+y^2+z^2)^{3\over 2}}-\frac{3}{2}\cdot\dfrac{2x_i\,(p_xx+p_yy+p_zz)}{(x^2+y^2+z^2)^{5\over 2}}\right)\,\hat{x}_i\\
+      &=-\frac{1}{4\pi\ee}\left[\frac{\vec{p}}{(x^2+y^2+z^2)^{3\over 2}}-\frac{3(p_xx+p_yy+p_zz)\,\rv}{(x^2+y^2+z^2)^{5\over 2}}\right]
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\begin{remark}
+  In a simplified case, $\vec{p}=q\cdot\vec{d}$.
+\end{remark}
+
+\begin{lemma}
+  The force acting on a dipole $\vec{p}$ due to electric field $\vE$ is: $\vF=(\vec{p}\vdot\nabla)\vE$.
+  \begin{proof}
+    By direct calculation: $$\vec{F}(\rv)=\lim_{d\to 0}q\,\Big[\vE(\rv+d\,\hat{n})-\vE(\rv)\Big]=p\lim_{d\to 0}\frac{\vE(\rv+d\,\hat{n})-\vE(\rv)}{d}=p\hat{n}\vdot\nabla\vE(\rv)$$
+  \end{proof}
+\end{lemma}
+
+\begin{definition}[Free and Bound Charges]
+  The bound charges in a material $\mat$ cannot be removed e.g. by grounding it. The free charges are the remaining ones, i.e.: $\rho=\rho_f+\rho_b$.
+\end{definition}
+
+\begin{lemma}
+  Let $\vec{P}$ denote the polarization density of a material $\mat$:
+  \begin{compactenum}[(i)]
+    \item $\rho_b=-\div\vec{P}$
+    \item $\sigma_b=\vec{P}\big|_{\partial\mat}\vdot\hat{n}$
+  \end{compactenum}
+  \begin{proof}
+    By \ref{dipole_formula}, we integrate in $\mat$: $\displaystyle\phi_\text{dipole}(\rv)=\frac{1}{4\pi\ee}\iiint_{\mat}\frac{(\rv-\irv)\vdot\vec{P}(\irv)}{\|\rv-\irv\|^3}\dd[3]{\irv}=\frac{1}{4\pi\ee}\oiint_{\partial\mat}\frac{\vec{P}(\irv)}{\|\rv-\irv\|}\vdot\dd[2]{\irv}-\frac{1}{4\pi\ee}\iiint_{\mat}\frac{\div\vec{P}(\irv)}{\|\rv-\irv\|}\dd[3]{\irv}$, it follows by definition of volume and surface charge.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $\vec{D}=\ee\cdot\vec{E}+\vec{P}$ obeys the Gauß Law with respect to the free charges:
+  $$\div\vec{D}=\rho_f\qquad\oiint_{\partial\Omega}\vec{D}(\irv)\vdot\dd[2]{\irv}=Q_f[\Omega]$$
+\end{corollary}
+
+\begin{definition}[Relative Permeability]
+  In a linear material $\mat$, the polarization density is parallel to the electric field. We get $\vec{D}(\rv)=\epsilon(\rv)\cdot \vE(\rv)$, where $\epsilon$ is called the permeability, sometimes we write $\epsilon(\rv)=\kappa(\rv)\cdot \ee$.
+\end{definition}
+
+\begin{remark}
+  $\vE(\rv)=\dfrac{1}{\kappa(\rv)}\cdot\vE_\text{vacc}(\rv)$, where $\vE_\text{vacc}$ is the electric field calculated in vaccum. And $\rho=\ee\,\div\vE$ and $\rho_f=\ee\,\div\vE_\text{vacc}$.
+\end{remark}
+
+\pagebreak
+
+\section{Electric Systems}
+
+\subsection{Work and Energy}
+
+\begin{definition}[Potential Energy]
+  Define $U(\rv)=q\,\phi(\rv)$ the potential energy of a test charge due to the charge configuration on $\phi$. For $\phi(\rv_0)=0$: $$U(\rv)=\int_{\rv_0\to\rv}\vF(\irv)\vdot\dd{\irv}=q\int_{\rv_0\to\rv}\vE(\irv)\vdot\dd{\irv}=q\,\phi(\rv)$$
+\end{definition}
+
+\begin{definition}
+  \label{el_energy_stored}
+  The energy stored in a system of particles is: $$U=\frac{1}{4\pi\ee}\sum_{i=1}^N\sum_{j =i+1}^N\frac{Q_i\,Q_j}{\|\rv_i-\rv_j\|}=\frac{1}{2}\sum_{i=1}^N\sum_{\substack{j =1\\i\neq j}}^N\frac{Q_i\,Q_j}{4\pi\ee\|\rv_i-\rv_j\|}=\frac{1}{2}\sum_{i=1}^N Q_i\,\phi_i(\rv_i)$$ where $\phi_i(\rv_i)=\lim\limits_{\rv\to\rv_i}\left[\phi(\rv)-\dfrac{Q_i}{\|\rv-\rv_i\|}\right]$ is the potential for all charged appart from $Q_i$. For a continuous charge distribution $\rho$ on a volume $\vol$, we have:
+  $$U=\frac{1}{2}\iiint_\vol \rho(\irv)\,\phi(\irv)\dd[3]{\ir}$$
+\end{definition}
+
+\begin{problem}
+  Calculate the energy stored in a spherical shell of radius $R$ with charge distribution $\sigma$. 
+  \begin{solution}
+  $$U=\frac{1}{2}\iint_{\Omega=0}^{4\pi} \sigma \frac{q}{4\pi\ee R}\,R^2\dd{\Omega}=\frac{1}{2}\cdot\frac{q}{4\pi\ee R}\,\sigma 4\pi R^2=\frac{q^2}{8\pi\ee R}$$ where $\Omega$ is the solid angle.
+  \end{solution}
+\end{problem}
+
+\begin{lemma}
+  \label{energy_el_square}
+  For a continuous charge distribution $\rho$ on a volume $\vol$ with $\phi\big|_{\partial\vol}\equiv 0$ or $\displaystyle\pdv{\phi}{\hat{n}}\bigg|_{\partial\vol}\equiv 0$:
+  $$U=\frac{1}{2}\,\ee\iiint_\vol \|\vE(\irv)\|^2\dd[3]{\ir}$$
+  \begin{proof}
+    By Gauß's theorem (cf. \ref{gauss_thm}),
+    $\displaystyle\iiint_\vol \div(\phi\cdot\vE)\dd[3]{\ir}=\oiint_{\partial\vol}\phi\cdot\vE\vdot\dd[2]{\irv}=0$ since either $\phi\big|_{\partial\vol}\equiv 0$ or $\displaystyle\pdv{\phi}{\hat{n}}\bigg|_{\partial\vol}\equiv 0$. Hence, if we integrate $\div(\phi\cdot\vE)=\phi\cdot (\div\vE)+(\grad\phi)\vdot\vE=\dfrac{1}{\ee}\,\rho\,\phi-\|\vE\|^2$, by Gauß's law (cf. \ref{gauss_diff}), $\rho=\ee\,\div\vE$, we get the result.
+  \end{proof}
+\end{lemma}
+
+\begin{problem}
+  Calculate the energy stored in a solid sphere of radius $R$ with charge distribution $\rho$. 
+  \begin{solution}
+    $$U=\frac{1}{2}\,\ee\iint_{\Omega=0}^{4\pi}\int_{r=0}^R \left(\frac{\rho\,r}{3\ee}\right)^2\,r^2\dd{r}\dd{\Omega}=\frac{2\pi\,\rho^2}{9\ee}\cdot\frac{R^5}{5}=\frac{q^2}{40\pi\ee R}$$ where $\Omega$ is the solid angle.
+  \end{solution}
+\end{problem}
+
+\begin{remark}[Material Correction]
+  For a continuous charge distribution $\rho$ on a material $\mat$ with $\phi\big|_{\partial\mat}\equiv 0$ or $\displaystyle\pdv{\phi}{\hat{n}}\bigg|_{\partial\mat}\equiv 0$:
+  $$U=\frac{1}{2}\iiint_\mat \epsilon(\irv)\cdot\|\vE(\irv)\|^2\dd[3]{\ir}$$
+\end{remark}
+
+\pagebreak
+
+\subsection{Boundary Value Problems}
+
+\begin{definition}[Poisson Equation]
+  \label{poisson}
+  Given $\div\vE=\rho/\ee$ and $\vE=-\grad\phi$, we get: $$\lapl\phi=-\frac{\rho}{\ee}$$
+  The equation is given in a region $\vol$. There are two opitions of what can be given in $\partial\vol$:
+  \begin{itemize}
+    \item[] Dirichlet Boundary Conditions: $\phi\big|_{\partial\vol}=f$
+    \item[] Neumann Boundary Conditions: $\displaystyle\pdv{\phi}{\hat{n}}\bigg|_{\partial\vol}=f$
+  \end{itemize}
+  Moreover, the equation $\lapl\phi=0$ is called the Laplace Equation.
+\end{definition}
+
+\begin{theorem}[Uniqueness Theorem]
+  \label{uniqueness}
+  The solution to Poisson's equation is unique in $\vol$ given either Dirichlet or the Neumann Boundary Conditions (up to a constant).
+  \begin{proof}
+    Let $\phi_1$ and $\phi_2$ be two solutions and $\psi=\phi_1-\phi_2$. By linearity, we have: $\lapl\psi=0$ and either $\psi\big|_{\partial\vol}\equiv 0$ or $\displaystyle\pdv{\psi}{\hat{n}}\bigg|_{\partial\vol}\equiv 0$. By \ref{green_ids} $\varphi=\psi$: $$\iiint_\vol \|\grad\psi\|^2\dd[3]{\ir}=\oiint_{\partial\vol}\psi\cdot\pdv{\psi}{\nhat}\dd[2]{\ir}-\iiint_\vol \psi\cdot\lapl\psi\dd[3]{\ir}=0$$ Then, $\Forall{\rv\in\vol}\|\grad\psi\|^2=0$. Solving $\grad\psi\equiv\vec{0}$, then $\psi=\text{const.}$, then, $\Forall{\rv\in\vol}\phi_1(\rv)=\phi_2(\rv)+\text{const.}$ which is exactly what we seeked to prove. Also, if the Dirichlet conditions applies, the constant vanishes.
+  \end{proof}
+\end{theorem}
+
+\begin{problem}
+  Calculate the potential in the region between two concentric sphere of radius $a$ and $2a$ and potential $0$ and $V$, respectively, and charge density $\rho=\rho_0$ inside.
+  \begin{solution}
+    By symmetry, the potential only depends on $r$. Hence, the laplacian becomes $\displaystyle\lapl\phi=\frac{1}{r^2}\pdv{}{r}\left(r^2\,\pdv{\phi}{r}\right)=-\frac{\rho_0}{\ee}$. By direct integration, we get: $\displaystyle r^2\,\pdv{\phi}{r}=A-\frac{\rho_0}{\ee}\cdot \frac{r^3}{3}\RA \phi(r)=B-\frac{A}{r}-\frac{\rho_0}{\ee}\cdot\frac{r^2}{6}$. By substituting, we get: $A=2aV+\dfrac{\rho_0}{\ee}\,a^3$, $B=2V+\dfrac{\rho_0}{\ee}\cdot\dfrac{7a^2}{6}$, hence the potential is given by: $\displaystyle\phi(r)=2V\left(1-\frac{a}{r}\right)+\frac{\rho_0\,a^2}{6\ee}\,\left(7-\frac{6a}{r}-\frac{r^2}{a^2}\right)$ for $a\leq r\leq 2a$, which solves the Poisson equation with Dirichlet conditions.
+  \end{solution}
+\end{problem}
+
+\begin{theorem}[Mean Value Property]
+  \label{mean_value_prop}
+  Let $\psi$ be a solution of Laplace equation on $\vol\subseteq\R^3$. Then: $\Forall{\rv\in\vol}$ $$\psi(\rv)=\frac{1}{4\pi R^2}\oiint_{\partial B_R(\rv)}\psi(\irv)\dd[2]{\ir}=\frac{3}{4\pi R^3}\iiint_{B_R(\rv)}\psi(\irv)\dd[3]{\ir}$$ that is, the value at $\rv$ is the average value over any sphere or spherical surface centered at $\rv$.
+  \begin{proof}
+    Let $\Omega$ be the solid angle, define: $$\gamma(R)=\frac{1}{4\pi R^2}\oiint_{\partial B_R(\rv)}\psi(\overbrace{\irv}^{\rv+R\,\hat{n}})\overbrace{\dd[2]{\ir}}^{R^2\dd{\Omega}}=\frac{1}{4\pi}\iint_{\Omega=0}^{4\pi}\psi(\rv+R\,\hat{n})\dd{\Omega}$$ Deriving wrt $R$: $$\gamma'(R)=\frac{1}{4\pi}\iint_{\Omega=0}^{4\pi}\pdv{\psi}{\hat{n}}\,(\rv+R\,\hat{n})\dd{\Omega}\underset{\text{Gauß}}{=}\frac{1}{4\pi R^2}\int_{r=0}^R\;\iint_{\Omega=0}^{4\pi}\lapl\psi\,(\rv+R\,\hat{n})R^2\dd{r}\dd{\Omega}=0$$ since $\psi$ is a solution of Laplace equation. Hence, $\gamma(R)=\text{const.}$, therefore: $$\gamma(R)=\lim_{R\to 0}\gamma(R)=\frac{1}{4\pi}\iint_{\Omega=0}^{4\pi}\lim_{R\to 0}\psi(\rv+R\,\hat{n})\dd{\Omega}=\frac{1}{4\pi}\iint_{\Omega=0}^{4\pi}\psi(\rv+\vec{0})\dd{\Omega}=\psi(\rv)$$
+    Now, for the volume result, we employ the following formula: $$\iiint_{B_R(\rv)}\psi(\irv)\dd[3]{\ir}=\int_{r=0}^R\left(\oiint_{\partial B_r(\rv)}\psi(\irv)\dd[2]{\ir}\right)\dd{r}=\int_{r=0}^R4\pi r^2\cdot\psi(\rv)\dd{r}=\frac{4\pi R^3}{3}\cdot\psi(\rv)$$
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Maximum Principle]
+  \label{maximum_lapl}
+  Let $\psi$ be a solution of Laplace equation on $\vol\subseteq\R^3$. Then, $\psi$ has no local maxima or minima on the interior of $\vol$. Hence, the extreme values must occur at the boundary $\partial\vol$.
+  \begin{proof}
+    By definition, if there is a local extremum, we may enclose the point by a sufficiently small sphere such that the centre has a bigger value then any point on/inside the sphere. But, by \ref{mean_value_prop} the value should be the average of the sphere. Contradiction.
+  \end{proof}
+\end{corollary}
+
+\begin{remark}
+  Another proof for uniqueness (cf. \ref{uniqueness}) on Dirichlet condition is given by: 
+  \begin{proof}
+    For two solutions $\phi_1$ and $\phi_2$, let $\psi=\phi_1-\phi_2$. By linearity, $\lapl\psi=0$ and $\psi\big|_{\partial\vol}\equiv 0$, then $\psi\equiv 0$, since any non-zero value in $\vol$ would contradict \ref{maximum_lapl}. Therefore, $\phi_1=\phi_2$.
+  \end{proof}
+\end{remark}
+
+\pagebreak
+
+\subsection{Surface of Materials}
+
+\begin{lemma}[Interface]
+  \label{surface_E_field}
+  In the boundary surface of a solid $\vol$: $$\vE_\text{above}-\vE_\text{below}=\frac{\sigma}{\ee}\,\hat{n}$$
+  \begin{proof}
+    \begin{compactenum}
+      \item Take a small area $A$ around $\rv$. By \ref{gauss_law} on a small box $V$ around $A$: $\Phi_E[\partial V]=\vE_\text{above}\vdot(A\,\hat{n})+\vE_\text{below}\vdot(-A\,\hat{n})=\frac{Q}{\ee}=\frac{\sigma\,A}{\ee}$. Hence, $(\vE_\text{above}-\vE_\text{below})\vdot\,\hat{n}=\dfrac{\sigma}{\ee}$.
+      \item Take a small curve $\Gamma$ around $\rv$. By \ref{faraday_potential} on a small area $\Sigma$ around $\Gamma$: $\displaystyle\oint_\Gamma\vE(\irv)\vdot\dd{\irv}=\vE_\text{above}\vdot(\ell\,\hat{t})+\vE_\text{below}\vdot(-\ell\,\hat{t})=0$ for any tangent vector $\hat{t}$. Hence, $(\vE_\text{above}-\vE_\text{below})\vdot\,\hat{t}=0$.
+    \end{compactenum}
+    Therefore, $\vE_\text{above}-\vE_\text{below}=\dfrac{\sigma}{\ee}\,\hat{n}$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $(\phi_\text{above}-\phi_\text{below})\big|_{\partial\vol}=0$ and $\displaystyle\sigma=-\ee\,\pdv{}{\hat{n}}\bigg|_{\partial\vol}(\phi_\text{above}-\phi_\text{below})$
+  \begin{proof}
+    By \ref{faraday_potential} and \ref{surface_E_field}, there second equation follows. Further, by taking at straight line curve from below to above, $\displaystyle \phi_a-\phi_b=-\int_{b\to a}\vE(\irv)\vdot\dd{\irv}$ which goes to $0$ as the path tends toward the boundary.
+  \end{proof}
+\end{corollary}
+
+\begin{lemma}[Interface of Materials]
+  In the boundary surface of a solid $\vol$: $\vec{D}_\text{above}-\vec{D}_\text{below}=\sigma_f\,\hat{n}$, in a linear medium, $\epsilon_\text{above}\cdot \vE_\text{above}-\epsilon_\text{below}\cdot\vE_\text{below}=\sigma_f\,\hat{n}$
+\end{lemma}
+
+\begin{definition}[Conductors]
+  A conductor, heretofore denoted $\Pi$ is an object which charges can move freely. Ideally, we would have an unlimited supply of free charges.
+\end{definition}
+
+\begin{theorem}
+  \label{conductors}
+  In a conductor, $\Pi$:
+  \begin{compactenum}
+    \item $\vE\big|_\Pi\equiv\vec{0}$
+    \item $\rho\big|_\Pi=0$ and the charges are in $\partial\Pi$
+    \item $\Pi$ is an equipotential (cf. \ref{equipotential}), hence, $\vE\perp\partial\Pi$
+  \end{compactenum}
+  \begin{proof}
+    \begin{compactenum}
+      \item Consedering the conductor consists of coupled charges (i.e. atoms), if there is a non-zero $\vE$ at a point, then the charges would move. Supposing electrostatics, the charges cannot move, hence the filed must vanish inside a conductor on the electrostatical regime.
+      \item By \ref{gauss_diff}, $\rho\big|_\Pi=\ee\,(\div\vE)\big|_\Pi=0$.
+      \item By \ref{potential_integral}, $\displaystyle \phi_a-\phi_b=-\int_{b\to a}\vE(\irv)\vdot\dd{\irv}=0$, and the rest is \ref{orthogonality_E}.
+    \end{compactenum}
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \label{induced_cond}
+  $\displaystyle\sigma=\ee\,\hat{n}\vdot\vE\big|_{\partial\Pi}=-\ee\,\pdv{\phi}{\hat{n}}\bigg|_{\partial\Pi}$
+\end{corollary}
+
+\begin{lemma}[Cavity]
+  If a conductor $\Pi$ has a cavity inside (denoted $\Pi_c$), that is, it is not simply connected (cf. Calculus II), then, in $\Pi_c$: $$Q[\partial\Pi_c]=-Q[\Pi_c]$$
+  that is, the induced charged on the surface of the cavity is exactly opposite to the charge inside the cavity.
+  \begin{proof}
+    Direct application of \ref{gauss_law} with $\Pi_c$ and \ref{conductors}.
+  \end{proof}
+\end{lemma}
+
+\begin{theorem}[Faraday Cage]
+  If $Q[\Pi_c]=0$, then $\vec{E}\big|_{\Pi_c}\equiv\vec{0}$
+  \begin{proof}
+    Observe $\vec{E}$ must be continuous inside $\Pi_c$ since $\div\vE$ exists (cf. \ref{gauss_diff}). Then, there is a loop $\Gamma$ (part inside the conductor, part in the cavity) so that $\mathcal{E}[\partial\Sigma]>0$. However, this contradicts \ref{faraday_potential}. Therefore, $\vec{E}\big|_{\Pi_c}\equiv\vec{0}$.
+  \end{proof}
+\end{theorem}
+
+\pagebreak
+
+\subsection{Method of Images}
+
+\begin{definition}
+  An image charge is a charged distribution on $\R^3\setminus \vol$ so that the Poisson Eq. (cf. \ref{poisson}) satisfies the boundary condition. By the uniqueness theorem (cf. \ref{uniqueness}), since we did not change $\rho\big|_\vol$, and it satisfies Dirichlet boundary conditions, the solution is valid and unique.
+\end{definition}
+
+\begin{problem}
+  A point charge of charge $q$ is placed at $(0,0,a)$ and in the plane $z=0$, there is a grounded ($\phi=0$) infinite conducting sheet. Find the potential everywhere above the sheet ($z>0$). What is the induced surface charge density on the sheet?
+  \begin{solution}
+    Place a charge $-q$ at $(0,0,-a)$. By Coulomb: $$\phi(x,y,z)=\frac{q}{4\pi\ee\sqrt{x^2+y^2+(z-a)^2}}-\frac{q}{4\pi\ee\sqrt{x^2+y^2+(z+a)^2}}$$ So, $\phi\big|_{z=0}=0$. Hence this expression gives us the potential for $z>0$. Now, by \ref{induced_cond}, $\displaystyle\sigma=-\ee\,\pdv{\phi}{z}\bigg|_{z=0}=-  \frac{qa}{2\pi\,(x^2+y^2+a^2)^{3\over 2}}$
+  \end{solution}
+\end{problem}
+
+\begin{problem}
+  A point charge of charge $q$ is placed at $(0,0,a)$ (with $a>R$) and there is a grounded ($\phi=0$) infinite conducting sphere ($r=R$). Find the potential everywhere outside the sphere ($r>R$). What is the induced surface charge density on the sphere?
+  \begin{solution}
+    Place a charge $q'$ at $(0,0,a')$  with $a'<R$. By Coulomb: $$\phi(x,y,z)=\frac{q}{4\pi\ee\sqrt{x^2+y^2+(z-a)^2}}+\frac{q'}{4\pi\ee\sqrt{x^2+y^2+(z-a')^2}}$$ Setting $\phi(0,0,R)=0$ and $\phi(0,0,-R)=0$, we get: $a'=\dfrac{R^2}{a}$ and $q'=-\dfrac{R}{a}\,q$. $$\phi(x,y,z)=\frac{q}{4\pi\ee\sqrt{x^2+y^2+(z-a)^2}}-\frac{R\,q}{4\pi\ee\sqrt{a^2(x^2+y^2)+(a\,z-R^2)^2}}$$
+    So, $\phi\big|_{r=R}=0$. Hence this expression gives us the potential for $r>R$. Now, by \ref{induced_cond}, $\displaystyle\sigma=-\ee\,\pdv{\phi}{r}\bigg|_{r=R}=\frac{q\,z}{4\pi\,(R^2+a^2-2a\,z)^{3\over 2}}\;\left(1-\frac{a^2}{R^2}\right)$ or, in spherical coordinates, $\displaystyle\sigma(\theta)=\frac{q\,R\cos{\theta}}{4\pi\,((a-R\cos{\theta})^2+R^2\sin^2{\theta})^{3\over 2}}\;\left(1-\frac{a^2}{R^2}\right)$
+  \end{solution}
+\end{problem}
+
+\pagebreak
+
+\subsection{Capacitors}
+
+\begin{definition}
+  \label{def_capacitor}
+  A capacitor $\mathcal{C}$ is a system of two conductors $\Pi_A$ and $\Pi_B$ in a vacuum. When charged with $+Q$ and $-Q$, respectively, with potential difference $V$, we define the capacitance as: $$C=\frac{Q}{V}=\frac{Q}{\phi_A-\phi_B}$$
+\end{definition}
+
+\begin{remark}
+  A more correct definition is: $C=\dfrac{Q_f}{V}$.
+\end{remark}
+
+\begin{theorem}[Second Uniqueness]
+  \label{second_uniqueness}
+  In a volume $\vol$, $\vE(\rv)$ is unique in $\vol$ given the charge density $\rho$ between the conductors inside $\vol$ and the total charge in each conductor. That is, let $\vol=\vol'\sqcup\Big(\bigsqcup_i\Pi_i\Big)$, the solution to this system is unique:
+  \begin{align*}
+    \oiint_{\partial\Pi_i}\vE(\irv)\vdot\dd[2]{\irv}=\frac{1}{\ee}\,Q_i
+    \quad&\quad (\div\vE)\big|_{\vol'}=\frac{1}{\ee}\,\rho
+  \end{align*}
+  \begin{proof}
+    Let $\vE_1$ and $\vE_2$ be two electric fields that solve the system. Define $\vE=\vE_2-\vE_1$, by linearity, the system becomes: $\displaystyle\oiint_{\partial\Pi_i}\vE(\irv)\vdot\dd[2]{\irv}=0$ and $(\div\vE)\big|_{\vol'}=0$. Moreover, $\partial\vol'=\bigsqcup_i\partial\Pi_i$ and $\phi\big|_{\partial\vol'}\equiv 0$. By \ref{conductors}, $\phi\big|_{\Pi_i}\equiv \phi_i\text{ (const.)}$, then: 
+    \begin{align*}
+      \iiint_{\vol'}\div(\phi\cdot\vE)(\irv)\dd[3]{\ir}=\oiint_{\partial\vol'}\phi(\irv)\cdot\vE(\irv)\vdot\dd[2]{\irv}=\sum_i\phi_i\cdot\oiint_{\partial\Pi_i}\vE(\irv)\vdot\dd[2]{\irv}=0\\
+      =\iiint_{\vol'}\Big[(\div\vE)(\irv)\cdot\phi(\irv)-\|\vE(\irv)\|^2\Big]\dd[3]{\ir}=-\iiint_{\vol'}\|\vE(\irv)\|^2\dd[3]{\ir}
+    \end{align*}
+    Hence, $\Forall{\rv\in\vol}\vE(\rv)=\vec{0}$, that is, $\vE_1\equiv\vE_2$.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  The distribution of charge on the surface of the conductor does not matter for the electric field.
+\end{corollary}
+
+\begin{theorem}
+  \label{capacitor_geometry}
+  The capacitance of a capacitor $\mathcal{C}$ (cf. \ref{def_capacitor}) only depends on the geometry of the conductors. That is, there is a linear dependency between $Q$ and $V$.
+  \begin{proof}
+    Since they are in a vacuum, $\rho=0$. Taking $Q_i$ on the capacitor, we get the electrical field $\vE_i$. Then, dividing by $Q_i$ and using \ref{second_uniqueness}, $$\frac{1}{Q_1}\,\vE_1=\frac{1}{Q_2}\,\vE_2\RA\frac{1}{Q_1}\,\phi_1=\frac{1}{Q_2}\,\phi_2\RA C_1=C_2$$ so, the capacitance does not change by changing the charge.
+  \end{proof}
+\end{theorem}
+
+\begin{problem}
+  Calculate the capacitance of two concentric spherical shells with radii $a<b$.
+  \begin{solution}
+    We get a charge of $Q$ (we're not assuming sign) in the inner shell. By spherical symmetry: $\vE=\dfrac{Q}{4\pi\ee\,r^2}\,\hat{r}\RA$ $$\phi(b)=\phi(a)-\int_{r=a}^b\dfrac{Q}{4\pi\ee\,r^2}\,dr=\phi(a)-\dfrac{Q}{4\pi\ee}\left(\frac{1}{a}-\frac{1}{b}\right)\RA C=\cfrac{4\pi\ee}{\cfrac{1}{a}-\cfrac{1}{b}}$$
+  \end{solution}
+\end{problem}
+
+\begin{lemma}[Associating Capacitors]
+  Let $\mathcal{C}_1$ and $\mathcal{C}_2$ be two capacitors, and combining them in parallel and series, respectively, will give the following equivalent capacitance:
+  \begin{center} 
+    \begin{circuitikz}
+      \draw (0,0) node[anchor=east] {B}
+      to[short, o-*] (1.5,0)
+      to[C=$C_1$, *-*] (1.5,3) -- (3,3)
+      to[C=$C_2$, *-*] (3,0) -- (1.5,0)
+      (1.5,3) to[short, -o] (0,3) node[anchor=east]{A};
+      \draw(0,1.5) node[label={left:$C_\parallel=C_1+C_2$}]{};
+    \end{circuitikz}
+    \hspace{1cm}
+    \begin{circuitikz}
+      \draw (2,0) node[anchor=west] {B}
+      to[short, o-*] (0,0)
+      to[C=$C_1$, *-*] (0,1.5) to[C=$C_2$, *-*] (0,3)
+      to[short, -o] (2,3) node[anchor=west]{A};
+      \draw(1,1.5) node[label={right:$C_*=\cfrac{1}{\cfrac{1}{C_1}+\cfrac{1}{C_2}}$}]{};
+    \end{circuitikz}
+  \end{center}
+  \begin{proof}
+    By definition:
+    \begin{compactitem}
+      \item Parallel: $C_\parallel=\dfrac{Q}{\phi_A-\phi_B}=\dfrac{Q_1+Q_2}{\phi_A-\phi_B}=C_1+C_2$
+      \item Series: $C_*=\dfrac{Q}{\phi_A-\phi_B}=\dfrac{Q}{\phi_A-\phi_C+\phi_C-\phi_B}=\cfrac{Q}{\cfrac{Q}{C_2}+\cfrac{Q}{C_1}}=\cfrac{1}{\cfrac{1}{C_1}+\cfrac{1}{C_2}}$
+    \end{compactitem}
+    Hence, we can associate capacitors by these formulas.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Capacitor Energy]
+  For a capacitor, the energy stored inside is: $U=\dfrac{Q^2}{2C}$
+  \begin{proof}
+    By \ref{el_energy_stored}, $\displaystyle U=\frac{1}{2}\iiint_\vol\rho(\irv)\cdot\frac{Q}{C}\dd[3]{\ir}=\frac{Q^2}{2C}$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  The capacitance is given by (cf. \ref{energy_el_square}):
+  $$\frac{1}{C}=\iiint_\vol \epsilon(\irv)\left[\frac{\|\vE(\irv)\|}{Q}\right]^2\dd[3]{\ir}$$
+\end{corollary}
+
+\begin{problem}
+  Calculate the capacitance of two concentric spherical shells with radii $a<b$.
+  \begin{solution}
+    We get a charge of $Q$ (we're not assuming sign) in the inner shell. By spherical symmetry: $\vE=\dfrac{Q}{4\pi\ee\,r^2}\,\hat{r}\RA$
+    $$\frac{1}{C}=\iint_{\Omega=0}^{4\pi}\int_{r=a}^b \epsilon_0\frac{1}{16\pi^2\ee^2\,r^4}\,r^2\dd{r}\dd{\Omega}=\frac{1}{4\pi\ee}\int_{r=a}^b\frac{\dd{r}}{r^2}=\frac{1}{4\pi\ee}\left(\frac{1}{a}-\frac{1}{b}\right)$$
+    where $\Omega$ is the solid angle.
+  \end{solution}
+\end{problem}
+
+\pagebreak
+
+\section{Currents and Circuits}
+
+\subsection{Current Density}
+
+\begin{definition}[Currents]
+  \label{def_current}
+  Define $\vJ$ as the current density, is defined as: $$\vJ(\rv,t)=\rho(\rv,t)\cdot\vec{v}_\text{drift}(\rv,t)$$ where $\rho(\rv,t)$ is the charge density (which now depends on time) and $\vec{v}_\text{drift}(\rv,t)$ is the average drift velocity of the particles. Moreover, we can rewrite the density $\rho(\rv,t)=e\,n(\rv,t)$, where $e$ is the electron's charge and $n$ is the number of electrons per volume.
+
+  \noindent Define the current through a surface $\Sigma$ as: $$\I[\Sigma]=\iint_\Sigma \vJ(\irv)\vdot\dd[2]{\irv}$$
+\end{definition}
+
+\begin{remark}
+  We may have surface or linear current density, denoted $\vec{K}$ or $\vec{I}$ respectively, where the charge is found only on a surface or a line.
+\end{remark}
+
+\begin{theorem}[Continuity]
+  (Local) Conservation of Charge is equivalent to the following formula: $$\pdv{\rho}{t}+\div\vJ\equiv 0$$
+  \begin{proof}
+    Take a closed surface $\partial\Omega$, then by Local Conservation of Charge, the current though the surface is exactly minus the change in charge. That is, $$\iiint_\Omega \div\vJ(\irv,t)\dd[3]{\ir}=\oiint_{\partial\Omega}\vJ(\irv,t)\vdot\dd[2]{\irv}=\I[\partial\Omega]=-\pdv{Q[\Omega]}{t}=-\iiint_\Omega\pdv{\rho}{t}(\irv,t)\dd[3]{\ir}$$ since this is valid for all volumes $\Omega$, the integrands should equal.
+  \end{proof}
+\end{theorem}
+
+\begin{definition}[Steady Current]
+  \label{steady_current}
+  A current is \textbf{steady} if: $$\pdv{\rho}{t}\equiv 0\quad\text{ and }\quad\pdv{\vJ}{t}\equiv \vec{0}$$ That is, the charges move individually and constant drift, but the charge density does not change. A direct consequence is $\div\vJ\equiv 0$.
+\end{definition}
+
+\begin{lemma}
+  In the regime \ref{steady_current}, the electric static equations (\ref{faraday_potential}, \ref{gauss_diff}, \ref{gauss_law}) are still valid, hence so are every uniqueness theorem.
+\end{lemma}
+
+\begin{lemma}
+  \label{power_dissipated}
+  The power dissipated by a current is: $$P=\iiint_\vol\vE(\irv)\vdot\vJ(\irv)\dd[3]{\ir}$$
+  \begin{proof}
+    $dw=\vec{f}\vdot\dd{\rv}=\rho(\vE+\rv'\cross\vB)\vdot\rv'\dd{t}=\vE\vdot(\rho\cdot\vec{v})\dd{t}\RA P=\iiint_\vol\vE\vdot\vJ\dd[3]{\irv}$
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Ohm's Law}
+
+\begin{theorem}[Ohm's Law]
+  \label{ohm_law}
+  In a linear material, there is a scalar function $\varrho:\vol\subseteq\R^3\to\R$, called the resistivity, such that: $$\vE(\rv)=\varrho(\rv)\cdot\vJ(\rv)$$
+\end{theorem}
+
+\begin{definition}
+  \label{def_resistor}
+  A resistor $\mathcal{R}$ is a system consiting of a linear material between two conductors $A$ and $B$. When passing with steady current $\I$ through each conductor, with potential difference $V=\phi_A-\phi_B$, we define resistance as: $$R=\frac{V}{\I}$$
+\end{definition}
+
+\begin{lemma}
+  The resistance of a resistor $\mathcal{R}$ (cf. \ref{def_resistor}) only depends on the resistivity of the material and geometry of both the conductors and material. That is, there is a linear dependency between $V$ and $\I$.
+  \begin{proof}
+    Since the currents are steady, $\div\vJ\equiv 0$. Looking at the formula for resistence and capacitance:
+    $$\dfrac{1}{C}=\dfrac{\int\vE(\irv)\vdot\dd{\irv}}{\oiint\epsilon(\irv)\cdot\vE(\irv)\vdot\dd[2]{\irv}}\qquad R=\dfrac{\int\vE(\irv)\vdot\dd{\irv}}{\oiint\frac{1}{\varrho(\irv)}\cdot\vE(\irv)\vdot\dd[2]{\irv}}$$
+    Hence, all properties follow by analogy $R\leftrightarrow \dfrac{1}{C}$ by $\dfrac{1}{\varrho}\leftrightarrow\epsilon$.
+  \end{proof}
+\end{lemma}
+
+\begin{problem}
+  Calculate the resistence of two concentric spherical shells with radii $a<b$ with uniform resistivity $\varrho$ in between.
+  \begin{solution}
+    We get a current of $\I$ (we're not assuming sign) goint out the inner shell. By spherical symmetry: $\vJ=\dfrac{\I}{4\pi\,r^2}\,\hat{r}\RA$ $$\phi(b)=\phi(a)-\int_{r=a}^b\dfrac{\varrho\,\I}{4\pi\,r^2}\,dr=\phi(a)-\dfrac{\varrho\I}{4\pi}\left(\frac{1}{a}-\frac{1}{b}\right)\RA R=\frac{\varrho}{4\pi}\left(\frac{1}{a}-\frac{1}{b}\right)$$
+    This is exactly the same result we got for capacitors, by applying the analogy.
+  \end{solution}
+\end{problem}
+
+\begin{remark}
+  The resistor has a (maybe non-trivial) capacitance, which makes it a RC circuit.
+\end{remark}
+
+\begin{theorem}[Kirchoff Laws]
+  For any given circuit:
+  \begin{compactitem}
+    \item Current: The sum of currents going into a node is equal to the sum going out. Equivalently, the algebraic sum of currents in a node is zero.
+    \item Voltage: The directed sum of voltage differences in a loop is zero.
+  \end{compactitem}
+\end{theorem}
+
+\begin{lemma}[Associating Resistors]
+  Let $\mathcal{R}_1$ and $\mathcal{R}_2$ be two resistors, and combining them in parallel and series, respectively, will give the following equivalent resistance:
+  \begin{center} 
+    \begin{circuitikz}
+      \draw (0,0) node[anchor=east] {B}
+      to[short, o-*] (1.5,0)
+      to[R=$R_1$, *-*] (1.5,3) -- (3,3)
+      to[R=$R_2$, *-*] (3,0) -- (1.5,0)
+      (1.5,3) to[short, -o] (0,3) node[anchor=east]{A};
+      \draw(0,1.5) node[label={left:$R_\parallel=\cfrac{1}{\cfrac{1}{R_1}+\cfrac{1}{R_2}}$}]{};
+    \end{circuitikz}
+    \hspace{1cm}
+    \begin{circuitikz}
+      \draw (2,0) node[anchor=west] {B}
+      to[short, o-*] (0,0)
+      to[R=$R_1$, *-*] (0,1.5) to[R=$R_2$, *-*] (0,3)
+      to[short, -o] (2,3) node[anchor=west]{A};
+      \draw(1,1.5) node[label={right:$R_*=R_1+R_2$}]{};
+    \end{circuitikz}
+  \end{center}
+  \begin{proof}
+    By definition:
+    \begin{compactitem}
+      \item Parallel: $R_\parallel=\dfrac{\phi_A-\phi_B}{I}=\dfrac{\phi_A-\phi_B}{I_1+I_2}=\cfrac{\phi_A-\phi_B}{\cfrac{\phi_A-\phi_B}{R_1}+\cfrac{\phi_A-\phi_B}{R_2}}=\cfrac{1}{\cfrac{1}{R_1}+\cfrac{1}{R_2}}$
+      \item Series: $R_*=\dfrac{\phi_A-\phi_B}{I}=\dfrac{\phi_A-\phi_C+\phi_C-\phi_B}{I}=\dfrac{R_2\,I+R_1\,I}{I}=R_1+R_2$
+    \end{compactitem}
+    Hence, we can associate resistors by these formulas.
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[RC Circuit]
+  We consider two cases:
+  \begin{center} 
+    \begin{circuitikz}
+      \draw (0,0) to[C=$C$, *-*]  (0,2.5) -- (3.5,2.5) to[R=$R$, *-*] (3.5,0) -- (0,0);
+      \draw(1.75,1.25) node[]{$Q=Q_0\,e^{\Large-\frac{t}{RC}}$};
+    \end{circuitikz}
+    \hspace{0.5cm}
+    \begin{circuitikz}
+      \draw (4.5,2.5) to[battery1, label={$\mathcal{E}$}, *-*]  (4.5,0) -- (0,0) to[C=$C$, *-*] (0,1.25) to[R=$R$, *-*] (0,2.5) -- (4.5,2.5);
+      \draw(2.25,1.25) node[]{$Q=C\mathcal{E}\Big(1-\,e^{\Large-\frac{t}{RC}}\Big)$};
+    \end{circuitikz}
+  \end{center}
+  \begin{proof}
+    For each case:
+    \begin{compactenum}
+      \item $R(-Q')=V=\dfrac{Q}{C}\RA Q=Q_0\,e^{\Large-\frac{t}{RC}}$
+      \item $\mathcal{E}=RQ'+\dfrac{Q}{C}\RA Q=C\mathcal{E}\Big(1-\,e^{\Large-\frac{t}{RC}}\Big)$
+    \end{compactenum}
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}[Resistance Power]
+  For a resistor, the power dissipated is: $P=R\,I^2$
+  \begin{proof}
+    By definition, $U=qV\RA P=\displaystyle\dv{U}{t}=V\dv{q}{t}=VI=RI^2$ by Ohm's Law.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  The resistance is given by (cf. \ref{power_dissipated}):
+  $$R=\iiint_\vol \varrho(\irv)\left[\frac{\|\vJ(\irv)\|}{I}\right]^2\dd[3]{\ir}$$
+\end{corollary}
+
+\pagebreak
+
+\section{Magnetics}
+
+\subsection{Magnetic Field}
+
+\begin{definition}[Lorentz Force]
+  \label{lorentz_force}
+  The force acting on a test charge $q$ in electric field $\vE$ and magnetic field $\vB$ is:
+  $$\vec{F}(t,\rv,\vec{v})=q\big[\vE(t,\rv)+\vec{v}\cross\vB(t,\rv)\big]$$
+\end{definition}
+
+\begin{corollary}[Cyclotronic Motion]
+  Let $\vec{\omega}_B=-\dfrac{q}{m}\,\vB$ and $\vec{a}_E=\dfrac{q}{m}\,\vE$, then a particle with charge $q$ moving with $\rv(t)$ satifies the ODE: $$\ddot{\rv}(t)=\vec{a}_E(t,\rv)+\vec{\omega}_B(t,\rv)\cross\dot{\rv}(t)$$ where only the electromagnetic forces are present.
+\end{corollary}
+
+\begin{lemma}[Superposition Principle]
+  If there are two distinct fields $\vB_1$ and $\vB_2$ for two distinct sources, the total magnetic field is $\vB_1+\vB_2$.
+\end{lemma}
+
+\begin{theorem}[Gauß's Law of Magnetism]
+  \label{gauss_magnetism}
+  For a static magnetic field (currents that induce the field are steady), $$\div\vB\equiv\vec{0}$$ hence $\Exist{\vA:\R^3\to\R^3}\vB=\curl\vA$. Further, $\Phi_B[\partial\Omega]=\displaystyle\oiint_{\partial\Omega}\vB(\irv)\vdot\dd[2]{\irv}=0$ for any closed surface $\partial\Omega$ (cf. \ref{gauss_thm}).
+\end{theorem}
+
+\begin{theorem}[Biot-Savart Law]
+  \label{biot_savart}
+  The magnetic field due to a steady current $\vJ$ on a volume $\vol$ is: $$\vB(\rv)=\frac{\mmu}{4\pi}\iiint_{\vol}\vJ(\irv)\cross\frac{\rv-\irv}{\|\rv-\irv\|^3}\dd[3]{\ir}$$ where $\mmu=\dfrac{1}{c^2\,\ee}$ ($c$ is the speed of light).
+\end{theorem}
+
+\begin{corollary}
+  \label{vector_potential}
+  The vector potential $\vA$ due to a steady current $\vJ$ on a volume $\vol$ is: $\displaystyle\vA(\rv)=\frac{\mmu}{4\pi}\iiint_{\vol}\frac{\vJ(\irv)}{\|\rv-\irv\|}\dd[3]{\ir}$
+\end{corollary}
+
+\begin{problem}[Uniform Ring]
+  $\,$
+  \InsertBoxR{-2}{\begin{minipage}{0.4\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        view = {30}{20},
+        axis lines = middle,
+        ticks=none,
+        zmax = 5, zmin = -3
+      ]
+      \addplot3 [
+        mesh, draw=blue,
+        point meta=x,
+        samples=47,
+        samples y=10,
+        domain=0:360,
+        y domain=0:360
+      ] ( {(3.5 + 0.25*cos(y))*cos(x)},
+          {(3.5 + 0.25*cos(y))*sin(x)},
+          {0.25*sin(y)});
+      \end{axis}
+    \end{tikzpicture}
+  \end{minipage}}[2]
+  \noindent Calculate the magnetic field due to a ring of charge (in the $xy$-plane) of radius $R$ with steady current $I$ going counterclockwise, at the $z$-axis.
+  \begin{solution}
+    Since it is symmetric about rotations around $z$, we integrate using cylindrical coordinates: We have $\|\rv-\irv\|=\sqrt{R^2+z^2}$:
+    \begin{align*}
+      \vec{B}(\rho)&=\frac{\mmu I}{4\pi}\int\limits_{\varphi=0}^{2\pi}\frac{\hat{\varphi}\cross(z\,\hat{z}-R\,\hat{\rho})R\dd{\varphi}}{(R^2+z^2)^{3\over 2}}=\frac{\mmu I\,R}{4\pi}\int\limits_{\varphi=0}^{2\pi}\frac{(z\,\hat{\rho}+R\,\hat{z})\dd{\varphi}}{(R^2+z^2)^{3\over 2}}\\
+      &=\frac{\mmu I\,R}{4\pi}\int\limits_{\varphi=0}^{2\pi}\frac{R\,\hat{z}\dd{\varphi}}{(R^2+z^2)^{3\over 2}}=\frac{\mmu I\,R^2}{2(R^2+z^2)^{3\over 2}}\,\hat{z}
+    \end{align*}
+  \end{solution}
+\end{problem}
+
+\begin{lemma}[Magnetic Dipole Moment]
+  Define $\displaystyle\vec{\mu}=\frac{1}{2}\iiint_{\vol}\irv\cross\vJ(\irv)\dd[3]{\ir}$ we get the dipole approximation of the vector potential: $\vec{A}_\text{dipole}(\rv)=\dfrac{\mmu\,\vec{\mu}\cross\rv}{4\pi\,\|\rv\|^3}$
+  \begin{proof}
+    Similar to the proof of electric dipole, with the added expression there are no magnetic monopole.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $\displaystyle\vB_\text{dipole}(\rv)=\dfrac{\mmu\,\Big[3(\vec{\mu}\vdot\hat{r})\,\hat{r}-\vec{\mu}\Big]}{4\pi\,\|\rv\|^3}$
+\end{corollary}
+
+\begin{remark}
+  In a simplified case, $\vec{\mu}=\mathcal{I}\cdot\vec{S}$.
+\end{remark}
+
+\begin{lemma}
+  The torque on a current loop due to a (locally constant) magnetic field $\vec{B}$ is: $\vec{\tau}=\vec{\mu}\cross\vB$.
+  \begin{proof}
+    By direct calculation: 
+    \begin{align*}
+      \vec{\tau}=\oint\rv\cross\big(\I\dd{\rv}\cross\vB\big)&=\I\oint\Big[(\rv\vdot\vB)\,\dd{\rv}-\vB(\rv\vdot\dd{\rv})\Big]\\
+      =\I\oint(\rv\vdot\vB)\,\dd{\rv}-\vB\I\oint\rv\vdot\dd{\rv}&=\I\oint(\rv\vdot\vB)\,\dd{\rv}\\
+      \vec{\mu}\cross\vB=\frac{1}{2}\oint\big(\rv\cross\I\dd{\rv}\big)\cross\vB&=\frac{1}{2}\I\oint\Big[(\rv\vdot\vB)\,\dd{\rv}-\rv(\vB\vdot\dd{\rv})\Big]\\
+      \RA\vec{\tau}-\vec{\mu}\cross\vB&=\frac{1}{2}\I\oint\Big[(\rv\vdot\vB)\,\dd{\rv}+\rv(\vB\vdot\dd{\rv})\Big]\\
+      =\frac{1}{2}\I\sum_{j,k}\,\hat{x}_k\oint\Big[r_j\,B_j\,\dd{x}_k+r_k\,B_j\,\dd{x}_j\Big]&=\frac{1}{2}\I\sum_{j,k}\,B_j\hat{x}_k\oint r_j\,\dd{x}_k+r_k\,\dd{x}_j
+    \end{align*}
+    which is zero taking Stokes.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Ampère's Law}
+
+\begin{theorem}[Differential Form of Ampère's Law]
+  \label{ampere_diff}
+  The magnetic field due to a steady current $\vJ$ obeys: $$\curl\vB(\rv)=\mmu\,\vJ(\rv)$$
+  \begin{proof}
+    We calculate using \ref{biot_savart} and \ref{vector_potential}:
+    \begin{align*}
+      \curl\vB&=\curl(\curl\vA)=\grad(\div\vA)-\lapl\vA\\
+      \lapl\vA(\rv)&=\frac{\mmu}{4\pi}\iiint_{\vol}\vJ(\irv)\Big(-4\pi\delta^3(\rv-\irv)\Big)\dd[3]{\ir}=-\mmu\vJ(\rv)\\
+      \div\vA&=\frac{\mmu}{4\pi}\iiint_{\vol}\vJ(\irv)\vdot\frac{\rv-\irv}{\|\rv-\irv\|^3}\dd[3]{\ir}\\
+      &=-\frac{\mmu}{4\pi}\oiint_{\partial\vol}\frac{\vJ(\irv)}{\|\rv-\irv\|}\vdot\dd[2]{\irv}\text{ due to }\div\vJ\equiv 0\\
+      &=0\text{ since }\vol\text{ encloses all the current}
+    \end{align*}
+    Hence $\curl\vB=-\lapl\vA=\mmu\vJ$.
+  \end{proof}
+\end{theorem}
+
+\begin{remark}
+  Taking the divergence of both sides, $\vec{0}\equiv \div(\curl\vB)=\mmu\div\vJ\RA\div\vJ\equiv\vec{0}$.
+\end{remark}
+
+\begin{corollary}[Coloumb Gauge]
+  The vector potential is given by the PDE: $\lapl\vA(\rv)=-\mmu\vJ(\rv)$ and $\div\vA(\rv)=0$
+\end{corollary}
+
+\begin{theorem}[Integral Form of Ampère's Law]
+  \label{ampere_law}
+  For any surface $\Sigma$, the magnetic field due to a steady current $\vJ$ obeys: $$\oint_{\partial\Sigma}\vB(\irv)\vdot \dd{\irv}=\mmu\,\I[\Sigma]$$
+  \begin{proof}
+    By the differential form of Ampère's Law and Stokes' Theorem: $$\oint_{\partial\Sigma}\vB(\irv)\vdot \dd{\irv}=\iint_\Sigma(\curl\vB(\irv))\vdot\dd[2]{\irv}=\iint_\Sigma\mmu\vJ(\irv)\vdot\dd[2]{\irv}=\mmu\,\I[\Sigma]$$ The result follows.
+  \end{proof}
+\end{theorem}
+
+\begin{problem}[Infinite Wire]
+  Calculate the magnetic field due to an infinite wire with steady current $I$.
+  \begin{solution}
+    By symmetry and Ampère's with $\Sigma$ a flat disk of radius $\rho$: $$2\pi \rho B_\varphi=\mmu I\RA\vB(\rho)=\dfrac{\mmu I}{2\pi \rho}\,\hat{\varphi}$$
+  \end{solution}
+\end{problem}
+
+\begin{problem}[Solenoid]
+  Calculate the magnetic field due to an infinite solenoid (radius $R$) with steady current $I$ and turn density $n$.
+  \begin{solution}
+    By symmetry and Ampère's with $\Sigma$ a rectangle on the $\varphi=\text{const.}$ half-plane of sides $\rho$ and $L$ with one side in the $z$-axis: 
+    \begin{enumerate}
+      \item $\rho>R: L\cdot (B_z-B_{z0})=-\mmu n\cdot L\cdot I\RA B_z=\text{const.}$, for $\lim\limits_{\rho\to\infty}B_z=0$, we need $B_z=0$.
+      \item $\rho<R: L\cdot (B_z-B_{z0})=0\RA B_z=B_{z0}=\mu_0\,n\,I\,\hat{z}$.
+    \end{enumerate}
+    Hence: $\displaystyle \vB(\rv)=\begin{cases}
+      \mu_0\,n\,I\,\hat{z} &\text{ if }\rho<R\\\vec{0}&\text{ otherwise}
+    \end{cases}$
+  \end{solution}
+\end{problem}
+
+\begin{lemma}[Interface]
+  \label{surface_B_field}
+  In the boundary surface of a solid $\vol$: $$\vB_\text{above}-\vB_\text{below}=\mmu\vec{K}\cross\hat{n}$$
+  \begin{proof}
+    \begin{compactenum}
+      \item Take a small area $A$ around $\rv$. By \ref{gauss_magnetism} on a small box $V$ around $A$: $\Phi_B[\partial V]=\vB_\text{above}\vdot(A\,\hat{n})+\vB_\text{below}\vdot(-A\,\hat{n})=0$. Hence, $(\vB_\text{above}-\vB_\text{below})\vdot\,\hat{n}=0$.
+      \item Take a small curve $\Gamma$ around $\rv$. By \ref{ampere_law} on a small area $\Sigma$ around $\Gamma$: $\displaystyle\oint_\Gamma\vB(\irv)\vdot\dd{\irv}=\vB_\text{above}\vdot(\ell\,\hat{t})+\vB_\text{below}\vdot(-\ell\,\hat{t})=\mu K\cdot\ell$ for the vector $\hat{t}$ tangent to the surface but perpendicular to $\vec{K}$, that is: $\hat{t}=\hat{n}\cross\hat{K}$. Hence, $\hat{n}\cross(\vB_\text{above}-\vB_\text{below})=\mmu\vec{K}$.
+    \end{compactenum}
+    Therefore, $\vB_\text{above}-\vB_\text{below}=\mmu\vec{K}\cross\hat{n}$.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Faraday's Law}
+
+\begin{theorem}[Faraday-Maxwell Differential Law]
+  The electric and magnetic fields resultant of the same source obey: $$\curl\vE(\rv,t)=-\pdv{\vB(\rv,t)}{t}$$
+\end{theorem}
+
+\begin{theorem}[Faraday-Maxwell Integral Law]
+  For any surface $\Sigma$, the electric and magnetic fields resultant of the same source obey: $$\displaystyle\oint_{\partial\Sigma}\vE(\irv,t)\vdot \dd{\irv}=-\iint_{\Sigma}\pdv{\vB(\irv,t)}{t}\vdot\dd[2]{\irv}$$
+  \begin{proof}
+    By the differential form of Maxwell-Faraday's Law and Stokes' Theorem: $$\oint_{\partial\Sigma}\vE(\irv,t)\vdot \dd{\irv}=\iint_\Sigma\Big[\curl\vE(\irv,t)\Big]\vdot\dd[2]{\irv}=-\iint_\Sigma\pdv{\vB(\irv,t)}{t}\vdot\dd[2]{\irv}$$ The result follows.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Substituing the vector potential: $$\curl\left(\vE+\pdv{\vA}{t}\right)\equiv\vec{0}\RA \vE+\pdv{\vA}{t}=-\grad\phi$$ Moreover, $\phi$ is exactly the electric potential, as before. Hence, it obeys: $\lapl\phi=-\dfrac{\rho}{\ee}$ if we require $\div\vA\equiv 0$.
+\end{corollary}
+
+\begin{definition}[EMF]
+  The electromotive force (emf) around a curve $\Gamma(t)$ (which may depend on time) is defined as:
+  $$\mathcal{E}[\Gamma(t)]=\oint_{\Gamma(t)}\vec{f}(\irv,t)\vdot\dd{\irv}=\oint_{\Gamma(t)}\Big[\vE(\irv,t)+\dot{\irv}(t)\cross\vB(\irv,t)\Big]\vdot\dd{\irv}$$ where $\vF(\rv,t)=q\,\vec{f}(\rv,t)$, that is, $\vec{f}$ is the force density.
+\end{definition}
+
+\begin{theorem}[Faraday's Flux Rule]
+  For any surface $\Sigma(t)$ (that may change with time), the magnetic field due to an arbitrary current $\vJ$ obeys:
+  $$\mathcal{E}[\partial\Sigma(t)]=-\dv{\Phi_B[\Sigma(t)]}{t}=-\dv{}{t}\,\iint_{\Sigma(t)}\vB(\irv,t)\vdot\dd[2]{\irv}$$
+  \begin{proof}
+    By \ref{kelvin_helmholtz} and the potential formulation of $\vE$, then:
+    \begin{align*}
+      -\dv{\Phi_B[\Sigma(t)]}{t}&=-\dv{}{t}\,\iint_{\Sigma(t)}\vB(\irv,t)\vdot\dd[2]{\irv}=-\dv{}{t}\,\oint_{\partial\Sigma(t)}\vA(\irv,t)\vdot\dd{\irv}\\
+      &=-\oint_{\partial\Sigma(t)}\left[\pdv{\vA(\irv,t)}{t}-\dot{\irv}\cross(\curl\vA(\irv,t))\right]\vdot\dd{\irv}\\
+      &=\oint_{\partial\Sigma(t)}\left[\vE(\irv,t)+\grad\phi(\irv,t)+\dot{\irv}\cross(\curl\vA(\irv,t))\right]\vdot\dd{\irv}\\
+      &=\oint_{\partial\Sigma(t)}\Big[\vE(\irv,t)+\dot{\irv}(t)\cross\vB(\irv,t)\Big]\vdot\dd{\irv}=\mathcal{E}[\partial\Sigma(t)]
+    \end{align*}
+    As required.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}[Lenz's Law]
+  The induced current (Eddy current) on a resistive material will generate an opposing magnetic field, so as to reduce the change in flux.
+\end{corollary}
+
+\begin{definition}[Magnetic Energy]
+  \label{energy_mag}
+  $$U=\frac{1}{2\mmu}\iiint_\vol \|\vB(\irv)\|^2\dd[3]\ir$$
+  \begin{proof}
+    This energy comes exactly from induction: 
+    \begin{align*}
+      U&=\frac{1}{2}\iiint_\vol \vA(\irv)\vdot\vJ(\irv)\dd[3]{\ir}=\frac{1}{2\mu_0}\iiint_\vol \vA(\irv)\vdot\curl\vB(\irv)\dd[3]{\ir}\\
+      &=\frac{1}{2\mu_0}\iiint_\vol \|\vB(\irv)\|^2\dd[3]{\ir}-\frac{1}{2\mu_0}\oiint_{\partial\vol} \vA(\irv)\cross\vB(\irv)\vdot\dd[2]{\irv}
+    \end{align*}
+    And the surface term is zero by enforcing a boundary condition $\vA\big|_{\partial\vol}\equiv\vec{0}$.
+  \end{proof}
+\end{definition}
+
+\pagebreak
+
+\subsection{Inductance}
+
+\begin{definition}[Mutual Inductance]
+  Given $n$ current loops $\Gamma_i=\partial\Sigma_i$ with current $I_i$ passing through, we define: $M_{i,j}=\dfrac{\Phi_{i,j}}{I_j}$, where $$\Phi_{i,j}=\Phi_{B_j}[\Sigma_i]=\iint_{\Sigma_i}\vB_j(\irv)\vdot\dd[2]{\irv}=\oint_{\Gamma_i}\vA_j(\irv)\vdot\dd{\irv}$$
+\end{definition}
+
+\begin{lemma}[Neumann Formula]
+  The mutual inductances depend only on the geometry of the two current loops and: $$M_{i,j}=\frac{\mmu}{4\pi}\oint_{\Gamma_i}\oint_{\Gamma_j}\frac{\dd{\irv_i}\vdot\dd{\irv_j}}{\|\irv_i-\irv_j\|}$$
+  \begin{proof}
+    By \ref{vector_potential} on a loop: $\displaystyle\vA_j(\rv)=\frac{\mmu}{4\pi}\oint_{\Gamma_j}\frac{I_j\,\dd{\irv}}{\|\rv-\irv\|}$. Hence, it follows since $I_j$ does not depend on position, we can plug it into $\displaystyle M_{i,j}\, I_j=\Phi_{i,j}=\oint_{\Gamma_i}\vA_j(\irv)\vdot\dd{\irv}$ and divide through.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  $M_{i,j}=M_{j,i}$
+\end{corollary}
+
+\begin{definition}[Self Inductance]
+  Define: $L_i=\dfrac{\Phi_{i,i}}{I_i}$, hence, we get: $$\mathcal{E}_i=-L_i\,\dv{I_i}{t}$$ Moreover, can take $L_i=\lim\limits_{\Gamma_j\to\Gamma_i}M_{i,j}$
+\end{definition}
+
+\begin{lemma}[Inductor Energy]
+  For a inductor, the energy stored inside is: $$U=\frac{L\,I^2}{2}$$
+  \begin{proof}
+    By \ref{power_dissipated}, $\displaystyle U=\int V\,I\dd{t}=\int L\,\dv{I}{t}\,I\dd{t}=\frac{L\,I^2}{2}$.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}
+  The Inductance is given by (cf. \ref{energy_mag}):
+  $$L=\iiint_\vol \frac{1}{\mu_0}\left[\frac{\|\vB(\irv)\|}{I}\right]^2\dd[3]{\ir}$$
+\end{corollary}
+
+
+\pagebreak
+
+\section{Maxwell's Equations}
+
+\subsection{Maxwell's Correction and Waves}
+
+\begin{remark}
+  So, far, our equations are:
+  \begin{align*}
+    \div\vE=\dfrac{\rho}{\ee}\quad&\quad\curl\vE=-\pdv{\vB}{t}\\
+    \div\vB=0\quad&\quad\curl\vB=\mmu\vJ
+  \end{align*}
+  However, the last equation cannot be correct, in general, since taking divergence of both sides would give $\div\vJ=\dfrac{1}{\mmu}\div(\curl\vB)=0$
+\end{remark}
+
+\begin{theorem}[Ampère Law with Maxwell Correction]
+  $$\quad\curl\vB=\mmu\vJ+\mmu\ee\pdv{\vE}{t}$$
+  \begin{proof}
+    Say $\curl\vB=\mmu(\vJ+\vJ_D)$ for some $\vJ_d$ (called the displacement current). Taking the divergence and the curl:
+    $$\div(\curl\vB)=0=\mmu(\div\vJ+\div\vJ_d)\RA \div\vJ_d=-\div\vJ=\pdv{\rho}{t}$$
+    and a solution to that, using Gauß's Law is: $J_d=\displaystyle\ee\pdv{\vE}{t}$.
+  \end{proof}
+\end{theorem}
+
+\begin{lemma}[Inhomogeneous Wave Equation]
+  Let $\displaystyle\Box^2=\lapl-\frac{1}{c^2}\pdv[2]{t}$ and $\displaystyle\div\vA+\frac{1}{c} \pdv{\phi}{t} \equiv 0$ (Lorentz Condition), then the Maxwell Equations become: $$\Box^2\phi=-\frac{\rho}{\ee}\qquad\Box^2\vA=-\mmu\vJ$$ 
+  \begin{proof}
+    Direct application of Maxwell's Equations.
+  \end{proof}
+\end{lemma}
+
+\begin{corollary}[E\&M Waves]
+  In a charge-free region ($\rho=0$ and $\vJ=\vec{0}$), the electromagnetic fields obey: $\Box^2\vE=\Box^2\vB=\vec{0}$.
+\end{corollary}
+
+\begin{lemma}
+  In a charge-free region, let $\psi$ be a solution to the wave equation. Then, $$\vE(\rv,t)=\vE_0\cdot \psi(\hat{k}\vdot\rv-ct)\RA\vB(\rv,t)=\frac{\hat{k}\cross\vE_0}{c}\cdot \psi(\hat{k}\vdot\rv-ct)$$
+  \begin{proof}
+    Follows from Faraday's Law.
+  \end{proof}
+\end{lemma}
+
+\pagebreak
+
+\subsection{Special Relativity}
+
+\begin{theorem}[Lorentz Transformation of Fields]
+  The transformation of electromagnetic fields from a frame $S$ to $S'$ moving at velocity $\vec{v}$.
+  \begin{align*}
+    \vE_{\parallel}'&=\vE_{\parallel} &
+    \vB_{\parallel}'&=\vB_{\parallel} \\
+    \vE_{\perp}'&=\gamma \left(\vE_{\perp}+\vec{v}\cross\vB \right)&
+    \vB_{\perp}'&=\gamma \left(\vB_{\perp}-\frac{1}{c^2} \vec{v}\cross\vE \right)
+  \end{align*}
+  \begin{proof}
+    Let $A_0=\phi/c$, then, we define: $F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu$, the result follows by applying a Lorentz boost to this tensor. Another derivation would be using the Lorentz force (cf. \ref{lorentz_force}) with the boost in velocities and forces.
+  \end{proof}
+\end{theorem}
+
+\begin{corollary}
+  Magnetic field is a Lorentz transformation of Electric Field. If $\vB=\vec{0}$: $$\vB'=-\frac{\gamma}{c^2} \vec{v}\cross\vE=-\frac{1}{c^2} \vec{v}\cross\vE'$$
+\end{corollary}
+
+\begin{theorem}[Jeffimenko's Equation]
+  A solution to Maxwell's Equations is:
+  $$\phi(\rv,t)=\frac{1}{4\pi\ee}\iiint_\vol\frac{\rho(\irv,t_r)}{\|\rv-\irv\|}\dd[3]{\irv}\qquad\vA(\rv,t)=\frac{\mmu}{4\pi}\iiint_\vol\frac{\vJ(\irv,t_r)}{\|\rv-\irv\|}\dd[3]{\irv}$$ where $t_r=t-\dfrac{\|\rv-\irv\|}{c}$ is the retarded time.
+  \begin{proof}
+    The derivation of this solution envolves taking Fourier transformation to find a Green's function. Outside the scope.
+  \end{proof}
+\end{theorem}
+
+\end{document}

@@ -30,7 +30,7 @@
 \newcommand{\Forall}[1]{\forall\,{#1}\,,\,}
 \newcommand{\Exist}[1]{\exists\,{#1}:}
 \newcommand{\NExist}[1]{\nexists\,{#1}:}
-\newcommand{\seq}[2]{\left\{{#1}\right\}_{#2 =1}^\infty}
+\newcommand{\seq}[2]{\left\{{#1}\right\}_{#2 \in\N}}
 
 \DeclareMathOperator{\N}{\mathbb{N}}
 \DeclareMathOperator{\R}{\mathbb{R}}
@@ -76,7 +76,7 @@
 \begin{definition}[Sequence]
   A sequence of real numbers is a set of numbers which are written in some particular order. There are infinitely many terms to the sequence:
   $$a_1,a_2,\cdots,a_n,\cdots$$
-  Denote the entire sequence by: $\seq{a_n}{n}$ or just $\{a_n\}$. The set of all sequences with in a set $\U$ is denoted $\U^{\N}$.
+  Denote the entire sequence by: $\seq{a_n}{n}$ or just $\{a_n\}$. A sequence in $A\subseteq \R$ is denoted $\seq{a_n\in A}{n}$.
 \end{definition}
 
 \begin{definition}[Bounded Sequences]
@@ -619,7 +619,7 @@ Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
 \begin{definition}[Limit of a Function]
   Let $f$ be defined in an open interval $\U$ about a, except possibly at a itself ("except"). A number $L$ is called the limit of $f$ at point $a$ if:
   \begin{itemize}
-    \item[](Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a \RA f(x_n)\to L$
+    \item[](Heine) $\Forall{\seq{x_n\in\U}{n}} x_n\to a \RA f(x_n)\to L$
     \item[](Cauchy) $\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}0<|x-a|<\delta\RA |f(x)-L|<\epsilon$
   \end{itemize}
   We denote $L=\lim\limits_{x\to a}f(x)$. Notice, by Heine, the limit is unique, if it exists.
@@ -630,8 +630,8 @@ Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
   \begin{proof}
     We prove each direction:
     \begin{itemize}
-      \item[$(\RA)$] By contrary, suppose $\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x\in\U}0<|x-a|<\delta\RA |f(x)-L|\geq \epsilon$. Define the sequence $\{x_n\}\in\U$ by picking $x_n$ such that $|x_n-a|<\dfrac{1}{n}\RA |f(x)-L|\geq \epsilon$. Hence $x_n\to a$ since $a-\dfrac{1}{n}<x_n<a+\dfrac{1}{n}$, by sandwich theorem. Therefore $f(x_n)\not\to L$, by definition, so Heine does not hold.
-      \item[$(\LA)$] By contrary, suppose $\Exist{\{x_n\}\in\U^{\N}}x_n\to a$, but $f(x_n)\not\to L$. By definition of the limits:
+      \item[$(\RA)$] By contrary, suppose $\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x\in\U}0<|x-a|<\delta\RA |f(x)-L|\geq \epsilon$. Define the sequence $\{x_n\}\in\U$ by picking $x_n$ such that $|x_n-a|<\dfrac{1}{n}\RA |f(x_n)-L|\geq \epsilon$. Hence $x_n\to a$ since $a-\dfrac{1}{n}<x_n<a+\dfrac{1}{n}$, by sandwich theorem. Therefore $f(x_n)\not\to L$, by definition, so Heine does not hold.
+      \item[$(\LA)$] By contrary, suppose $\Exist{\seq{x_n\in\U}{n}}x_n\to a$, but $f(x_n)\not\to L$. By definition of the limits:
       \begin{align*}
         \Forall{\delta>0}\Exist{N\in\N}\Forall{n\geq N}&|x_n-a|<\delta\\
         \Exist{\epsilon>0}\Forall{N\in\N}\Exist{n_0\geq N}&|f(x_{n_0})-L|\geq \epsilon
@@ -643,12 +643,12 @@ Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
 
 \begin{definition}[Infinite Limit of Functions]
   Let $f$ be defined in an open interval $\U$ about $a$, "except". We say $f(x)\to \infty$ (eq. $-\infty$) at $x=a$ if: (Cauchy) $$\Forall{M>0}\Exist{\delta>0}\Forall{x\in\U}0<|x-a|<\delta\RA f(x)>M \big(\text{eq. }f(x)<M\big)$$
-  (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a \RA f(x_n)\to \infty\;\big(\text{eq. }-\infty\big)$
+  (Heine) $\Forall{\seq{x_n\in\U}{n}} x_n\to a \RA f(x_n)\to \infty\;\big(\text{eq. }-\infty\big)$
 \end{definition}
 
 \begin{definition}[Limit at Infinity]
   Let $f$ be defined in an unbounded open interval $(a,\infty)$ or $(-\infty,a)$. A number $L$ is called the limit of $f$ at $\infty$ (eq. $-\infty$) if: (Cauchy) $$\Forall{\epsilon>0}\Exist{M>0}\Forall{x\in\U}x>M\;\big(\text{eq. }x<M\big)\RA |f(x)-L|<\epsilon$$
-  (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to \infty \;\big(\text{eq. }-\infty\big) \RA f(x_n)\to L$
+  (Heine) $\Forall{\seq{x_n\in\U}{n}} x_n\to \infty \;\big(\text{eq. }-\infty\big) \RA f(x_n)\to L$
 \end{definition}
 
 \begin{lemma}
@@ -696,9 +696,9 @@ Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
   We define:
   \begin{itemize}
     \item[] (From the right) $\lim\limits_{x\to a^{+}}f(x)=L$ iff: (Cauchy) $$\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}a<x<a+\delta\RA |f(x)-L|<\epsilon$$
-    (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a^{+} \RA f(x_n)\to L$
+    (Heine) $\Forall{\seq{x_n\in\U}{n}} x_n\to a^{+} \RA f(x_n)\to L$
     \item[] (From the left) $\lim\limits_{x\to a^{-}}f(x)=L$ iff: (Cauchy) $$\Forall{\epsilon>0}\Exist{\delta>0}\Forall{x\in\U}a-\delta<x<a\RA |f(x)-L|<\epsilon$$
-    (Heine) $\Forall{\{x_n\}\in \U^{\N}} x_n\to a^{-} \RA f(x_n)\to L$
+    (Heine) $\Forall{\seq{x_n\in\U}{n}} x_n\to a^{-} \RA f(x_n)\to L$
   \end{itemize}
 \end{definition}
 
@@ -740,8 +740,8 @@ Therefore, if we pick $N=3$, the sequence is stricly monotonically decreasing.
 \begin{theorem}[Heine-Cantor]
   If $f:[a,b]\to \R$ is continuous, then it is uniformly continuous.
   \begin{proof}
-    By contrary, $$\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x,y\in[a,b]}|x-y|<\delta\RA |f(x)-f(y)|\geq\epsilon$$
-    Define $\{x_n\}$ and $\{y_n\}$ such that $\Forall{n\in\N},|x_n-y_n|<\dfrac{1}{n}$ and $|f(x_n)-f(y_n)|\geq\epsilon$. Since $x_n$ is bounded, there is a convergent subsequence $\seq{x_{n_k}}{k}$ with limit we denote $x_0\in[a,b]$. By Triangle Inequality, $$|y_{n_k}-x_0|\leq |x_{n_k}-x_0|+|x_{n_k}-y_{n_k}|\leq |x_{n_k}-x_0|+\dfrac{1}{n_k}$$ hence $y_{n_k}\to x_0$. Since $f$ is continuous, $\lim\limits_{k\to\infty}f(x_{n_k})=f(x_0)=\lim\limits_{k\to\infty}f(y_{n_k})$. But $\Forall{k\in\N}|f(x_{n_k})-f(y_{n_k})|\geq \epsilon>0$. By taking $k\to\infty$, there is a contradiction.
+    By contrary, suppose $$\Exist{\epsilon>0}\Forall{\delta>0}\Exist{x,y\in[a,b]}|x-y|<\delta\RA |f(x)-f(y)|\geq\epsilon$$
+    Define $\{x_n\}$ and $\{y_n\}$ s.t. $\Forall{n\in\N}|x_n-y_n|<\dfrac{1}{n}$ and $|f(x_n)-f(y_n)|\geq\epsilon$. Since $x_n$ is bounded, there is a convergent subsequence $\seq{x_{n_k}}{k}$ with limit we denote $x_0\in[a,b]$. By Triangle Inequality, $$|y_{n_k}-x_0|\leq |x_{n_k}-x_0|+|x_{n_k}-y_{n_k}|\leq |x_{n_k}-x_0|+\dfrac{1}{n_k}$$ hence $y_{n_k}\to x_0$. Since $f$ is continuous, $\lim\limits_{k\to\infty}f(x_{n_k})=f(x_0)=\lim\limits_{k\to\infty}f(y_{n_k})$. But $\Forall{k\in\N}|f(x_{n_k})-f(y_{n_k})|\geq \epsilon>0$. By taking $k\to\infty$, there is a contradiction.
   \end{proof}
 \end{theorem}
 
